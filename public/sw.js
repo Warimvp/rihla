@@ -3,7 +3,8 @@
 const CACHE = 'rihla-v1'
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['/'])))
+  // './' se résout contre l'emplacement du SW : racine ou sous-chemin, même code.
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./'])))
   self.skipWaiting()
 })
 
@@ -31,7 +32,7 @@ self.addEventListener('fetch', (e) => {
             }
             return reponse
           })
-          .catch(() => (request.mode === 'navigate' ? caches.match('/') : undefined))
+          .catch(() => (request.mode === 'navigate' ? caches.match('./') : undefined))
     )
   )
 })

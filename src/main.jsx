@@ -10,8 +10,9 @@ createRoot(document.getElementById('root')).render(
 )
 
 // Hors-ligne (PWA) : seulement en production, le SW gênerait le HMR en dev.
+// Chemin relatif : fonctionne à la racine comme sous /rihla/ (GitHub Pages).
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {})
+    navigator.serviceWorker.register('sw.js').catch(() => {})
   })
 }

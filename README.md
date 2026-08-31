@@ -1,5 +1,7 @@
 # Rihla · رحلة — les langues du monde, gratuites pour toujours
 
+**➜ App en ligne : https://warimvp.github.io/rihla/** (PWA installable — déployée automatiquement à chaque push sur `main`).
+
 En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla** (« le voyage ») reprend sa route : chaque langue est une **destination**, chaque leçon une **étape**, chaque réussite un **tampon** dans ton passeport.
 
 - 9 destinations : Grenade (espagnol), Venise (italien), Londres (anglais), Istanbul (turc), Ispahan (persan), Mombasa (swahili), Delhi (hindi), Pékin (mandarin), Tokyo (japonais)
@@ -23,9 +25,9 @@ pnpm build      # production dans dist/
 
 ## Déploiement — gratuit, et sans organisation Apple
 
-### 1. Le web d'abord (zéro compte Apple, zéro dirham)
+### 1. Le web d'abord (zéro compte Apple, zéro dirham) — ✅ en place
 
-L'app est une PWA installable (manifeste + service worker hors-ligne). Héberge `dist/` sur n'importe quel hébergement statique gratuit (Cloudflare Pages, GitHub Pages…) ou sur ton Hostinger. Sur iPhone : Safari → Partager → « Sur l'écran d'accueil ». Au Maroc, l'essentiel du parc est Android : le canal web/PWA couvre déjà presque tout le monde.
+Déployé sur **GitHub Pages** : https://warimvp.github.io/rihla/ — le workflow `.github/workflows/pages.yml` teste, construit et publie à chaque push sur `main`. La base Vite est relative (`base: './'`), donc le même build se déploie tel quel ailleurs (Cloudflare Pages, Hostinger, racine ou sous-chemin). Sur iPhone : Safari → Partager → « Sur l'écran d'accueil ». Au Maroc, l'essentiel du parc est Android : le canal web/PWA couvre déjà presque tout le monde.
 
 ### 2. Sur ton iPhone — compte Apple **gratuit** (aucun abonnement)
 
