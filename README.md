@@ -1,6 +1,6 @@
 # Rihla · رحلة — les langues du monde, gratuites pour toujours
 
-**➜ App en ligne : https://warimvp.github.io/rihla/** (PWA installable — déployée automatiquement à chaque push sur `main`).
+**➜ App en ligne : https://warimvp.github.io/rihla/** (PWA installable — déployée automatiquement à chaque push sur `main`). Code sous licence [MIT](LICENSE) : libre d'usage, de copie et de modification — comme l'app, pour toujours.
 
 En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla** (« le voyage ») reprend sa route : chaque langue est une **destination**, chaque leçon une **étape**, chaque réussite un **tampon** dans ton passeport.
 
