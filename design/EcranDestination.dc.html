@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Young+Serif');
+    @import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700');
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700');
+    body { margin: 0; font-family: 'Readex Pro', 'Avenir Next', 'Segoe UI', sans-serif; color: #2B1E12; }
+    a { color: #4E46C8; } a:hover { color: #3A34A0; }
+    .etape { background: #FDF8EE; border: 1px solid #E5DAC4; border-radius: 18px; box-shadow: 0 2px 10px rgba(43,30,18,0.08); padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
+    .num { width: 42px; height: 42px; border-radius: 999px; background: #E4E2F8; color: #3A34A0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex: 0 0 auto; }
+    .num--fait { background: #23795B; color: #FDF8EE; }
+    .jeu { background: #FDF8EE; border: 1px solid #E5DAC4; border-radius: 18px; box-shadow: 0 2px 10px rgba(43,30,18,0.08); padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
+    .medaillon { width: 44px; height: 44px; border-radius: 14px; background: #E4E2F8; color: #3A34A0; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+    .chevron { flex: 0 0 auto; }
+  </style>
+</helmet>
+<div style="width: 390px; height: 1360px; box-sizing: border-box; background: #F7F0E3; display: flex; flex-direction: column; gap: 16px; padding: 64px 20px 24px; overflow: hidden;">
+  <div style="display: flex; align-items: center; gap: 14px;">
+    <span style="width: 48px; height: 48px; border-radius: 999px; background: #C8552F; color: #FDF8EE; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700;">ES</span>
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <div style="font-family: 'Young Serif', Georgia, serif; font-size: 25px;">Grenade</div>
+      <div style="font-size: 13px; color: #7A6A55;">Espagnol · 400 km</div>
+    </div>
+  </div>
+  <div style="background: #FDF8EE; border: 1px solid #E5DAC4; border-radius: 18px; box-shadow: 0 2px 10px rgba(43,30,18,0.08); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;">
+    <div style="font-size: 12.5px; color: #7A6A55; letter-spacing: 0.06em; text-transform: uppercase;">Carnet de route</div>
+    <div style="font-size: 13.5px; line-height: 1.6; color: #7A6A55;">Ibn Battuta a vu Grenade en 1350 — dernier royaume d'al-Andalus.</div>
+  </div>
+  <div style="font-family: 'Young Serif', Georgia, serif; font-size: 20px;">Étapes du voyage</div>
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="etape">
+      <span class="num num--fait"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FDF8EE" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">Salutations</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">8 mots · 8 / 8 bonnes réponses</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+    <div class="etape">
+      <span class="num num--fait"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FDF8EE" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">En route</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">8 mots · 8 / 8 bonnes réponses</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+    <div class="etape">
+      <span class="num">3</span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">À table</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">8 mots</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+    <div class="etape">
+      <span class="num">4</span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">Les nombres</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">8 mots</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+    <div class="etape">
+      <span class="num">5</span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">Au marché</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">8 mots</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+    <div class="etape">
+      <span class="num">6</span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">Les jours</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">8 mots</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+  </div>
+  <div style="display: flex; align-items: baseline; justify-content: space-between;">
+    <div style="font-family: 'Young Serif', Georgia, serif; font-size: 20px;">Jeux du voyage</div>
+    <div style="font-size: 12.5px; color: #7A6A55;">Révise en jouant — XP à la clé</div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="jeu">
+      <span class="medaillon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3A34A0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"></rect><g fill="#3A34A0" stroke="none"><rect x="9" y="9" width="6" height="6"></rect><rect x="9" y="9" width="6" height="6" transform="rotate(45 12 12)"></rect></g></svg>
+      </span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">Zellige des paires</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">Retrouve chaque mot et son sens</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+    <div class="jeu">
+      <span class="medaillon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3A34A0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-4h13L20 9"></path><path d="M4 9a2 2 0 0 0 4 0a2 2 0 0 0 4 0a2 2 0 0 0 4 0a2 2 0 0 0 4 0"></path><path d="M6 12.5V19h12v-6.5"></path><path d="M9.5 19v-4h5v4"></path></svg>
+      </span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">Le Souk</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">45 secondes pour attraper le bon mot</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+    <div class="jeu">
+      <span class="medaillon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3A34A0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18c5-1 8-4 10-8" stroke-dasharray="3 3"></path><g fill="#3A34A0" stroke="none"><rect x="14" y="4.5" width="5" height="5"></rect><rect x="14" y="4.5" width="5" height="5" transform="rotate(45 16.5 7)"></rect></g></svg>
+      </span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">La Caravane</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">Épelle les mots, fais avancer l'étoile</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+    <div class="jeu">
+      <span class="medaillon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3A34A0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="1.7" fill="#3A34A0" stroke="none"></circle><path d="M10.5 8.5a5 5 0 0 1 0 7"></path><path d="M14 5.5a9.5 9.5 0 0 1 0 13"></path></svg>
+      </span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">L'Oreille</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">Écoute seulement, puis choisis</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+    <div class="jeu">
+      <span class="medaillon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3A34A0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><g fill="#3A34A0" stroke="none"><rect x="4.5" y="4.5" width="5.5" height="5.5"></rect><rect x="4.5" y="4.5" width="5.5" height="5.5" transform="rotate(45 7.25 7.25)"></rect><rect x="14" y="14" width="5.5" height="5.5"></rect><rect x="14" y="14" width="5.5" height="5.5" transform="rotate(45 16.75 16.75)"></rect></g><path d="M13.2 10.8l-2.4 2.4"></path></svg>
+      </span>
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 15.5px; font-weight: 600;">Le Duel</span>
+        <span style="font-size: 12.5px; color: #7A6A55;">À deux, face à face, sur un seul téléphone</span>
+      </span>
+      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+  </div>
+  <div style="font-size: 11.5px; color: #A79A83; text-align: center;">Vue complète (défilable dans l'app) — la barre d'onglets reste fixée en bas du viewport.</div>
+</div>
+<script data-dc-script data-props='{"$preview":{"width":390,"height":1360}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</x-dc>
+</body>
+</html>

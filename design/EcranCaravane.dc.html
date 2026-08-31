@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Young+Serif');
+    @import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700');
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700');
+    body { margin: 0; font-family: 'Readex Pro', 'Avenir Next', 'Segoe UI', sans-serif; color: #2B1E12; }
+    a { color: #4E46C8; } a:hover { color: #3A34A0; }
+    .fente { min-width: 30px; height: 46px; border-bottom: 3px solid #E0D5BE; display: flex; align-items: center; justify-content: center; font-size: 21px; font-weight: 600; padding: 0 2px; }
+    .fente--pleine { border-color: #4E46C8; }
+    .lettre { min-width: 44px; height: 48px; border-radius: 12px; background: #FDF8EE; border: 1.5px solid #E5DAC4; font-size: 19px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+    .lettre--usee { opacity: 0.3; }
+  </style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F7F0E3; display: flex; flex-direction: column; gap: 16px; padding: 64px 20px 24px; overflow: hidden;">
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <div style="width: 44px; height: 44px; margin-inline-start: -11px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+    </div>
+    <div style="flex: 1 1 auto; font-size: 15.5px; font-weight: 600;">La Caravane</div>
+    <div style="font-size: 13px; font-weight: 600; color: #7A6A55; flex: 0 0 auto;">Mot 4 sur 8</div>
+  </div>
+  <div style="position: relative; height: 36px; flex: 0 0 auto;">
+    <div style="position: absolute; left: 12px; right: 12px; top: 18px; border-top: 2px dashed #E0D5BE;"></div>
+    <span style="position: absolute; top: 6px; left: 43%; display: inline-flex;">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><g fill="#E9A319"><rect x="7" y="7" width="10" height="10"></rect><rect x="7" y="7" width="10" height="10" transform="rotate(45 12 12)"></rect></g></svg>
+    </span>
+  </div>
+  <div style="background: #FDF8EE; border: 1px solid #E5DAC4; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(43,30,18,0.08); flex: 0 0 auto;">
+    <div style="font-size: 12.5px; color: #7A6A55; letter-spacing: 0.06em; text-transform: uppercase;">Épelle ce mot · Espagnol</div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="font-family: 'Young Serif', Georgia, serif; font-size: 24px;">Au revoir</div>
+      <div style="width: 44px; height: 44px; border-radius: 999px; background: #E4E2F8; display: flex; align-items: center; justify-content: center;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3A34A0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 3 9 3 15 6 15 11 19 11 5" fill="#3A34A0" stroke="none"></polygon>
+          <path d="M15 9.5a3.5 3.5 0 0 1 0 5"></path>
+          <path d="M17.5 7a7 7 0 0 1 0 10"></path>
+        </svg>
+      </div>
+    </div>
+    <div dir="ltr" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;">
+      <span class="fente fente--pleine">a</span>
+      <span class="fente fente--pleine">d</span>
+      <span class="fente fente--pleine">i</span>
+      <span class="fente"></span>
+      <span class="fente"></span>
+    </div>
+  </div>
+  <div dir="ltr" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
+    <span class="lettre lettre--usee">d</span>
+    <span class="lettre lettre--usee">i</span>
+    <span class="lettre">ó</span>
+    <span class="lettre">s</span>
+    <span class="lettre">t</span>
+    <span class="lettre lettre--usee">a</span>
+    <span class="lettre">e</span>
+  </div>
+  <div style="font-size: 12px; color: #7A6A55; line-height: 1.5; text-align: center;">Chaque mot réussi fait avancer l'étoile d'une étape sur la piste — mot prononcé à l'arrivée.</div>
+  <div style="flex: 1 1 auto;"></div>
+  <div style="min-height: 44px; display: flex; align-items: center; justify-content: center; color: #3A34A0; font-size: 14.5px; font-weight: 600;">Effacer</div>
+</div>
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</x-dc>
+</body>
+</html>
