@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.DS_Store
+
+# Canvas Claude Design assemblé (~2 Mo) — régénérable depuis design/*.dc.html + canvas.json
+design/theme-rihla.html
+
+# Copie du build web dans le projet iOS — régénérée par `pnpm ios:sync`
+ios/App/App/public/

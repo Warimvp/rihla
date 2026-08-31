@@ -1,0 +1,178 @@
+import { useEffect, useState } from 'react'
+import { LANGUES, langueParId } from './data/langues.js'
+import { defaultLocale, getDictionary, getDirection, locales } from './i18n.js'
+import {
+  ajouterXp,
+  chargerProgres,
+  enregistrerDefi,
+  enregistrerEtape,
+  progresInitial,
+  sauverProgres,
+  visaObtenu,
+} from './lib/progression.js'
+import { Accueil } from './components/Accueil.jsx'
+import { Apprendre } from './components/Apprendre.jsx'
+import { Lecon } from './components/Lecon.jsx'
+import { Passeport } from './components/Passeport.jsx'
+import { Reglages } from './components/Reglages.jsx'
+import { BarreOnglets } from './components/Communs.jsx'
+import { Defi } from './components/Defi.jsx'
+import { JeuCaravane } from './components/JeuCaravane.jsx'
+import { JeuDuel } from './components/JeuDuel.jsx'
+import { JeuOreille } from './components/JeuOreille.jsx'
+import { JeuSouk } from './components/JeuSouk.jsx'
+import { JeuZellige } from './components/JeuZellige.jsx'
+
+const JEUX = { zellige: JeuZellige, souk: JeuSouk, caravane: JeuCaravane, oreille: JeuOreille, duel: JeuDuel }
+
+const lireLocal = (cle, defaut) => {
+  try {
+    return localStorage.getItem(cle) ?? defaut
+  } catch {
+    return defaut
+  }
+}
+
+const ecrireLocal = (cle, valeur) => {
+  try {
+    localStorage.setItem(cle, valeur)
+  } catch {
+    // Stockage indisponible (navigation privée…) : l'app fonctionne sans persistance.
+  }
+}
+
+export default function App() {
+  const [locale, setLocale] = useState(() => {
+    const l = lireLocal('rihla.langue', defaultLocale)
+    return locales.includes(l) ? l : defaultLocale
+  })
+  const t = getDictionary(locale)
+
+  useEffect(() => {
+    document.documentElement.lang = locale
+    document.documentElement.dir = getDirection(locale)
+    ecrireLocal('rihla.langue', locale)
+  }, [locale])
+
+  const [progres, setProgres] = useState(() => chargerProgres())
+  const [onglet, setOnglet] = useState('carte')
+  const [destinationId, setDestinationId] = useState(() => lireLocal('rihla.destination', LANGUES[0].id))
+  const [leconActive, setLeconActive] = useState(null)
+  const [jeuActif, setJeuActif] = useState(null)
+  const [defiActif, setDefiActif] = useState(false)
+
+  useEffect(() => {
+    ecrireLocal('rihla.destination', destinationId)
+  }, [destinationId])
+
+  const majProgres = (p) => {
+    setProgres(p)
+    sauverProgres(p)
+  }
+
+  const ouvrirDestination = (langue) => {
+    setDestinationId(langue.id)
+    setOnglet('apprendre')
+  }
+
+  const ouvrirLecon = (langue, lecon) => {
+    setDestinationId(langue.id)
+    setLeconActive({ langueId: langue.id, leconId: lecon.id })
+  }
+
+  const effacer = () => {
+    if (window.confirm(t.confirmEffacer)) majProgres(progresInitial())
+  }
+
+  if (defiActif) {
+    const terminerDefi = (score, total) => {
+      const resultat = enregistrerDefi(progres, score, total)
+      majProgres(resultat.progres)
+      return resultat
+    }
+    return (
+      <div className="app">
+        <Defi t={t} locale={locale} surTerminer={terminerDefi} surQuitter={() => setDefiActif(false)} />
+      </div>
+    )
+  }
+
+  if (jeuActif) {
+    const langue = langueParId(jeuActif.langueId)
+    const Jeu = JEUX[jeuActif.type]
+    return (
+      <div className="app">
+        <Jeu
+          t={t}
+          locale={locale}
+          langue={langue}
+          surXp={(montant) => majProgres(ajouterXp(progres, montant))}
+          surQuitter={() => setJeuActif(null)}
+        />
+      </div>
+    )
+  }
+
+  if (leconActive) {
+    const langue = langueParId(leconActive.langueId)
+    const lecon = langue.lecons.find((l) => l.id === leconActive.leconId)
+    const terminer = (score, total) => {
+      const visaAvant = visaObtenu(progres, langue)
+      const resultat = enregistrerEtape(progres, langue.id, lecon.id, score, total)
+      majProgres(resultat.progres)
+      return {
+        xpGagne: resultat.xpGagne,
+        valide: resultat.valide,
+        nouveauVisa: visaObtenu(resultat.progres, langue) && !visaAvant,
+      }
+    }
+    return (
+      <div className="app">
+        <Lecon
+          t={t}
+          locale={locale}
+          langue={langue}
+          lecon={lecon}
+          indexLangue={LANGUES.indexOf(langue)}
+          surTerminer={terminer}
+          surQuitter={() => {
+            setLeconActive(null)
+            setOnglet('apprendre')
+          }}
+        />
+      </div>
+    )
+  }
+
+  const destination = langueParId(destinationId) ?? LANGUES[0]
+
+  return (
+    <div className="app">
+      {onglet === 'carte' ? (
+        <Accueil
+          t={t}
+          locale={locale}
+          progres={progres}
+          surDestination={ouvrirDestination}
+          surLecon={ouvrirLecon}
+          surDefi={() => setDefiActif(true)}
+        />
+      ) : null}
+      {onglet === 'apprendre' ? (
+        <Apprendre
+          t={t}
+          locale={locale}
+          progres={progres}
+          langue={destination}
+          surLecon={ouvrirLecon}
+          surJeu={(type) => setJeuActif({ type, langueId: destination.id })}
+        />
+      ) : null}
+      {onglet === 'passeport' ? <Passeport t={t} locale={locale} progres={progres} /> : null}
+      {onglet === 'reglages' ? (
+        <Reglages t={t} locale={locale} surLocale={setLocale} surEffacer={effacer} />
+      ) : null}
+      <BarreOnglets actif={onglet} sur={setOnglet} t={t} />
+    </div>
+  )
+}

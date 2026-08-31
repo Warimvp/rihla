@@ -1,0 +1,20 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 960, "h": 600, "title": "Rihla — Couverture" },
+    { "file": "Logo.dc.html", "x": 1040, "y": 0, "w": 960, "h": 640, "title": "Logo & icône d'app" },
+    { "file": "Fondations.dc.html", "x": 0, "y": 700, "w": 960, "h": 760, "title": "Couleurs & typographie" },
+    { "file": "Composants.dc.html", "x": 1040, "y": 740, "w": 960, "h": 880, "title": "Composants UI" },
+    { "file": "EcranAccueil.dc.html", "x": 0, "y": 1720, "w": 390, "h": 844, "title": "Écran — Itinéraire" },
+    { "file": "EcranLecon.dc.html", "x": 470, "y": 1720, "w": 390, "h": 844, "title": "Écran — Leçon" },
+    { "file": "EcranPasseport.dc.html", "x": 940, "y": 1720, "w": 390, "h": 844, "title": "Écran — Passeport" },
+    { "file": "EcranArabe.dc.html", "x": 1410, "y": 1720, "w": 390, "h": 844, "title": "Écran — Accueil (AR/RTL)" },
+    { "file": "EcranJeux.dc.html", "x": 1880, "y": 1720, "w": 390, "h": 844, "title": "Écran — Jeu : Le Souk" },
+    { "file": "DirectionB.dc.html", "x": 0, "y": 2700, "w": 720, "h": 540, "title": "Piste B — Néo-Atlas" },
+    { "file": "DirectionC.dc.html", "x": 800, "y": 2700, "w": 720, "h": 540, "title": "Piste C — Nuit d'encre" }
+  ],
+  "annotations": [
+    { "id": "note-piste", "x": 2350, "y": 1720, "w": 300, "text": "Piste retenue : « Carnet de voyage » — zellige, bleu Majorelle, terracotta, safran.\nJetons exacts dans la planche « Couleurs & typographie » ; le code de l'app reprend les mêmes variables CSS." },
+    { "id": "note-alternatives", "x": 1560, "y": 2700, "w": 300, "text": "Deux pistes alternatives, volontairement basse fidélité.\nSi tu préfères l'une d'elles, dis-le : je décline tout le thème et le CSS de l'app dans cette direction." }
+  ],
+  "launch": { "view": "canvas" }
+}

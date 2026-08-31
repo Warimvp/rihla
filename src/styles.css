@@ -1,0 +1,875 @@
+/* ————— Rihla — design system « Carnet de voyage » —————
+   Jetons identiques au canvas Claude Design (design/theme-rihla.html). */
+
+:root {
+  --sable: #f7f0e3;
+  --papier: #fdf8ee;
+  --encre: #2b1e12;
+  --encre-2: #7a6a55;
+  --encre-3: #a79a83;
+  --majorelle: #4e46c8;
+  --majorelle-fonce: #3a34a0;
+  --majorelle-pale: #e4e2f8;
+  --terracotta: #c8552f;
+  --terracotta-fonce: #a84523;
+  --terracotta-pale: #f7e0d4;
+  --safran: #e9a319;
+  --safran-fonce: #7a5107;
+  --safran-pale: #fbefd3;
+  --menthe: #23795b;
+  --menthe-fonce: #17553f;
+  --menthe-pale: #ddefe2;
+  --ligne: #e5dac4;
+  --ligne-2: #e0d5be;
+  --piste: #efe7d6;
+  --desactive: #e9e1cf;
+  --r-champ: 10px;
+  --r-bouton: 14px;
+  --r-carte: 18px;
+  --ombre: 0 2px 10px rgba(43, 30, 18, 0.08);
+  --ombre-cta: 0 4px 14px rgba(58, 52, 160, 0.28);
+  --police-titre: 'Young Serif', Georgia, serif;
+  --police-ui: 'Readex Pro', 'Avenir Next', 'Segoe UI', sans-serif;
+}
+
+/* En arabe, Amiri prend le relais pour les titres. */
+[dir='rtl'] {
+  --police-titre: 'Amiri', 'Geeza Pro', Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--sable);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%232B1E12' stroke-opacity='0.04'%3E%3Crect x='19' y='19' width='18' height='18'/%3E%3Crect x='19' y='19' width='18' height='18' transform='rotate(45 28 28)'/%3E%3C/g%3E%3C/svg%3E");
+  color: var(--encre);
+  font-family: var(--police-ui);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+/* ————— Coquille de l'app ————— */
+
+.app {
+  max-width: 480px;
+  margin-inline: auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.vue {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: calc(20px + env(safe-area-inset-top)) 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vue--pleine {
+  padding-top: calc(24px + env(safe-area-inset-top));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  margin: 0;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 25px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+p {
+  margin: 0;
+}
+
+.texte-2 {
+  color: var(--encre-2);
+}
+
+.texte-petit {
+  font-size: 12.5px;
+}
+
+.surtitre {
+  font-size: 12.5px;
+  color: var(--encre-2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ————— Fond zellige Majorelle (bandeaux, CTA) ————— */
+
+.fond-zellige {
+  background-color: var(--majorelle);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23F7F0E3' stroke-opacity='0.14'%3E%3Crect x='19' y='19' width='18' height='18'/%3E%3Crect x='19' y='19' width='18' height='18' transform='rotate(45 28 28)'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ————— Boutons ————— */
+
+.bouton {
+  appearance: none;
+  border: none;
+  font-family: var(--police-ui);
+  font-size: 15px;
+  font-weight: 600;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: var(--r-bouton);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.12s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bouton:active {
+  transform: scale(0.97);
+}
+
+.bouton:focus-visible {
+  outline: 3px solid var(--majorelle-pale);
+  outline-offset: 2px;
+}
+
+.bouton--primaire {
+  background: var(--majorelle);
+  color: var(--papier);
+  box-shadow: var(--ombre-cta);
+}
+
+.bouton--primaire:hover {
+  background: var(--majorelle-fonce);
+}
+
+.bouton--primaire:disabled {
+  background: var(--desactive);
+  color: var(--encre-3);
+  box-shadow: none;
+  cursor: default;
+}
+
+.bouton--secondaire {
+  background: transparent;
+  border: 1.5px solid var(--terracotta);
+  color: var(--terracotta-fonce);
+}
+
+.bouton--secondaire:hover {
+  background: var(--terracotta-pale);
+}
+
+.bouton--fantome {
+  background: transparent;
+  color: var(--majorelle-fonce);
+  min-height: 44px;
+}
+
+.bouton--pleine {
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.bouton--rond {
+  min-height: 0;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--majorelle-pale);
+  color: var(--majorelle-fonce);
+}
+
+.bouton--rond:hover {
+  background: #d6d3f2;
+}
+
+/* ————— Cartes & chips ————— */
+
+.carte {
+  background: var(--papier);
+  border: 1px solid var(--ligne);
+  border-radius: var(--r-carte);
+  box-shadow: var(--ombre);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 2px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chip--menthe {
+  background: var(--menthe-pale);
+  color: var(--menthe-fonce);
+}
+
+.chip--safran {
+  background: var(--safran-pale);
+  color: var(--safran-fonce);
+}
+
+.chip--terracotta {
+  background: var(--terracotta-pale);
+  color: var(--terracotta-fonce);
+}
+
+/* ————— Pastille de langue (typo-médaillon, pas de drapeau) ————— */
+
+.pastille {
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+
+/* ————— Progression ————— */
+
+.piste-progres {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--piste);
+  overflow: hidden;
+}
+
+.piste-progres--claire {
+  background: rgba(247, 240, 227, 0.25);
+}
+
+.piste-progres__barre {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--majorelle);
+  transition: width 0.4s ease;
+}
+
+/* ————— Itinéraire (rail pointillé) ————— */
+
+.itineraire {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.itineraire::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  inset-inline-start: 20px;
+  border-inline-start: 2px dashed var(--ligne-2);
+}
+
+.etape-itineraire {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  text-align: start;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--police-ui);
+  color: var(--encre);
+  cursor: pointer;
+  border-radius: 14px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.etape-itineraire:focus-visible {
+  outline: 3px solid var(--majorelle-pale);
+  outline-offset: 2px;
+}
+
+.etape-itineraire .pastille {
+  border: 3px solid var(--sable);
+}
+
+.etape-itineraire--active {
+  background: var(--papier);
+  border: 1px solid var(--ligne);
+  box-shadow: var(--ombre);
+  padding: 10px 12px;
+  margin-inline-start: -12px;
+  padding-inline-start: 20px;
+}
+
+.etape-itineraire--active .pastille {
+  border-color: var(--papier);
+}
+
+.etape-itineraire--future {
+  opacity: 0.75;
+}
+
+/* ————— Barre d'onglets ————— */
+
+.barre-onglets {
+  flex: 0 0 auto;
+  margin: 8px 16px calc(12px + env(safe-area-inset-bottom));
+  background: var(--papier);
+  border: 1px solid var(--ligne);
+  border-radius: var(--r-carte);
+  box-shadow: var(--ombre);
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.onglet {
+  appearance: none;
+  background: none;
+  border: none;
+  font-family: var(--police-ui);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 12px;
+  color: var(--encre-2);
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 999px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.onglet:focus-visible {
+  outline: 3px solid var(--majorelle-pale);
+  outline-offset: 2px;
+}
+
+.onglet--actif {
+  flex-direction: row;
+  gap: 7px;
+  background: var(--majorelle-pale);
+  padding: 12px 15px;
+  color: var(--majorelle-fonce);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+/* ————— Leçon : cartes-mots (recto/verso) ————— */
+
+.carte-mot {
+  perspective: 1000px;
+  min-height: 300px;
+}
+
+.carte-mot__interieur {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.4, 0.1, 0.2, 1);
+}
+
+.carte-mot--retournee .carte-mot__interieur {
+  transform: rotateY(180deg);
+}
+
+.carte-mot__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 20px;
+  border-radius: var(--r-carte);
+}
+
+.carte-mot__face--recto {
+  background: var(--papier);
+  border: 1px solid var(--ligne);
+  box-shadow: var(--ombre);
+}
+
+.carte-mot__face--verso {
+  transform: rotateY(180deg);
+  color: var(--papier);
+}
+
+.mot-cible {
+  font-family: var(--police-titre);
+  font-size: 30px;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.romanisation {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--encre-2);
+}
+
+/* ————— Leçon : quiz ————— */
+
+.option {
+  appearance: none;
+  width: 100%;
+  min-height: 54px;
+  border-radius: var(--r-bouton);
+  background: var(--papier);
+  border: 1.5px solid var(--ligne);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 16px;
+  font-family: var(--police-ui);
+  font-size: 15px;
+  color: var(--encre);
+  text-align: start;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.option:active {
+  transform: scale(0.98);
+}
+
+.option:focus-visible {
+  outline: 3px solid var(--majorelle-pale);
+  outline-offset: 2px;
+}
+
+.option--correcte {
+  background: var(--menthe-pale);
+  border-color: var(--menthe);
+  color: var(--menthe-fonce);
+  font-weight: 600;
+}
+
+.option--fausse {
+  background: var(--terracotta-pale);
+  border-color: var(--terracotta);
+  color: var(--terracotta-fonce);
+}
+
+.option:disabled {
+  cursor: default;
+}
+
+.bandeau-reponse {
+  border-radius: var(--r-bouton);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bandeau-reponse--bonne {
+  background: var(--menthe-pale);
+  color: var(--menthe-fonce);
+}
+
+.bandeau-reponse--mauvaise {
+  background: var(--terracotta-pale);
+  color: var(--terracotta-fonce);
+}
+
+/* ————— Tampons (visas) ————— */
+
+.tampon-case {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.tampon-case--vide {
+  border: 2px dashed var(--ligne-2);
+  border-radius: 16px;
+  color: var(--encre-3);
+}
+
+@keyframes tamponner {
+  0% {
+    transform: scale(2.1) rotate(12deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.92) rotate(-3deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.tampon--anime {
+  animation: tamponner 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+/* ————— Apparitions en cascade ————— */
+
+@keyframes apparaitre {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.apparition {
+  animation: apparaitre 0.4s ease both;
+}
+
+/* ————— Réglages : sélecteur segmenté ————— */
+
+.segmente {
+  display: flex;
+  background: var(--piste);
+  border-radius: var(--r-bouton);
+  padding: 4px;
+  gap: 4px;
+}
+
+.segmente__choix {
+  appearance: none;
+  border: none;
+  flex: 1;
+  min-height: 44px;
+  border-radius: 11px;
+  background: transparent;
+  font-family: var(--police-ui);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--encre-2);
+  cursor: pointer;
+}
+
+.segmente__choix--actif {
+  background: var(--papier);
+  color: var(--majorelle-fonce);
+  box-shadow: var(--ombre);
+}
+
+/* ————— Divers ————— */
+
+.rangee-stats {
+  display: flex;
+}
+
+.rangee-stats > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 0;
+}
+
+.rangee-stats > div + div {
+  border-inline-start: 1px solid var(--ligne);
+}
+
+.icone-directionnelle {
+  flex: 0 0 auto;
+}
+
+[dir='rtl'] .icone-directionnelle {
+  transform: scaleX(-1);
+}
+
+/* ————— Jeux du voyage ————— */
+
+@keyframes secouer {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.anim-secouer {
+  animation: secouer 0.45s ease;
+}
+
+.anim-pop {
+  animation: pop 0.35s ease;
+}
+
+.carte-jeu {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  font-family: var(--police-ui);
+  text-align: start;
+  color: var(--encre);
+}
+
+.carte-jeu__medaillon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--majorelle-pale);
+  color: var(--majorelle-fonce);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+/* Tuiles du memory zellige (recto caché / verso mot) */
+
+.tuile {
+  perspective: 600px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tuile:focus-visible {
+  outline: 3px solid var(--majorelle-pale);
+  outline-offset: 2px;
+}
+
+.tuile__interieur {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 88px;
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.4, 0.1, 0.2, 1);
+}
+
+.tuile--vue .tuile__interieur {
+  transform: rotateY(180deg);
+}
+
+.tuile__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 14px;
+  box-sizing: border-box;
+}
+
+.tuile__face--cachee {
+  background: var(--papier);
+  border: 1.5px solid var(--ligne);
+}
+
+.tuile__face--mot {
+  transform: rotateY(180deg);
+  background: var(--majorelle-pale);
+  border: 1.5px solid var(--majorelle);
+  color: var(--majorelle-fonce);
+  font-weight: 600;
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.tuile--gagnee {
+  pointer-events: none;
+}
+
+.tuile--gagnee .tuile__face--mot {
+  background: var(--menthe-pale);
+  border-color: var(--menthe);
+  color: var(--menthe-fonce);
+}
+
+/* Chrono du souk */
+
+.chrono {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--piste);
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
+.chrono__barre {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--safran);
+  transition: width 1s linear, background-color 0.3s ease;
+}
+
+.chrono__barre--urgent {
+  background: var(--terracotta);
+}
+
+/* Étal de souk : une option coiffée d'un auvent rayé */
+
+.etal {
+  position: relative;
+  overflow: hidden;
+  padding-top: 16px;
+}
+
+.etal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(90deg, var(--terracotta) 0 14px, var(--papier) 14px 28px);
+  opacity: 0.8;
+}
+
+/* Caravane des lettres */
+
+.fente {
+  min-width: 30px;
+  height: 46px;
+  border-bottom: 3px solid var(--ligne-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  font-weight: 600;
+  padding: 0 2px;
+}
+
+.fente--pleine {
+  border-color: var(--majorelle);
+}
+
+.fente--espace {
+  border-color: transparent;
+  min-width: 14px;
+}
+
+.lettre {
+  min-width: 44px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--papier);
+  border: 1.5px solid var(--ligne);
+  font-family: var(--police-ui);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--encre);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s ease;
+}
+
+.lettre:active {
+  transform: scale(0.94);
+}
+
+.lettre:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.lettre:focus-visible {
+  outline: 3px solid var(--majorelle-pale);
+  outline-offset: 2px;
+}
+
+/* Éclat d'étoiles (validation, visas) */
+
+.eclat {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.eclat__etoile {
+  position: absolute;
+  animation: eclater 0.9s ease-out both;
+}
+
+@keyframes eclater {
+  from {
+    transform: translate(0, 0) scale(0.4) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--dx), var(--dy)) scale(1) rotate(140deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
