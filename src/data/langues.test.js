@@ -4,9 +4,16 @@ import { LANGUES } from './langues.js'
 // Garde-fou du contenu : les sens sont partagés par index entre toutes les
 // langues — si une langue oublie une leçon ou un mot, ça doit casser ici.
 describe('données des langues', () => {
-  it('chaque destination a les 3 leçons complètes et alignées', () => {
+  it('chaque destination a les 6 leçons complètes et alignées', () => {
     for (const langue of LANGUES) {
-      expect(langue.lecons.map((l) => l.id)).toEqual(['salutations', 'enroute', 'atable'])
+      expect(langue.lecons.map((l) => l.id)).toEqual([
+        'salutations',
+        'enroute',
+        'atable',
+        'nombres',
+        'marche',
+        'jours',
+      ])
       for (const lecon of langue.lecons) {
         expect(lecon.mots).toHaveLength(8)
         expect(new Set(lecon.mots.map((m) => m.id)).size).toBe(8)
