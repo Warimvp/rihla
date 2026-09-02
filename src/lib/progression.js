@@ -9,6 +9,7 @@ export const progresInitial = () => ({
   serie: { compte: 0, dernierJour: null },
   etapes: {},
   defis: {},
+  carnet: {},
 })
 
 const stockageParDefaut = () => (typeof localStorage === 'undefined' ? null : localStorage)

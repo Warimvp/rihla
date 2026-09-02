@@ -7,3 +7,6 @@ design/theme-rihla.html
 
 # Copie du build web dans le projet iOS — régénérée par `pnpm ios:sync`
 ios/App/App/public/
+
+# Produits de compilation Xcode (contiennent le profil de provisionnement — UDID)
+ios/build/

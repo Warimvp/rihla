@@ -8,6 +8,7 @@ En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla*
 - Leçons en deux temps : cartes-mots (avec prononciation) puis quiz
 - Cinq jeux de révision par destination : **Zellige des paires** (memory), **Le Souk** (45 s chrono, combos), **La Caravane** (épellation, l'étoile avance sur la piste), **L'Oreille** (compréhension orale pure) et **Le Duel** (2 joueurs face à face sur un seul téléphone)
 - **L'étape du jour** : un défi quotidien qui mélange les 9 langues — même tirage pour tout le monde, et il fait avancer ta série de jours de voyage
+- **Le Carnet** : la révision espacée du voyageur (Leitner, 5 rangs — 1/2/4/8/16 jours) : chaque étape validée y verse ses mots, et ils reviennent juste avant que tu les oublies
 - XP, kilomètres parcourus, série de « jours de voyage », visas à collectionner
 - Interface **français / arabe (RTL)** — pensée pour le Maroc
 - **100 % gratuit, pour toujours** : pas de pub, pas de compte, pas de paywall, fonctionne hors-ligne (PWA)

@@ -1,12 +1,17 @@
 import { LANGUES, nomLangue, nomVille, titreLecon } from '../data/langues.js'
-import { defiDuJour, etapesValidees, prochaineEtape, visaObtenu } from '../lib/progression.js'
+import { joursAvantProchaine, motsDus, tailleCarnet } from '../lib/carnet.js'
+import { defiDuJour, etapesValidees, jourLocal, prochaineEtape, visaObtenu } from '../lib/progression.js'
 import { AnneauProgres, ChipSerie, Pastille } from './Communs.jsx'
-import { ChevronAvant, Coche, Etoile8, FlecheAvant } from './Icones.jsx'
+import { CarnetIcone, ChevronAvant, Coche, Etoile8, FlecheAvant } from './Icones.jsx'
 
-export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi }) {
+export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi, surCarnet }) {
   const suite = prochaineEtape(progres, LANGUES)
   const aCommence = Object.keys(progres.etapes).length > 0
   const defiFait = defiDuJour(progres)
+  const jour = jourLocal()
+  const nbDus = motsDus(progres, LANGUES, jour).length
+  const enCarnet = tailleCarnet(progres)
+  const attente = joursAvantProchaine(progres, jour)
 
   return (
     <div className="vue">
@@ -126,6 +131,52 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi 
         ) : (
           <ChevronAvant taille={18} couleur="var(--safran-fonce)" trait={2} />
         )}
+      </button>
+
+      <button
+        type="button"
+        className="carte apparition"
+        onClick={surCarnet}
+        disabled={nbDus === 0}
+        style={{
+          animationDelay: '90ms',
+          padding: '13px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 13,
+          cursor: nbDus > 0 ? 'pointer' : 'default',
+          fontFamily: 'var(--police-ui)',
+          textAlign: 'start',
+          color: 'var(--encre)',
+          opacity: nbDus > 0 ? 1 : 0.6,
+        }}
+      >
+        <span
+          style={{
+            width: 42,
+            height: 42,
+            borderRadius: 14,
+            background: 'var(--menthe-pale)',
+            color: 'var(--menthe-fonce)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: '0 0 auto',
+          }}
+        >
+          <CarnetIcone taille={22} trait={1.8} />
+        </span>
+        <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 15, fontWeight: 600 }}>{t.carnet.titre}</span>
+          <span style={{ fontSize: 12.5, color: nbDus > 0 ? 'var(--menthe-fonce)' : 'var(--encre-2)', fontWeight: nbDus > 0 ? 500 : 400 }}>
+            {nbDus > 0
+              ? `${t.carnet.aReviser(nbDus)} · ${t.carnet.dansCarnet(enCarnet)}`
+              : enCarnet > 0
+                ? t.carnet.reviensDans(attente)
+                : t.carnet.vide}
+          </span>
+        </span>
+        {nbDus > 0 ? <ChevronAvant taille={18} couleur="var(--menthe-fonce)" trait={2} /> : null}
       </button>
 
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>

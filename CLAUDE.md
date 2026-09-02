@@ -39,6 +39,12 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - **L'étape du jour** (`Defi.jsx` + `src/lib/defi.js`, carte safran sur l'Accueil) : 10 questions dans les 9 langues, tirage déterministe par date (graine = AAAAMMJJ, même défi pour tous). Première réussite du jour : score×4 XP (+10 si parfait) **et la série avance** (quel que soit le score — c'est un rituel, pas un examen ; idempotent si une étape a déjà compté le jour). Rejouer le même jour : 0 XP, meilleur score conservé (`enregistrerDefi`).
 - Animations : `.anim-pop` / `.anim-secouer` (réponses), flip 3D `.tuile`, `EclatEtoiles` (pluie de khatams), tampon `tamponner` — toutes coupées par `prefers-reduced-motion`.
 
+## Le Carnet — révision espacée (`src/lib/carnet.js`, `src/components/Carnet.jsx`)
+- Leitner à 5 rangs, intervalles `[1, 2, 4, 8, 16]` jours. Une étape **validée** verse ses 8 mots au rang 1 (`ajouterAuCarnet`, appelé dans App). Bonne réponse : +1 rang (plafond 5) ; erreur : retour au rang 1 — la date repart du jour.
+- Session : les mots dus (les plus anciens d'abord), toutes langues mêlées, plafonnée à 12 ; distracteurs pris dans la langue du mot ; 3 XP par bonne réponse (les révisions ne doivent pas rapporter plus que les leçons).
+- Carte « Le Carnet » sur l'Accueil : active si mots dus, sinon « À jour — reviens dans X j » (ou invite à valider une étape si vide).
+- Stockage : `progres.carnet` = `{ "langueId:motId": { boite, jour } }` — clés stables, ne pas renommer les ids de mots.
+
 ## Principes produit (non négociables)
 - **100 % gratuit pour toujours** : pas de pub, pas de compte, pas de paywall, tout fonctionne hors-ligne.
 - Pas de faux verrous : toutes les destinations sont ouvertes dès le départ.

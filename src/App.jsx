@@ -6,16 +6,19 @@ import {
   chargerProgres,
   enregistrerDefi,
   enregistrerEtape,
+  jourLocal,
   progresInitial,
   sauverProgres,
   visaObtenu,
 } from './lib/progression.js'
+import { ajouterAuCarnet, reviserMot } from './lib/carnet.js'
 import { Accueil } from './components/Accueil.jsx'
 import { Apprendre } from './components/Apprendre.jsx'
 import { Lecon } from './components/Lecon.jsx'
 import { Passeport } from './components/Passeport.jsx'
 import { Reglages } from './components/Reglages.jsx'
 import { BarreOnglets } from './components/Communs.jsx'
+import { Carnet } from './components/Carnet.jsx'
 import { Defi } from './components/Defi.jsx'
 import { JeuCaravane } from './components/JeuCaravane.jsx'
 import { JeuDuel } from './components/JeuDuel.jsx'
@@ -60,6 +63,7 @@ export default function App() {
   const [leconActive, setLeconActive] = useState(null)
   const [jeuActif, setJeuActif] = useState(null)
   const [defiActif, setDefiActif] = useState(false)
+  const [carnetActif, setCarnetActif] = useState(null)
 
   useEffect(() => {
     ecrireLocal('rihla.destination', destinationId)
@@ -82,6 +86,23 @@ export default function App() {
 
   const effacer = () => {
     if (window.confirm(t.confirmEffacer)) majProgres(progresInitial())
+  }
+
+  if (carnetActif) {
+    return (
+      <div className="app">
+        <Carnet
+          t={t}
+          locale={locale}
+          progresInitialSession={carnetActif.progresDepart}
+          surReponse={(langueId, motId, bonne) => majProgres(reviserMot(progres, langueId, motId, bonne, jourLocal()))}
+          surTerminer={(xp) => {
+            if (xp > 0) majProgres(ajouterXp(progres, xp))
+          }}
+          surQuitter={() => setCarnetActif(null)}
+        />
+      </div>
+    )
   }
 
   if (defiActif) {
@@ -119,11 +140,14 @@ export default function App() {
     const terminer = (score, total) => {
       const visaAvant = visaObtenu(progres, langue)
       const resultat = enregistrerEtape(progres, langue.id, lecon.id, score, total)
-      majProgres(resultat.progres)
+      const progresFinal = resultat.valide
+        ? ajouterAuCarnet(resultat.progres, langue.id, lecon.mots, jourLocal())
+        : resultat.progres
+      majProgres(progresFinal)
       return {
         xpGagne: resultat.xpGagne,
         valide: resultat.valide,
-        nouveauVisa: visaObtenu(resultat.progres, langue) && !visaAvant,
+        nouveauVisa: visaObtenu(progresFinal, langue) && !visaAvant,
       }
     }
     return (
@@ -156,6 +180,7 @@ export default function App() {
           surDestination={ouvrirDestination}
           surLecon={ouvrirLecon}
           surDefi={() => setDefiActif(true)}
+          surCarnet={() => setCarnetActif({ progresDepart: progres })}
         />
       ) : null}
       {onglet === 'apprendre' ? (

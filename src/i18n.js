@@ -102,6 +102,17 @@ const fr = {
     seriePlus: '+1 jour de voyage dans ta série',
     finTitre: 'Étape du jour bouclée !',
   },
+  carnet: {
+    titre: 'Le Carnet',
+    aReviser: (n) => `${n} mot${n > 1 ? 's' : ''} à réviser`,
+    vide: 'Valide une étape pour remplir ton carnet',
+    reviensDans: (j) => (j === 1 ? 'À jour — reviens demain' : `À jour — reviens dans ${j} jours`),
+    dansCarnet: (n) => `${n} mot${n > 1 ? 's' : ''} au carnet`,
+    rangMonte: (b, j) => `Rang ${b} — on le reverra dans ${j} jour${j > 1 ? 's' : ''}`,
+    rangRetombe: 'Retour au rang 1 — on le reverra demain',
+    finTitre: 'Carnet à jour !',
+    finSub: 'La mémoire du voyageur se tisse en repassant.',
+  },
   numLocale: 'fr-MA',
 }
 
@@ -201,6 +212,17 @@ const ar = {
     dejaFaite: 'أُنجزت اليوم من قبل — هذه كانت للشرف فقط.',
     seriePlus: '+1 يوم سفر في سلسلتك',
     finTitre: 'أنجزت مرحلة اليوم!',
+  },
+  carnet: {
+    titre: 'الدفتر',
+    aReviser: (n) => `${n} كلمات للمراجعة`,
+    vide: 'أكمل مرحلة لملء دفترك',
+    reviensDans: (j) => (j === 1 ? 'محدَّث — عد غداً' : `محدَّث — عد بعد ${j} أيام`),
+    dansCarnet: (n) => `${n} كلمة في الدفتر`,
+    rangMonte: (b, j) => `الرتبة ${b} — سنراجعها بعد ${j} ${j > 1 ? 'أيام' : 'يوم'}`,
+    rangRetombe: 'عودة إلى الرتبة 1 — سنراجعها غداً',
+    finTitre: 'الدفتر محدَّث!',
+    finSub: 'ذاكرة المسافر تُنسج بالتكرار.',
   },
   numLocale: 'fr-MA',
 }
