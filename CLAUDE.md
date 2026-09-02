@@ -12,6 +12,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Canvas Claude Design : https://claude.ai/code/artifact/9646c563-567e-49f4-8bd9-cfcd80494524
 - Sources des planches : `design/*.dc.html` + `design/canvas.json` (le fichier assemblé `design/theme-rihla.html` est ignoré par git, régénérable).
 - **Jetons identiques** entre le canvas (planche « Couleurs & typographie ») et `src/styles.css` — ne pas les faire diverger.
+- **Mode nuit « Nuit d'encre »** (Clair/Auto/Nuit dans Réglages, `rihla.theme`) : les écrasements de jetons existent EN DOUBLE dans `styles.css` — bloc `[data-theme='sombre']` (choix explicite) + bloc `@media (prefers-color-scheme: dark)` gardé par `:not([data-theme='clair'])` (auto natif, sans JS). **Toujours éditer les deux à l'identique.** Sémantique : les `-fonce` sont des couleurs de TEXTE (elles s'éclaircissent la nuit), les `-pale` des FONDS teintés (ils s'assombrissent). Texte sur fond Majorelle : `--sur-majorelle`, jamais `--majorelle-pale`. Deux balises `theme-color` à media queries dans index.html.
 - Pas de drapeaux pour les langues (typo-médaillons ES/TR/…), pas d'emoji en guise d'icône (SVG inline dans `src/components/Icones.jsx`).
 
 ## I18n

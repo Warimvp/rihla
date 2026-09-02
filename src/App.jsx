@@ -57,6 +57,28 @@ export default function App() {
     ecrireLocal('rihla.langue', locale)
   }, [locale])
 
+  const [theme, setTheme] = useState(() => {
+    const choix = lireLocal('rihla.theme', 'auto')
+    return ['clair', 'auto', 'sombre'].includes(choix) ? choix : 'auto'
+  })
+
+  // L'« auto » est natif : sans attribut, le media query CSS et les deux
+  // balises theme-color suivent le système tout seuls. L'attribut (et
+  // l'écrasement des theme-color) ne sert qu'aux choix explicites.
+  useEffect(() => {
+    if (theme === 'auto') delete document.documentElement.dataset.theme
+    else document.documentElement.dataset.theme = theme
+    const metas = document.querySelectorAll('meta[name="theme-color"]')
+    for (const meta of metas) {
+      if (theme === 'auto') {
+        meta.setAttribute('content', meta.getAttribute('media')?.includes('dark') ? '#171210' : '#4E46C8')
+      } else {
+        meta.setAttribute('content', theme === 'sombre' ? '#171210' : '#4E46C8')
+      }
+    }
+    ecrireLocal('rihla.theme', theme)
+  }, [theme])
+
   const [progres, setProgres] = useState(() => chargerProgres())
   const [onglet, setOnglet] = useState('carte')
   const [destinationId, setDestinationId] = useState(() => lireLocal('rihla.destination', LANGUES[0].id))
@@ -195,7 +217,7 @@ export default function App() {
       ) : null}
       {onglet === 'passeport' ? <Passeport t={t} locale={locale} progres={progres} /> : null}
       {onglet === 'reglages' ? (
-        <Reglages t={t} locale={locale} surLocale={setLocale} surEffacer={effacer} />
+        <Reglages t={t} locale={locale} surLocale={setLocale} theme={theme} surTheme={setTheme} surEffacer={effacer} />
       ) : null}
       <BarreOnglets actif={onglet} sur={setOnglet} t={t} />
     </div>

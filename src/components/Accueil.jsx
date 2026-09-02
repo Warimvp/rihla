@@ -45,7 +45,7 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
             <span style={{ color: 'var(--papier)', fontSize: 15.5, fontWeight: 600 }}>
               {aCommence ? t.reprendre : t.commencer} — {nomVille(suite.langue, locale)}
             </span>
-            <span style={{ color: 'var(--majorelle-pale)', fontSize: 12.5 }}>
+            <span style={{ color: 'var(--sur-majorelle)', fontSize: 12.5 }}>
               {nomLangue(suite.langue, locale)} · {titreLecon(suite.lecon, locale)}
             </span>
             <span className="piste-progres piste-progres--claire">
@@ -90,7 +90,7 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
           textAlign: 'start',
           color: 'var(--encre)',
           background: 'var(--safran-pale)',
-          borderColor: '#EDD9A8',
+          borderColor: 'var(--safran-bord)',
         }}
       >
         <span

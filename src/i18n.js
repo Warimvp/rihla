@@ -49,6 +49,7 @@ const fr = {
   langueInterface: "Langue de l'interface",
   francais: 'Français',
   arabe: 'العربية',
+  apparence: { titre: 'Apparence', clair: 'Clair', auto: 'Auto', sombre: 'Nuit' },
   aPropos: 'À propos',
   histoireApp:
     "En 1325, Ibn Battuta quitte Tanger pour un voyage de 29 ans et 120 000 km. Rihla (« le voyage ») reprend sa route : chaque langue est une destination, chaque leçon une étape, chaque réussite un tampon dans ton passeport.",
@@ -160,6 +161,7 @@ const ar = {
   langueInterface: 'لغة التطبيق',
   francais: 'Français',
   arabe: 'العربية',
+  apparence: { titre: 'المظهر', clair: 'فاتح', auto: 'تلقائي', sombre: 'ليلي' },
   aPropos: 'حول التطبيق',
   histoireApp:
     'سنة 1325، غادر ابن بطوطة طنجة في رحلة دامت 29 عاماً وقطع فيها 120 ألف كلم. «رحلة» تسير على خطاه: كل لغة وجهة، كل درس مرحلة، وكل نجاح ختم في جواز سفرك.',

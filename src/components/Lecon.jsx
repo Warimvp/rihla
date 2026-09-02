@@ -158,7 +158,7 @@ export function Lecon({ t, locale, langue, lecon, indexLangue, surTerminer, surQ
                 <div className="mot-cible" style={{ color: 'var(--papier)', fontSize: 27 }}>
                   {sens(mots[iCarte], locale)}
                 </div>
-                <div style={{ fontSize: 14, color: 'var(--majorelle-pale)' }}>{mots[iCarte].t}</div>
+                <div style={{ fontSize: 14, color: 'var(--sur-majorelle)' }}>{mots[iCarte].t}</div>
               </div>
             </div>
           </div>

@@ -9,6 +9,7 @@
     { "file": "EcranPasseport.dc.html", "x": 940, "y": 1720, "w": 390, "h": 844, "title": "Écran — Passeport" },
     { "file": "EcranArabe.dc.html", "x": 1410, "y": 1720, "w": 390, "h": 844, "title": "Écran — Accueil (AR/RTL)" },
     { "file": "EcranDefi.dc.html", "x": 1880, "y": 1720, "w": 390, "h": 844, "title": "Écran — L'étape du jour" },
+    { "file": "EcranNuit.dc.html", "x": 2820, "y": 1720, "w": 390, "h": 844, "title": "Écran — Mode nuit « Nuit d'encre »" },
     { "file": "EcranJeux.dc.html", "x": 0, "y": 2700, "w": 390, "h": 1040, "title": "Écran — Jeu : Le Souk" },
     { "file": "EcranDuel.dc.html", "x": 470, "y": 2700, "w": 390, "h": 844, "title": "Écran — Jeu : Le Duel (2 joueurs)" },
     { "file": "EcranOreille.dc.html", "x": 940, "y": 2700, "w": 390, "h": 844, "title": "Écran — Jeu : L'Oreille" },
@@ -24,6 +25,7 @@
     { "id": "note-duel", "x": 2820, "y": 2700, "w": 300, "text": "Le Duel : téléphone posé à plat entre deux joueurs — la moitié haute est pivotée à 180°.\nPremier sur la bonne réponse = le point ; une erreur verrouille la manche (« Raté ! »)." },
     { "id": "note-carnet", "x": 2820, "y": 3020, "w": 300, "text": "Le Carnet : révision espacée (Leitner, 5 rangs — 1/2/4/8/16 jours).\nChaque étape validée y verse ses mots ; carte dédiée sur l'Accueil (mots dus / à jour / vide)." },
     { "id": "note-defi", "x": 2350, "y": 2020, "w": 300, "text": "L'étape du jour : 10 questions dans les 9 langues, même tirage pour tout le monde (graine datée).\nPremière réussite du jour : XP + la série de jours avance." },
+    { "id": "note-nuit", "x": 3290, "y": 1720, "w": 300, "text": "Mode nuit « Nuit d'encre » — la Piste C devenue réelle : mêmes jetons, rôles inversés (les -fonce deviennent des textes clairs, les -pale des fonds sombres), Majorelle éclairci.\nRéglable : Clair / Auto (suit le système) / Nuit." },
     { "id": "note-alternatives", "x": 470, "y": 4420, "w": 300, "text": "Deux pistes alternatives, volontairement basse fidélité.\nSi tu préfères l'une d'elles, dis-le : je décline tout le thème et le CSS de l'app dans cette direction." }
   ],
   "launch": { "view": "canvas" }
