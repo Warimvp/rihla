@@ -1,6 +1,6 @@
 # Rihla (رحلة) — les langues du monde, gratuites pour toujours
 
-App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 9 destinations sur la route d'Ibn Battuta (Grenade → Tokyo), leçons = étapes, réussites = tampons dans un passeport. Cible Maroc : interface FR/AR + RTL.
+App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 10 destinations sur la route d'Ibn Battuta (Grenade → Tokyo, dont Le Caire pour l'arabe), leçons = étapes, réussites = tampons dans un passeport. Cible Maroc : interface FR/AR + RTL.
 
 ## Stack
 - Vite + React 18, **JS/JSX (pas de TS)**, CSS vanilla (`src/styles.css` — les variables CSS = jetons du thème).
@@ -18,6 +18,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 ## I18n
 - FR/AR dans `src/i18n.js` (même approche que khedma/Dari) : dictionnaires, direction dérivée, `lang`/`dir` posés sur `<html>` par un effet dans `App.jsx`.
 - Polices : Young Serif (titres FR), Amiri (titres AR — bascule via `--police-titre` sous `[dir='rtl']`), Readex Pro (UI, couvre latin **et** arabe).
+- **Langue des définitions** (`rihla.source` : auto/fr/ar, Réglages) : découplée de la langue d'interface. Tout affichage de SENS d'apprentissage passe par `sensPour(mot, source, langueId)` (i18n.js) — jamais `sens(mot, locale)` directement : il gère la bascule automatique quand la destination EST la langue des définitions (arabe → arabe ⇒ sens en français).
 - CSS logique partout (`margin-inline-*`, `inset-inline-*`) ; icônes directionnelles retournées par `.icone-directionnelle`.
 
 ## Lancer

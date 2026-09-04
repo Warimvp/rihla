@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { sens } from '../i18n.js'
+import { sensPour } from '../i18n.js'
 import { LANGUES, nomLangue } from '../data/langues.js'
 import { construireDefi, estBonneOption } from '../lib/defi.js'
 import { jourLocal } from '../lib/progression.js'
@@ -9,7 +9,7 @@ import { Pastille } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 
 // L'étape du jour : 10 questions, toutes les langues, même tirage pour tous.
-export function Defi({ t, locale, surTerminer, surQuitter }) {
+export function Defi({ t, locale, source, surTerminer, surQuitter }) {
   const questions = useMemo(() => construireDefi(LANGUES, jourLocal()), [])
   const [iQuestion, setIQuestion] = useState(0)
   const [choix, setChoix] = useState(null)
@@ -119,7 +119,7 @@ export function Defi({ t, locale, surTerminer, surQuitter }) {
               : 'option'
           return (
             <button key={option.id} type="button" className={classe} disabled={revele} onClick={() => choisir(option)}>
-              <span>{sens(option, locale)}</span>
+              <span>{sensPour(option, source, question.langue.id)}</span>
               {estCorrecte ? <Coche taille={20} trait={2.4} /> : null}
               {estFausse ? <Croix taille={20} trait={2.4} /> : null}
             </button>
@@ -153,7 +153,7 @@ export function Defi({ t, locale, surTerminer, surQuitter }) {
               <span style={{ fontSize: 12.5 }}>
                 {estBonneOption(question, choix)
                   ? t.encoreQuestions(total - iQuestion - 1)
-                  : `${t.laBonneEtait} ${sens(bonne, locale)}`}
+                  : `${t.laBonneEtait} ${sensPour(bonne, source, question.langue.id)}`}
               </span>
             </span>
           </div>

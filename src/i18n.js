@@ -50,6 +50,13 @@ const fr = {
   francais: 'Français',
   arabe: 'العربية',
   apparence: { titre: 'Apparence', clair: 'Clair', auto: 'Auto', sombre: 'Nuit' },
+  sourceReglage: {
+    titre: 'Langue des définitions',
+    sousTitre: 'La langue qui traduit ce que tu apprends',
+    auto: 'Auto',
+    fr: 'Français',
+    ar: 'العربية',
+  },
   aPropos: 'À propos',
   histoireApp:
     "En 1325, Ibn Battuta quitte Tanger pour un voyage de 29 ans et 120 000 km. Rihla (« le voyage ») reprend sa route : chaque langue est une destination, chaque leçon une étape, chaque réussite un tampon dans ton passeport.",
@@ -162,6 +169,13 @@ const ar = {
   francais: 'Français',
   arabe: 'العربية',
   apparence: { titre: 'المظهر', clair: 'فاتح', auto: 'تلقائي', sombre: 'ليلي' },
+  sourceReglage: {
+    titre: 'لغة الشرح',
+    sousTitre: 'اللغة التي تُترجم ما تتعلمه',
+    auto: 'تلقائي',
+    fr: 'Français',
+    ar: 'العربية',
+  },
   aPropos: 'حول التطبيق',
   histoireApp:
     'سنة 1325، غادر ابن بطوطة طنجة في رحلة دامت 29 عاماً وقطع فيها 120 ألف كلم. «رحلة» تسير على خطاه: كل لغة وجهة، كل درس مرحلة، وكل نجاح ختم في جواز سفرك.',
@@ -232,5 +246,11 @@ const ar = {
 const DICTS = { fr, ar }
 export const getDictionary = (locale) => DICTS[locale] ?? DICTS[defaultLocale]
 
-// Sens d'un mot appris, selon la langue de l'interface.
+// Sens d'un mot appris, selon la langue demandée.
 export const sens = (mot, locale) => (locale === 'ar' ? mot.ar : mot.fr)
+
+// Sens pour l'APPRENTISSAGE : respecte la langue des définitions choisie,
+// mais bascule automatiquement sur l'autre langue quand on apprend justement
+// celle des définitions (arabe → arabe n'aurait aucun sens).
+export const sensPour = (mot, source, langueId) =>
+  sens(mot, langueId === source ? (source === 'fr' ? 'ar' : 'fr') : source)

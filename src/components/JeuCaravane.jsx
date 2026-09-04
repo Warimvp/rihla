@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { sens } from '../i18n.js'
+import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { parler } from '../lib/tts.js'
@@ -20,7 +20,7 @@ const nettoyer = (texte) =>
 
 // La Caravane : épelle chaque mot avec les tuiles-lettres ;
 // à chaque mot réussi, l'étoile avance d'une étape sur la piste.
-export function JeuCaravane({ t, locale, langue, surXp, surQuitter }) {
+export function JeuCaravane({ t, locale, source, langue, surXp, surQuitter }) {
   const [partie, setPartie] = useState(0)
   const mots = useMemo(
     () =>
@@ -183,7 +183,7 @@ export function JeuCaravane({ t, locale, langue, surXp, surQuitter }) {
           {t.jeux.epelle} · {nomLangue(langue, locale)}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="mot-cible" style={{ fontSize: 24 }}>{sens(mot, locale)}</div>
+          <div className="mot-cible" style={{ fontSize: 24 }}>{sensPour(mot, source, langue.id)}</div>
           <button type="button" className="bouton bouton--rond" style={{ width: 44, height: 44 }} aria-label={t.ecouter} onClick={() => parler(mot.t, langue.tts)}>
             <HautParleur taille={20} trait={1.8} />
           </button>

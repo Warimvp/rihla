@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { sens } from '../i18n.js'
+import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { parler } from '../lib/tts.js'
@@ -23,7 +23,7 @@ function tirerManche(pool, precedentId) {
 
 // Deux joueurs, un téléphone posé à plat : la moitié haute est pivotée à 180°
 // pour faire face au second joueur. Premier sur la bonne réponse = le point.
-export function JeuDuel({ t, locale, langue, surXp, surQuitter }) {
+export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
   const [phase, setPhase] = useState('intro')
   const [iManche, setIManche] = useState(0)
   const [manche, setManche] = useState(null)
@@ -179,7 +179,7 @@ export function JeuDuel({ t, locale, langue, surXp, surQuitter }) {
                 disabled={Boolean(vainqueurManche) || verrouille}
                 onClick={() => toucher(nom, option)}
               >
-                {sens(option, locale)}
+                {sensPour(option, source, langue.id)}
               </button>
             )
           })}

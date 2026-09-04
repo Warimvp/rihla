@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { sens } from '../i18n.js'
+import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { parler, peutParler } from '../lib/tts.js'
@@ -24,7 +24,7 @@ function tirerManches(pool) {
   })
 }
 
-export function JeuOreille({ t, locale, langue, surXp, surQuitter }) {
+export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
   const [partie, setPartie] = useState(0)
   const [manches, setManches] = useState(() => tirerManches(tousLesMots(langue)))
   const [iManche, setIManche] = useState(0)
@@ -176,7 +176,7 @@ export function JeuOreille({ t, locale, langue, surXp, surQuitter }) {
           return (
             <button key={option.id} type="button" className={classe} disabled={revele} onClick={() => choisir(option)}>
               <span>
-                {manche.type === 'sens' ? sens(option, locale) : option.t}
+                {manche.type === 'sens' ? sensPour(option, source, langue.id) : option.t}
                 {manche.type === 'mot' && option.r ? (
                   <span className="romanisation" style={{ marginInlineStart: 8 }}>{option.r}</span>
                 ) : null}

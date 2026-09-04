@@ -1,6 +1,6 @@
 import { MarqueRihla } from './Logo.jsx'
 
-export function Reglages({ t, locale, surLocale, theme, surTheme, surEffacer }) {
+export function Reglages({ t, locale, surLocale, theme, surTheme, sourceChoix, surSource, surEffacer }) {
   return (
     <div className="vue">
       <h1>{t.onglets.reglages}</h1>
@@ -22,6 +22,25 @@ export function Reglages({ t, locale, surLocale, theme, surTheme, surEffacer }) 
           >
             {t.arabe}
           </button>
+        </div>
+      </div>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.sourceReglage.titre}</span>
+          <span className="texte-2" style={{ fontSize: 12.5 }}>{t.sourceReglage.sousTitre}</span>
+        </div>
+        <div className="segmente">
+          {['auto', 'fr', 'ar'].map((choix) => (
+            <button
+              key={choix}
+              type="button"
+              className={`segmente__choix ${sourceChoix === choix ? 'segmente__choix--actif' : ''}`}
+              onClick={() => surSource(choix)}
+            >
+              {t.sourceReglage[choix]}
+            </button>
+          ))}
         </div>
       </div>
 

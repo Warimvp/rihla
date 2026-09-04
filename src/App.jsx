@@ -79,6 +79,17 @@ export default function App() {
     ecrireLocal('rihla.theme', theme)
   }, [theme])
 
+  // Langue des définitions (indépendante de la langue de l'interface) :
+  // « anglais → arabe » = interface FR, définitions AR, par exemple.
+  const [sourceChoix, setSourceChoix] = useState(() => {
+    const s = lireLocal('rihla.source', 'auto')
+    return ['auto', 'fr', 'ar'].includes(s) ? s : 'auto'
+  })
+  const source = sourceChoix === 'auto' ? locale : sourceChoix
+  useEffect(() => {
+    ecrireLocal('rihla.source', sourceChoix)
+  }, [sourceChoix])
+
   const [progres, setProgres] = useState(() => chargerProgres())
   const [onglet, setOnglet] = useState('carte')
   const [destinationId, setDestinationId] = useState(() => lireLocal('rihla.destination', LANGUES[0].id))
@@ -116,6 +127,7 @@ export default function App() {
         <Carnet
           t={t}
           locale={locale}
+          source={source}
           progresInitialSession={carnetActif.progresDepart}
           surReponse={(langueId, motId, bonne) => majProgres(reviserMot(progres, langueId, motId, bonne, jourLocal()))}
           surTerminer={(xp) => {
@@ -135,7 +147,7 @@ export default function App() {
     }
     return (
       <div className="app">
-        <Defi t={t} locale={locale} surTerminer={terminerDefi} surQuitter={() => setDefiActif(false)} />
+        <Defi t={t} locale={locale} source={source} surTerminer={terminerDefi} surQuitter={() => setDefiActif(false)} />
       </div>
     )
   }
@@ -148,6 +160,7 @@ export default function App() {
         <Jeu
           t={t}
           locale={locale}
+          source={source}
           langue={langue}
           surXp={(montant) => majProgres(ajouterXp(progres, montant))}
           surQuitter={() => setJeuActif(null)}
@@ -177,6 +190,7 @@ export default function App() {
         <Lecon
           t={t}
           locale={locale}
+          source={source}
           langue={langue}
           lecon={lecon}
           indexLangue={LANGUES.indexOf(langue)}
@@ -217,7 +231,16 @@ export default function App() {
       ) : null}
       {onglet === 'passeport' ? <Passeport t={t} locale={locale} progres={progres} /> : null}
       {onglet === 'reglages' ? (
-        <Reglages t={t} locale={locale} surLocale={setLocale} theme={theme} surTheme={setTheme} surEffacer={effacer} />
+        <Reglages
+          t={t}
+          locale={locale}
+          surLocale={setLocale}
+          theme={theme}
+          surTheme={setTheme}
+          sourceChoix={sourceChoix}
+          surSource={setSourceChoix}
+          surEffacer={effacer}
+        />
       ) : null}
       <BarreOnglets actif={onglet} sur={setOnglet} t={t} />
     </div>

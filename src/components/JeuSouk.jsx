@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { sens } from '../i18n.js'
+import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { parler } from '../lib/tts.js'
@@ -22,7 +22,7 @@ function nouvelleManche(pool, precedentId) {
 }
 
 // Le Souk : 45 secondes au chrono, attraper le bon mot sur le bon étal.
-export function JeuSouk({ t, locale, langue, surXp, surQuitter }) {
+export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
   const pool = useMemo(() => tousLesMots(langue), [langue])
   const [temps, setTemps] = useState(DUREE)
   const [manche, setManche] = useState(() => nouvelleManche(pool, null))
@@ -172,7 +172,7 @@ export function JeuSouk({ t, locale, langue, surXp, surQuitter }) {
             {cible.r ? <div className="romanisation">{cible.r}</div> : null}
           </>
         ) : (
-          <div className="mot-cible" style={{ fontSize: 26 }}>{sens(cible, locale)}</div>
+          <div className="mot-cible" style={{ fontSize: 26 }}>{sensPour(cible, source, langue.id)}</div>
         )}
         <div className="texte-2" style={{ fontSize: 13 }}>{t.jeux.quelEtal}</div>
       </div>
@@ -191,7 +191,7 @@ export function JeuSouk({ t, locale, langue, surXp, surQuitter }) {
           return (
             <button key={option.id} type="button" className={classe} onClick={() => repondre(option)}>
               <span>
-                {direction === 'versSens' ? sens(option, locale) : option.t}
+                {direction === 'versSens' ? sensPour(option, source, langue.id) : option.t}
                 {direction === 'versMot' && option.r ? (
                   <span className="romanisation" style={{ marginInlineStart: 8 }}>{option.r}</span>
                 ) : null}

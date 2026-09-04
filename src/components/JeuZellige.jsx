@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { sens } from '../i18n.js'
+import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { parler } from '../lib/tts.js'
@@ -10,16 +10,16 @@ const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_PAIRES = 6
 
 // Memory en mosaïque : 12 tuiles zellige, associer chaque mot à son sens.
-export function JeuZellige({ t, locale, langue, surXp, surQuitter }) {
+export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
   const [partie, setPartie] = useState(0)
   const paires = useMemo(() => melanger(tousLesMots(langue)).slice(0, NB_PAIRES), [langue, partie])
   const tuiles = useMemo(
     () =>
       melanger([
         ...paires.map((mot) => ({ motId: mot.id, face: 't', texte: mot.t, tts: true })),
-        ...paires.map((mot) => ({ motId: mot.id, face: 'sens', texte: sens(mot, locale), tts: false })),
+        ...paires.map((mot) => ({ motId: mot.id, face: 'sens', texte: sensPour(mot, source, langue.id), tts: false })),
       ]).map((tuile, idx) => ({ ...tuile, idx })),
-    [paires, locale]
+    [paires, source, langue]
   )
   const [ouvertes, setOuvertes] = useState([])
   const [gagnees, setGagnees] = useState(() => new Set())

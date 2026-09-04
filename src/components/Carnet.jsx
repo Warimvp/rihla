@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { sens } from '../i18n.js'
+import { sensPour } from '../i18n.js'
 import { LANGUES, nomLangue } from '../data/langues.js'
 import { INTERVALLES, XP_PAR_MOT, construireRevision, motsDus, prochaineBoite } from '../lib/carnet.js'
 import { jourLocal } from '../lib/progression.js'
@@ -10,7 +10,7 @@ import { EclatEtoiles } from './EclatEtoiles.jsx'
 
 // La session de révision espacée : les mots dus du carnet, toutes langues
 // mêlées, avec le mouvement de rang annoncé après chaque réponse.
-export function Carnet({ t, locale, progresInitialSession, surReponse, surTerminer, surQuitter }) {
+export function Carnet({ t, locale, source, progresInitialSession, surReponse, surTerminer, surQuitter }) {
   const session = useMemo(
     () => construireRevision(motsDus(progresInitialSession, LANGUES, jourLocal())),
     [progresInitialSession]
@@ -117,7 +117,7 @@ export function Carnet({ t, locale, progresInitialSession, surReponse, surTermin
             </button>
           </>
         ) : (
-          <div className="mot-cible" style={{ fontSize: 25 }}>{sens(question.mot, locale)}</div>
+          <div className="mot-cible" style={{ fontSize: 25 }}>{sensPour(question.mot, source, question.langue.id)}</div>
         )}
       </div>
 
@@ -137,7 +137,7 @@ export function Carnet({ t, locale, progresInitialSession, surReponse, surTermin
           return (
             <button key={option.id} type="button" className={classe} disabled={aRepondu} onClick={() => choisir(option)}>
               <span>
-                {question.type === 'comprendre' ? sens(option, locale) : option.t}
+                {question.type === 'comprendre' ? sensPour(option, source, question.langue.id) : option.t}
                 {question.type === 'produire' && option.r ? (
                   <span className="romanisation" style={{ marginInlineStart: 8 }}>{option.r}</span>
                 ) : null}
@@ -173,7 +173,7 @@ export function Carnet({ t, locale, progresInitialSession, surReponse, surTermin
               <span style={{ fontSize: 12.5 }}>
                 {aReussi
                   ? t.carnet.rangMonte(rangApres, INTERVALLES[rangApres - 1])
-                  : `${t.laBonneEtait} ${question.type === 'comprendre' ? sens(bonneOption, locale) : bonneOption.t} · ${t.carnet.rangRetombe}`}
+                  : `${t.laBonneEtait} ${question.type === 'comprendre' ? sensPour(bonneOption, source, question.langue.id) : bonneOption.t} · ${t.carnet.rangRetombe}`}
               </span>
             </span>
           </div>

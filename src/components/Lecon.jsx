@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { sens } from '../i18n.js'
+import { sensPour } from '../i18n.js'
 import { nomLangue, nomVille, titreLecon } from '../data/langues.js'
 import { construireQuiz, estBonne } from '../lib/quiz.js'
 import { parler } from '../lib/tts.js'
@@ -7,7 +7,7 @@ import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { TamponVisa } from './TamponVisa.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 
-export function Lecon({ t, locale, langue, lecon, indexLangue, surTerminer, surQuitter }) {
+export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTerminer, surQuitter }) {
   const [phase, setPhase] = useState('cartes')
   const [tour, setTour] = useState(0)
   const [iCarte, setICarte] = useState(0)
@@ -156,7 +156,7 @@ export function Lecon({ t, locale, langue, lecon, indexLangue, surTerminer, surQ
               </div>
               <div className="carte-mot__face carte-mot__face--verso fond-zellige" style={{ borderRadius: 'var(--r-carte)' }}>
                 <div className="mot-cible" style={{ color: 'var(--papier)', fontSize: 27 }}>
-                  {sens(mots[iCarte], locale)}
+                  {sensPour(mots[iCarte], source, langue.id)}
                 </div>
                 <div style={{ fontSize: 14, color: 'var(--sur-majorelle)' }}>{mots[iCarte].t}</div>
               </div>
@@ -200,7 +200,7 @@ export function Lecon({ t, locale, langue, lecon, indexLangue, surTerminer, surQ
                 {question.mot.r ? <div className="romanisation">{question.mot.r}</div> : null}
               </>
             ) : (
-              <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)' }}>{sens(question.mot, locale)}</div>
+              <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)' }}>{sensPour(question.mot, source, langue.id)}</div>
             )}
           </div>
           <p style={{ fontSize: 15, fontWeight: 500 }}>
@@ -219,7 +219,7 @@ export function Lecon({ t, locale, langue, lecon, indexLangue, surTerminer, surQ
               return (
                 <button key={option.id} type="button" className={classe} disabled={revele} onClick={() => choisir(option)}>
                   <span>
-                    {question.type === 'comprendre' ? sens(option, locale) : option.t}
+                    {question.type === 'comprendre' ? sensPour(option, source, langue.id) : option.t}
                     {question.type === 'produire' && option.r ? (
                       <span className="romanisation" style={{ marginInlineStart: 8 }}>{option.r}</span>
                     ) : null}
@@ -256,7 +256,7 @@ export function Lecon({ t, locale, langue, lecon, indexLangue, surTerminer, surQ
                   <span style={{ fontSize: 12.5 }}>
                     {estBonne(question, choix)
                       ? t.encoreQuestions(total - iQuestion - 1)
-                      : `${t.laBonneEtait} ${question.type === 'comprendre' ? sens(bonne, locale) : bonne.t}`}
+                      : `${t.laBonneEtait} ${question.type === 'comprendre' ? sensPour(bonne, source, langue.id) : bonne.t}`}
                   </span>
                 </span>
               </div>

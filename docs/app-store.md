@@ -22,7 +22,7 @@ Tout ce qu'il faut copier-coller dans App Store Connect. Le `.ipa` signé est pr
 
 > En 1325, Ibn Battuta quittait Tanger pour le plus grand voyage de son siècle. Rihla (« le voyage ») te fait reprendre sa route : 9 langues, 9 destinations, un passeport à tamponner.
 >
-> **9 LANGUES DU MONDE** — espagnol, italien, anglais, turc, persan, swahili, hindi, mandarin, japonais : de Grenade à Tokyo, chaque langue est une destination sur ta carte.
+> **10 LANGUES DU MONDE** — arabe, espagnol, italien, anglais, turc, persan, swahili, hindi, mandarin, japonais : de Grenade à Tokyo, chaque langue est une destination sur ta carte. Et tu choisis la langue de tes définitions : apprends l'anglais avec des sens en arabe, ou l'arabe avec des sens en français.
 >
 > **DES LEÇONS COURTES** — cartes-mots avec prononciation, puis quiz. Valide tes 6 étapes et décroche le visa de la ville.
 >
@@ -42,7 +42,7 @@ Tout ce qu'il faut copier-coller dans App Store Connect. Le `.ipa` signé est pr
 
 > سنة 1325 غادر ابن بطوطة طنجة في أعظم رحلة في قرنه. «رحلة» تعيدك إلى دربه: 9 لغات، 9 وجهات، وجواز سفر تملؤه الأختام.
 >
-> • 9 لغات من العالم: الإسبانية، الإيطالية، الإنجليزية، التركية، الفارسية، السواحلية، الهندية، الصينية، اليابانية.
+> • 10 لغات من العالم: العربية، الإسبانية، الإيطالية، الإنجليزية، التركية، الفارسية، السواحلية، الهندية، الصينية، اليابانية — وتختار أنت لغة الشرح (تعلّم الإنجليزية بشرح عربي، أو العربية بشرح فرنسي).
 > • دروس قصيرة: بطاقات كلمات مع النطق، ثم اختبار. أكمل مراحلك واحصل على تأشيرة المدينة.
 > • 5 ألعاب للمراجعة، ومرحلة اليوم، ودفتر المراجعة المتباعدة.
 > • مجاني إلى الأبد: بلا حساب، بلا إعلانات، بلا جمع للبيانات — ويعمل بدون أنترنت.
@@ -55,7 +55,7 @@ Tout ce qu'il faut copier-coller dans App Store Connect. Le `.ipa` signé est pr
 
 ## Nouveautés v1.0
 
-> Premier départ de Tanger : 9 langues, 432 mots, 5 jeux, l'étape du jour, le carnet de révision espacée, mode nuit, FR/AR.
+> Premier départ de Tanger : 10 langues (arabe compris), 480 mots, 5 jeux, l'étape du jour, le carnet de révision espacée, mode nuit, langue des définitions au choix, FR/AR.
 
 ## Questionnaire « Confidentialité de l'app »
 

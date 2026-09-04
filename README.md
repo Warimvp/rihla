@@ -4,7 +4,8 @@
 
 En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla** (« le voyage ») reprend sa route : chaque langue est une **destination**, chaque leçon une **étape**, chaque réussite un **tampon** dans ton passeport.
 
-- 9 destinations : Grenade (espagnol), Venise (italien), Londres (anglais), Istanbul (turc), Ispahan (persan), Mombasa (swahili), Delhi (hindi), Pékin (mandarin), Tokyo (japonais)
+- 10 destinations : Grenade (espagnol), Venise (italien), Londres (anglais), Istanbul (turc), Le Caire (arabe), Ispahan (persan), Mombasa (swahili), Delhi (hindi), Pékin (mandarin), Tokyo (japonais)
+- **Langue des définitions au choix** (Réglages) : apprends l'anglais avec des sens en arabe, ou l'arabe avec des sens en français — indépendamment de la langue de l'interface
 - Leçons en deux temps : cartes-mots (avec prononciation) puis quiz
 - Cinq jeux de révision par destination : **Zellige des paires** (memory), **Le Souk** (45 s chrono, combos), **La Caravane** (épellation, l'étoile avance sur la piste), **L'Oreille** (compréhension orale pure) et **Le Duel** (2 joueurs face à face sur un seul téléphone)
 - **L'étape du jour** : un défi quotidien qui mélange les 9 langues — même tirage pour tout le monde, et il fait avancer ta série de jours de voyage
