@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
+import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
@@ -45,6 +46,7 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
     crediteRef.current = true
     const xp = Math.min(XP_MAX, xpCumul)
     if (xp > 0) surXp(xp)
+    if (xp > 0) fanfare()
     setFin({ xp })
   }, [temps, fin, xpCumul, surXp])
 
@@ -68,6 +70,7 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
     if (retour || fin || temps <= 0) return
     const bonne = option.id === manche.cible.id
     setRetour({ choisiId: option.id, bonne })
+    retourReponse(bonne)
     if (bonne) {
       const gain = 10 + 2 * Math.min(5, combo)
       setScore(score + 1)

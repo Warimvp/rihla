@@ -47,6 +47,13 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Carte « Le Carnet » sur l'Accueil : active si mots dus, sinon « À jour — reviens dans X j » (ou invite à valider une étape si vide).
 - Stockage : `progres.carnet` = `{ "langueId:motId": { boite, jour } }` — clés stables, ne pas renommer les ids de mots.
 
+## Mécaniques « niveau Duolingo » (2026-09-06)
+- **Exercices variés en leçon** (`construireQuiz`, cycle `CYCLE_EXERCICES`) : comprendre → écouter → produire → épeler. Replis AUTOMATIQUES : sans TTS, écouter → comprendre ; cible > 10 caractères (`cibleEpellation`), épeler → produire. L'épellation partagée vit dans `src/lib/epellation.js` (Caravane + leçons).
+- **Objectif du jour** (10/20/30 XP, Réglages) : chaque gain d'XP passe par `App.majProgres` → `attribuerXpDuJour` (14 jours conservés dans `progres.xpJours`). Barre sur l'Accueil. Les débits (achat de nuit) ne s'attribuent pas.
+- **Caravansérail** (gel de série) : 150 XP la nuit, stock max 2 (Passeport). `majSerieAvecGels` couvre EXACTEMENT un jour manqué (l'avant-veille) ; 2+ jours manqués → série perdue, nuits conservées. `gelConsomme` remonte jusqu'aux écrans de fin (chip menthe).
+- **Sons + haptique** (`src/lib/sons.js`) : WebAudio synthétisé (aucun asset), `retourReponse(bonne)` sur CHAQUE réponse (leçons, défi, carnet, 5 jeux), `fanfare()` sur les fins victorieuses ; coupable dans Réglages (`rihla.sons`). Toujours déclenché par un geste (règles d'autoplay).
+- Pas de vies/cœurs à la Duolingo : c'est un dark pattern de monétisation, contraire au « gratuit pour toujours ».
+
 ## Principes produit (non négociables)
 - **100 % gratuit pour toujours** : pas de pub, pas de compte, pas de paywall, tout fonctionne hors-ligne.
 - Pas de faux verrous : toutes les destinations sont ouvertes dès le départ.

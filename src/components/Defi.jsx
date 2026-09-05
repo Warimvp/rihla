@@ -3,6 +3,7 @@ import { sensPour } from '../i18n.js'
 import { LANGUES, nomLangue } from '../data/langues.js'
 import { construireDefi, estBonneOption } from '../lib/defi.js'
 import { jourLocal } from '../lib/progression.js'
+import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { Pastille } from './Communs.jsx'
@@ -23,6 +24,7 @@ export function Defi({ t, locale, source, surTerminer, surQuitter }) {
     if (choix) return
     setChoix(option)
     if (estBonneOption(question, option)) setScore(score + 1)
+    retourReponse(estBonneOption(question, option))
     parler(question.mot.t, question.langue.tts)
   }
 
@@ -31,6 +33,7 @@ export function Defi({ t, locale, source, surTerminer, surQuitter }) {
       setIQuestion(iQuestion + 1)
       setChoix(null)
     } else {
+      fanfare()
       setBilan(surTerminer(score, total))
     }
   }

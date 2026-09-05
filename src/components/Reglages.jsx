@@ -1,6 +1,10 @@
+import { useState } from 'react'
+import { OBJECTIFS_JOUR } from '../lib/progression.js'
+import { reglerSons, sonsActifs } from '../lib/sons.js'
 import { MarqueRihla } from './Logo.jsx'
 
-export function Reglages({ t, locale, surLocale, theme, surTheme, sourceChoix, surSource, surEffacer }) {
+export function Reglages({ t, locale, surLocale, theme, surTheme, sourceChoix, surSource, objectifJour, surObjectif, surEffacer }) {
+  const [sons, setSons] = useState(() => sonsActifs())
   return (
     <div className="vue">
       <h1>{t.onglets.reglages}</h1>
@@ -39,6 +43,44 @@ export function Reglages({ t, locale, surLocale, theme, surTheme, sourceChoix, s
               onClick={() => surSource(choix)}
             >
               {t.sourceReglage[choix]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.objectif.titre}</span>
+          <span className="texte-2" style={{ fontSize: 12.5 }}>{t.objectif.sousTitre}</span>
+        </div>
+        <div className="segmente">
+          {OBJECTIFS_JOUR.map((objectif) => (
+            <button
+              key={objectif}
+              type="button"
+              className={`segmente__choix ${objectifJour === objectif ? 'segmente__choix--actif' : ''}`}
+              onClick={() => surObjectif(objectif)}
+            >
+              {objectif} XP
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.sons.titre}</span>
+        <div className="segmente">
+          {[true, false].map((valeur) => (
+            <button
+              key={String(valeur)}
+              type="button"
+              className={`segmente__choix ${sons === valeur ? 'segmente__choix--actif' : ''}`}
+              onClick={() => {
+                reglerSons(valeur)
+                setSons(valeur)
+              }}
+            >
+              {valeur ? t.sons.oui : t.sons.non}
             </button>
           ))}
         </div>

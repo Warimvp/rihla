@@ -3,6 +3,7 @@ import { sensPour } from '../i18n.js'
 import { LANGUES, nomLangue } from '../data/langues.js'
 import { INTERVALLES, XP_PAR_MOT, construireRevision, motsDus, prochaineBoite } from '../lib/carnet.js'
 import { jourLocal } from '../lib/progression.js'
+import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { Pastille } from './Communs.jsx'
@@ -28,6 +29,7 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
     const bonne = option.id === question.mot.id
     setChoix(option)
     if (bonne) setBonnes(bonnes + 1)
+    retourReponse(bonne)
     surReponse(question.langue.id, question.mot.id, bonne)
     parler(question.mot.t, question.langue.tts)
   }
@@ -38,6 +40,7 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
       setChoix(null)
     } else {
       const xp = bonnes * XP_PAR_MOT
+      if (bonnes > 0) fanfare()
       surTerminer(xp)
       setFin({ xp })
     }

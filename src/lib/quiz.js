@@ -1,5 +1,6 @@
 // Moteur de quiz : pur et déterministe quand on lui injecte un générateur,
 // pour être testable (et cassable — un test qui ne peut pas échouer ne prouve rien).
+import { cibleEpellation, construireLettres } from './epellation.js'
 
 // Petit générateur pseudo-aléatoire seedable (mulberry32).
 export function mulberry32(graine) {
@@ -29,15 +30,26 @@ export function choisirDistracteurs(mots, mot, n, alea = Math.random) {
   return melanger(autres, alea).slice(0, n)
 }
 
-// Une question par mot, en alternant les deux sens :
+// Une question par mot, en variant les exercices (façon Duolingo) :
 // - 'comprendre' : on montre le mot dans la langue cible, on choisit son sens ;
-// - 'produire'   : on montre le sens, on choisit le mot dans la langue cible.
-export function construireQuiz(mots, alea = Math.random) {
-  return melanger(mots, alea).map((mot, i) => ({
-    mot,
-    type: i % 2 === 0 ? 'comprendre' : 'produire',
-    options: melanger([mot, ...choisirDistracteurs(mots, mot, 3, alea)], alea),
-  }))
+// - 'ecouter'    : on ENTEND seulement le mot, on choisit son sens ;
+// - 'produire'   : on montre le sens, on choisit le mot dans la langue cible ;
+// - 'epeler'     : on montre le sens, on épelle le mot avec des tuiles-lettres.
+// Replis : sans audio, 'ecouter' redevient 'comprendre' ; un mot trop long
+// pour l'épellation redevient 'produire'.
+export const CYCLE_EXERCICES = ['comprendre', 'ecouter', 'produire', 'epeler']
+
+export function construireQuiz(mots, alea = Math.random, capacites = { audio: true }) {
+  return melanger(mots, alea).map((mot, i) => {
+    let type = CYCLE_EXERCICES[i % CYCLE_EXERCICES.length]
+    if (type === 'ecouter' && !capacites.audio) type = 'comprendre'
+    if (type === 'epeler') {
+      const cible = cibleEpellation(mot)
+      if (cible) return { mot, type, cible, fentes: cible.split(''), lettres: construireLettres(cible, alea) }
+      type = 'produire'
+    }
+    return { mot, type, options: melanger([mot, ...choisirDistracteurs(mots, mot, 3, alea)], alea) }
+  })
 }
 
 export const estBonne = (question, option) => option.id === question.mot.id

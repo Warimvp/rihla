@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import {
+  acheterGel,
   ajouterXp,
+  attribuerXpDuJour,
   chargerProgres,
   defiDuJour,
   enregistrerDefi,
   enregistrerEtape,
+  majSerieAvecGels,
+  reglerObjectif,
+  xpDuJour,
   kmParcourus,
   majSerie,
   nbVisas,
@@ -134,6 +139,94 @@ describe('enregistrerDefi', () => {
     const apresEtape = enregistrerEtape(progresInitial(), 'es', 'salutations', 8, 8, '2026-08-30').progres
     const { progres } = enregistrerDefi(apresEtape, 5, 10, '2026-08-30')
     expect(progres.serie.compte).toBe(1)
+  })
+})
+
+describe('majSerieAvecGels — la nuit au caravansérail', () => {
+  const serie = { compte: 5, dernierJour: '2026-09-01' }
+
+  it('couvre exactement un jour manqué quand une nuit est en réserve', () => {
+    expect(majSerieAvecGels(serie, 1, '2026-09-03')).toEqual({
+      serie: { compte: 6, dernierJour: '2026-09-03' },
+      gels: 0,
+      gelConsomme: true,
+    })
+  })
+
+  it('sans nuit en réserve, la série retombe à 1', () => {
+    expect(majSerieAvecGels(serie, 0, '2026-09-03').serie).toEqual({ compte: 1, dernierJour: '2026-09-03' })
+  })
+
+  it('deux jours manqués : la série tombe mais les nuits sont gardées', () => {
+    const bilan = majSerieAvecGels(serie, 2, '2026-09-04')
+    expect(bilan.serie).toEqual({ compte: 1, dernierJour: '2026-09-04' })
+    expect(bilan.gels).toBe(2)
+    expect(bilan.gelConsomme).toBe(false)
+  })
+
+  it('lendemain normal : +1 sans toucher aux nuits', () => {
+    expect(majSerieAvecGels(serie, 2, '2026-09-02')).toEqual({
+      serie: { compte: 6, dernierJour: '2026-09-02' },
+      gels: 2,
+      gelConsomme: false,
+    })
+  })
+
+  it("une étape validée après un jour manqué consomme la nuit et le signale", () => {
+    const base = { ...progresInitial(), xp: 500, gels: 1, serie: { compte: 3, dernierJour: '2026-08-30' } }
+    const resultat = enregistrerEtape(base, 'es', 'salutations', 8, 8, '2026-09-01')
+    expect(resultat.gelConsomme).toBe(true)
+    expect(resultat.progres.serie.compte).toBe(4)
+    expect(resultat.progres.gels).toBe(0)
+  })
+})
+
+describe('acheterGel', () => {
+  it('débite 150 XP, plafonne à 2 nuits et refuse les bourses vides', () => {
+    const riche = { ...progresInitial(), xp: 400 }
+    const un = acheterGel(riche)
+    expect(un.achete).toBe(true)
+    expect(un.progres.xp).toBe(250)
+    expect(un.progres.gels).toBe(1)
+    const deux = acheterGel(un.progres)
+    expect(deux.progres.gels).toBe(2)
+    expect(acheterGel(deux.progres).achete).toBe(false)
+    expect(acheterGel({ ...progresInitial(), xp: 100 }).achete).toBe(false)
+  })
+})
+
+describe('objectif quotidien', () => {
+  it("attribue chaque gain d'XP au jour où il tombe", () => {
+    const avant = progresInitial()
+    const apres = attribuerXpDuJour(avant, ajouterXp(avant, 25), '2026-09-03')
+    expect(xpDuJour(apres, '2026-09-03')).toBe(25)
+    const encore = attribuerXpDuJour(apres, ajouterXp(apres, 10), '2026-09-03')
+    expect(xpDuJour(encore, '2026-09-03')).toBe(35)
+    expect(xpDuJour(encore, '2026-09-04')).toBe(0)
+  })
+
+  it("sans gain (ou lors d'un achat), rien ne s'attribue", () => {
+    const base = attribuerXpDuJour(progresInitial(), ajouterXp(progresInitial(), 20), '2026-09-03')
+    expect(attribuerXpDuJour(base, base, '2026-09-03')).toBe(base)
+    const riche = { ...base, xp: 200 }
+    const apresAchat = attribuerXpDuJour(riche, acheterGel(riche).progres, '2026-09-03')
+    expect(apresAchat.xpJours['2026-09-03']).toBe(20)
+  })
+
+  it('ne conserve que les 14 derniers jours', () => {
+    let progres = progresInitial()
+    for (let i = 1; i <= 16; i++) {
+      const jour = `2026-09-${String(i).padStart(2, '0')}`
+      progres = attribuerXpDuJour(progres, ajouterXp(progres, 5), jour)
+    }
+    expect(Object.keys(progres.xpJours)).toHaveLength(14)
+    expect(progres.xpJours['2026-09-01']).toBeUndefined()
+    expect(progres.xpJours['2026-09-16']).toBe(5)
+  })
+
+  it("l'objectif n'accepte que 10, 20 ou 30", () => {
+    expect(reglerObjectif(progresInitial(), 30).objectifJour).toBe(30)
+    expect(reglerObjectif(progresInitial(), 25).objectifJour).toBe(20)
   })
 })
 

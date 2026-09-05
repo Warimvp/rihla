@@ -110,6 +110,21 @@ const fr = {
     seriePlus: '+1 jour de voyage dans ta série',
     finTitre: 'Étape du jour bouclée !',
   },
+  objectif: {
+    titre: 'Objectif du jour',
+    sousTitre: 'En XP — leçons, jeux, défi et révisions comptent',
+    progression: (a, b) => `${a}/${b} XP aujourd’hui`,
+    atteint: 'Objectif du jour atteint !',
+  },
+  gel: {
+    titre: 'Caravansérail',
+    desc: 'Une nuit couvre un jour manqué : ta série survit.',
+    stock: (n) => `${n} nuit${n > 1 ? 's' : ''} en réserve`,
+    acheter: 'Réserver une nuit — 150 XP',
+    plein: 'Réserve pleine',
+    utilise: 'Nuit au caravansérail utilisée — série sauvée !',
+  },
+  sons: { titre: 'Sons et vibrations', oui: 'Activés', non: 'Coupés' },
   carnet: {
     titre: 'Le Carnet',
     aReviser: (n) => `${n} mot${n > 1 ? 's' : ''} à réviser`,
@@ -229,6 +244,21 @@ const ar = {
     seriePlus: '+1 يوم سفر في سلسلتك',
     finTitre: 'أنجزت مرحلة اليوم!',
   },
+  objectif: {
+    titre: 'هدف اليوم',
+    sousTitre: 'بالنقاط — الدروس والألعاب والتحدي والمراجعات تُحسب',
+    progression: (a, b) => `${a}/${b} نقطة اليوم`,
+    atteint: 'حققت هدف اليوم!',
+  },
+  gel: {
+    titre: 'الخان',
+    desc: 'ليلة واحدة تغطي يوم غياب: سلسلتك تنجو.',
+    stock: (n) => `${n} ${n > 1 ? 'ليالٍ' : 'ليلة'} في الرصيد`,
+    acheter: 'احجز ليلة — 150 نقطة',
+    plein: 'الرصيد ممتلئ',
+    utilise: 'استُخدمت ليلة الخان — نجت السلسلة!',
+  },
+  sons: { titre: 'الأصوات والاهتزاز', oui: 'مفعّلة', non: 'مقطوعة' },
   carnet: {
     titre: 'الدفتر',
     aReviser: (n) => `${n} كلمات للمراجعة`,

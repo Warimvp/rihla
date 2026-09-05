@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react'
 import { LANGUES, langueParId } from './data/langues.js'
 import { defaultLocale, getDictionary, getDirection, locales } from './i18n.js'
 import {
+  acheterGel,
   ajouterXp,
+  attribuerXpDuJour,
   chargerProgres,
   enregistrerDefi,
   enregistrerEtape,
   jourLocal,
   progresInitial,
+  reglerObjectif,
   sauverProgres,
   visaObtenu,
 } from './lib/progression.js'
@@ -102,9 +105,12 @@ export default function App() {
     ecrireLocal('rihla.destination', destinationId)
   }, [destinationId])
 
+  // Point de passage unique : tout gain d'XP est attribué au jour où il tombe
+  // (c'est ce qui alimente l'objectif quotidien).
   const majProgres = (p) => {
-    setProgres(p)
-    sauverProgres(p)
+    const final = attribuerXpDuJour(progres, p)
+    setProgres(final)
+    sauverProgres(final)
   }
 
   const ouvrirDestination = (langue) => {
@@ -229,7 +235,17 @@ export default function App() {
           surJeu={(type) => setJeuActif({ type, langueId: destination.id })}
         />
       ) : null}
-      {onglet === 'passeport' ? <Passeport t={t} locale={locale} progres={progres} /> : null}
+      {onglet === 'passeport' ? (
+        <Passeport
+          t={t}
+          locale={locale}
+          progres={progres}
+          surAcheterGel={() => {
+            const resultat = acheterGel(progres)
+            if (resultat.achete) majProgres(resultat.progres)
+          }}
+        />
+      ) : null}
       {onglet === 'reglages' ? (
         <Reglages
           t={t}
@@ -239,6 +255,8 @@ export default function App() {
           surTheme={setTheme}
           sourceChoix={sourceChoix}
           surSource={setSourceChoix}
+          objectifJour={progres.objectifJour ?? 20}
+          surObjectif={(objectif) => majProgres(reglerObjectif(progres, objectif))}
           surEffacer={effacer}
         />
       ) : null}

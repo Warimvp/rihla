@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
+import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler, peutParler } from '../lib/tts.js'
 import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
@@ -53,6 +54,7 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
     const scoreApres = bonne ? score + 1 : score
     setChoix(option)
     if (bonne) setScore(scoreApres)
+    retourReponse(bonne)
     setTimeout(() => {
       if (iManche + 1 < manches.length) {
         setIManche(iManche + 1)
@@ -60,6 +62,7 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
       } else {
         const xp = scoreApres * 8
         if (xp > 0) surXp(xp)
+        if (xp > 0) fanfare()
         setFin({ xp, score: scoreApres })
       }
     }, 950)

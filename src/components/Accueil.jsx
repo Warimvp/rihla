@@ -1,6 +1,6 @@
 import { LANGUES, nomLangue, nomVille, titreLecon } from '../data/langues.js'
 import { joursAvantProchaine, motsDus, tailleCarnet } from '../lib/carnet.js'
-import { defiDuJour, etapesValidees, jourLocal, prochaineEtape, visaObtenu } from '../lib/progression.js'
+import { defiDuJour, etapesValidees, jourLocal, prochaineEtape, visaObtenu, xpDuJour } from '../lib/progression.js'
 import { AnneauProgres, ChipSerie, Pastille } from './Communs.jsx'
 import { CarnetIcone, ChevronAvant, Coche, Etoile8, FlecheAvant } from './Icones.jsx'
 
@@ -12,6 +12,9 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
   const nbDus = motsDus(progres, LANGUES, jour).length
   const enCarnet = tailleCarnet(progres)
   const attente = joursAvantProchaine(progres, jour)
+  const xpJour = xpDuJour(progres, jour)
+  const objectif = progres.objectifJour ?? 20
+  const objectifAtteint = xpJour >= objectif
 
   return (
     <div className="vue">
@@ -22,6 +25,33 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
         </div>
         <ChipSerie compte={progres.serie.compte} t={t} />
       </header>
+
+      <div className="carte apparition" style={{ padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div className="piste-progres" style={{ flex: '1 1 auto', height: 10 }}>
+          <div
+            className="piste-progres__barre"
+            style={{
+              width: `${Math.min(100, (xpJour / objectif) * 100)}%`,
+              height: 10,
+              background: objectifAtteint ? 'var(--menthe)' : 'var(--safran)',
+            }}
+          ></div>
+        </div>
+        <span
+          style={{
+            fontSize: 12.5,
+            fontWeight: 600,
+            color: objectifAtteint ? 'var(--menthe-fonce)' : 'var(--encre-2)',
+            flex: '0 0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          {objectifAtteint ? <Coche taille={14} trait={2.6} /> : null}
+          {objectifAtteint ? t.objectif.atteint : t.objectif.progression(xpJour, objectif)}
+        </span>
+      </div>
 
       {suite ? (
         <button

@@ -1,22 +1,15 @@
 import { useMemo, useState } from 'react'
 import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
+import { assembler, cibleEpellation, construireLettres } from '../lib/epellation.js'
 import { melanger } from '../lib/quiz.js'
+import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_MOTS = 8
-const DISTRACTEURS = 'aeinorstlu'
-
-// On épelle la romanisation quand l'écriture cible n'est pas latine.
-const nettoyer = (texte) =>
-  texte
-    .toLowerCase()
-    .replace(/[¿?¡!.,…？]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
 
 // La Caravane : épelle chaque mot avec les tuiles-lettres ;
 // à chaque mot réussi, l'étoile avance d'une étape sur la piste.
@@ -25,8 +18,8 @@ export function JeuCaravane({ t, locale, source, langue, surXp, surQuitter }) {
   const mots = useMemo(
     () =>
       melanger(tousLesMots(langue))
-        .map((mot) => ({ ...mot, cible: nettoyer(mot.r ?? mot.t) }))
-        .filter((mot) => mot.cible.length >= 2 && mot.cible.length <= 10)
+        .map((mot) => ({ ...mot, cible: cibleEpellation(mot) }))
+        .filter((mot) => mot.cible)
         .slice(0, NB_MOTS),
     [langue, partie]
   )
@@ -40,11 +33,7 @@ export function JeuCaravane({ t, locale, source, langue, surXp, surQuitter }) {
   const mot = mots[iMot]
   const fentes = useMemo(() => (mot ? mot.cible.split('') : []), [mot])
   const aPlacer = useMemo(() => fentes.filter((c) => c !== ' '), [fentes])
-  const tuilesLettres = useMemo(() => {
-    if (!mot) return []
-    const extras = Array.from({ length: 2 }, () => DISTRACTEURS[Math.floor(Math.random() * DISTRACTEURS.length)])
-    return melanger([...aPlacer, ...extras]).map((c, cle) => ({ c, cle }))
-  }, [mot, aPlacer, partie])
+  const tuilesLettres = useMemo(() => (mot ? construireLettres(mot.cible) : []), [mot, partie])
 
   const rejouer = () => {
     setPartie(partie + 1)
@@ -57,14 +46,9 @@ export function JeuCaravane({ t, locale, source, langue, surXp, surQuitter }) {
   }
 
   const verifier = (placement) => {
-    const assemble = []
-    let curseur = 0
-    for (const c of fentes) {
-      if (c === ' ') assemble.push(' ')
-      else assemble.push(placement[curseur++]?.c ?? '')
-    }
-    if (assemble.join('') === mot.cible) {
+    if (assembler(fentes, placement) === mot.cible) {
       setEtat('bonne')
+      retourReponse(true)
       parler(mot.t, langue.tts)
       const gain = fautesMot === 0 ? 10 : 5
       const cumul = xpCumul + gain
@@ -77,11 +61,13 @@ export function JeuCaravane({ t, locale, source, langue, surXp, surQuitter }) {
           setEtat('saisie')
         } else {
           surXp(cumul)
+          fanfare()
           setFin({ xp: cumul })
         }
       }, 750)
     } else {
       setEtat('fausse')
+      retourReponse(false)
       setFautesMot(fautesMot + 1)
       setTimeout(() => {
         setPlacees([])

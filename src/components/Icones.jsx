@@ -128,6 +128,14 @@ export const CaravaneIcone = (props) => (
   </Svg>
 )
 
+export const TenteIcone = (props) => (
+  <Svg {...props}>
+    <path d="M4 20v-9a8 8 0 0 1 16 0v9" />
+    <path d="M9.5 20v-4.5a2.5 2.5 0 0 1 5 0V20" />
+    <path d="M3 20h18" />
+  </Svg>
+)
+
 export const CarnetIcone = (props) => (
   <Svg {...props}>
     <rect x="5" y="3" width="14" height="18" rx="2" />

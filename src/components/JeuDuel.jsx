@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
+import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { Croix, DuelIcone, Etoile8 } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
@@ -49,6 +50,7 @@ export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
       setVerrous({ haut: false, bas: false })
       setVainqueurManche(null)
     } else {
+      fanfare()
       surXp(XP_DUEL)
       setFin({ scores: scoresApres, xp: XP_DUEL })
       setPhase('fin')
@@ -61,11 +63,13 @@ export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
       const scoresApres = { ...scores, [cote]: scores[cote] + 1 }
       setScores(scoresApres)
       setVainqueurManche(cote)
+      retourReponse(true)
       parler(manche.cible.t, langue.tts)
       setTimeout(() => mancheSuivante(scoresApres), 1050)
     } else {
       const verrousApres = { ...verrous, [cote]: true }
       setVerrous(verrousApres)
+      retourReponse(false)
       if (verrousApres.haut && verrousApres.bas) {
         setVainqueurManche('personne')
         setTimeout(() => mancheSuivante(scores), 1050)

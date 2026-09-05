@@ -10,6 +10,9 @@ export const progresInitial = () => ({
   etapes: {},
   defis: {},
   carnet: {},
+  xpJours: {},
+  objectifJour: 20,
+  gels: 0,
 })
 
 const stockageParDefaut = () => (typeof localStorage === 'undefined' ? null : localStorage)
@@ -61,6 +64,50 @@ export function majSerie(serie, jour) {
   return { compte: 1, dernierJour: jour }
 }
 
+// La nuit au caravansérail : couvre EXACTEMENT un jour manqué. Si le dernier
+// jour actif est l'avant-veille et qu'une nuit est en réserve, elle est
+// consommée et la série survit. Deux jours manqués ou plus : la série tombe.
+export function majSerieAvecGels(serie, gels, jour) {
+  if (serie.dernierJour === jour) return { serie, gels, gelConsomme: false }
+  if (serie.dernierJour === veilleDe(jour)) {
+    return { serie: { compte: serie.compte + 1, dernierJour: jour }, gels, gelConsomme: false }
+  }
+  if (gels > 0 && serie.compte > 0 && serie.dernierJour === veilleDe(veilleDe(jour))) {
+    return { serie: { compte: serie.compte + 1, dernierJour: jour }, gels: gels - 1, gelConsomme: true }
+  }
+  return { serie: { compte: 1, dernierJour: jour }, gels, gelConsomme: false }
+}
+
+export const PRIX_GEL = 150
+export const MAX_GELS = 2
+
+export function acheterGel(progres) {
+  const gels = progres.gels ?? 0
+  if (progres.xp < PRIX_GEL || gels >= MAX_GELS) return { progres, achete: false }
+  return { progres: { ...progres, xp: progres.xp - PRIX_GEL, gels: gels + 1 }, achete: true }
+}
+
+// ————— Objectif quotidien —————
+// Chaque gain d'XP est attribué au jour où il tombe (leçons, jeux, défi,
+// carnet : tout passe par là via App.majProgres). On ne garde que 2 semaines.
+export const JOURS_XP_CONSERVES = 14
+export const OBJECTIFS_JOUR = [10, 20, 30]
+
+export function attribuerXpDuJour(avant, apres, jour = jourLocal()) {
+  const delta = apres.xp - avant.xp
+  if (delta <= 0) return apres
+  const xpJours = { ...(apres.xpJours ?? {}) }
+  xpJours[jour] = (xpJours[jour] ?? 0) + delta
+  const jours = Object.keys(xpJours).sort()
+  while (jours.length > JOURS_XP_CONSERVES) delete xpJours[jours.shift()]
+  return { ...apres, xpJours }
+}
+
+export const xpDuJour = (progres, jour = jourLocal()) => progres.xpJours?.[jour] ?? 0
+
+export const reglerObjectif = (progres, objectif) =>
+  OBJECTIFS_JOUR.includes(objectif) ? { ...progres, objectifJour: objectif } : progres
+
 export const SEUIL_VALIDATION = 0.75
 
 // Enregistre le résultat d'une étape. Retourne le nouveau progrès et le bilan.
@@ -75,13 +122,17 @@ export function enregistrerEtape(progres, langueId, leconId, score, total, jour 
     valide: valide || (existante?.valide ?? false),
     jour,
   }
+  const bilanSerie = valide
+    ? majSerieAvecGels(progres.serie, progres.gels ?? 0, jour)
+    : { serie: progres.serie, gels: progres.gels ?? 0, gelConsomme: false }
   const nouveau = {
     ...progres,
     xp: progres.xp + xpGagne,
-    serie: valide ? majSerie(progres.serie, jour) : progres.serie,
+    serie: bilanSerie.serie,
+    gels: bilanSerie.gels,
     etapes: { ...progres.etapes, [cle]: etape },
   }
-  return { progres: nouveau, xpGagne, valide }
+  return { progres: nouveau, xpGagne, valide, gelConsomme: bilanSerie.gelConsomme }
 }
 
 // XP gagnés hors étapes (jeux du voyage). Jamais négatif.
@@ -96,14 +147,23 @@ export function enregistrerDefi(progres, score, total, jour = jourLocal()) {
   const deja = progres.defis?.[jour]
   const xpGagne = deja ? 0 : score * 4 + (score === total ? 10 : 0)
   const serieAvant = progres.serie.compte
-  const serie = deja ? progres.serie : majSerie(progres.serie, jour)
+  const bilanSerie = deja
+    ? { serie: progres.serie, gels: progres.gels ?? 0, gelConsomme: false }
+    : majSerieAvecGels(progres.serie, progres.gels ?? 0, jour)
   const nouveau = {
     ...progres,
     xp: progres.xp + xpGagne,
-    serie,
+    serie: bilanSerie.serie,
+    gels: bilanSerie.gels,
     defis: { ...(progres.defis ?? {}), [jour]: { score: Math.max(score, deja?.score ?? 0), total } },
   }
-  return { progres: nouveau, xpGagne, dejaFaite: Boolean(deja), serieAvancee: serie.compte > serieAvant }
+  return {
+    progres: nouveau,
+    xpGagne,
+    dejaFaite: Boolean(deja),
+    serieAvancee: bilanSerie.serie.compte > serieAvant,
+    gelConsomme: bilanSerie.gelConsomme,
+  }
 }
 
 export const defiDuJour = (progres, jour = jourLocal()) => progres.defis?.[jour] ?? null

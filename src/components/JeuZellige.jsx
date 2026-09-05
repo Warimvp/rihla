@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
+import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { Croix, Etoile8 } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
@@ -45,6 +46,7 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
     const nbCoups = coups + 1
     setCoups(nbCoups)
     if (a.motId === b.motId && a.face !== b.face) {
+      retourReponse(true)
       const complet = gagnees.size + 1 === paires.length
       setTimeout(() => {
         setGagnees((avant) => new Set([...avant, a.motId]))
@@ -52,6 +54,7 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
         if (complet) {
           const xp = 30 + (nbCoups <= 10 ? 20 : nbCoups <= 14 ? 10 : 0)
           surXp(xp)
+          fanfare()
           setFin({ xp })
         }
       }, 380)
