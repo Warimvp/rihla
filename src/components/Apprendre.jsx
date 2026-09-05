@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { histoire, nomLangue, nomVille, titreLecon } from '../data/langues.js'
 import { cleEtape } from '../lib/progression.js'
 import { Pastille } from './Communs.jsx'
@@ -28,9 +29,16 @@ export function Apprendre({ t, locale, progres, langue, surLecon, surJeu }) {
         {langue.lecons.map((lecon, i) => {
           const etape = progres.etapes[cleEtape(langue.id, lecon.id)]
           const validee = etape?.valide ?? false
+          const nouveauNiveau = i === 0 || lecon.niveau !== langue.lecons[i - 1].niveau
           return (
+            <Fragment key={lecon.id}>
+              {nouveauNiveau ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: i === 0 ? 0 : 8 }}>
+                  <span className="surtitre">{lecon.niveau === 2 ? t.niveau2 : t.niveau1}</span>
+                  <span style={{ flex: '1 1 auto', borderTop: '1px dashed var(--ligne-2)' }}></span>
+                </div>
+              ) : null}
             <button
-              key={lecon.id}
               type="button"
               className="carte apparition"
               style={{
@@ -72,6 +80,7 @@ export function Apprendre({ t, locale, progres, langue, surLecon, surJeu }) {
               </span>
               <ChevronAvant taille={18} couleur="var(--encre-2)" trait={2} />
             </button>
+            </Fragment>
           )
         })}
       </div>

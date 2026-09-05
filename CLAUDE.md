@@ -47,6 +47,9 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Carte « Le Carnet » sur l'Accueil : active si mots dus, sinon « À jour — reviens dans X j » (ou invite à valider une étape si vide).
 - Stockage : `progres.carnet` = `{ "langueId:motId": { boite, jour } }` — clés stables, ne pas renommer les ids de mots.
 
+## Contenu : niveaux
+- 9 leçons par destination : 6 de **niveau 1** (mots) + 3 de **niveau 2 « Conversation »** (phrases : rencontre, debrouille, exprimer). `LECONS_META[].niveau` regroupe l'affichage dans Apprendre (en-têtes N1/N2). Le visa exige les 9. Ajouter une leçon = 8 concepts communs (fr+ar) + 8 entrées × 10 langues, romanisation obligatoire pour fa/hi/zh/ja/ar — le garde-fou `langues.test.js` veille.
+
 ## Mécaniques « niveau Duolingo » (2026-09-06)
 - **Exercices variés en leçon** (`construireQuiz`, cycle `CYCLE_EXERCICES`) : comprendre → écouter → produire → épeler. Replis AUTOMATIQUES : sans TTS, écouter → comprendre ; cible > 10 caractères (`cibleEpellation`), épeler → produire. L'épellation partagée vit dans `src/lib/epellation.js` (Caravane + leçons).
 - **Objectif du jour** (10/20/30 XP, Réglages) : chaque gain d'XP passe par `App.majProgres` → `attribuerXpDuJour` (14 jours conservés dans `progres.xpJours`). Barre sur l'Accueil. Les débits (achat de nuit) ne s'attribuent pas.

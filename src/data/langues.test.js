@@ -4,7 +4,7 @@ import { LANGUES } from './langues.js'
 // Garde-fou du contenu : les sens sont partagés par index entre toutes les
 // langues — si une langue oublie une leçon ou un mot, ça doit casser ici.
 describe('données des langues', () => {
-  it('chaque destination a les 6 leçons complètes et alignées', () => {
+  it('chaque destination a les 9 leçons complètes et alignées, niveaux compris', () => {
     for (const langue of LANGUES) {
       expect(langue.lecons.map((l) => l.id)).toEqual([
         'salutations',
@@ -13,7 +13,11 @@ describe('données des langues', () => {
         'nombres',
         'marche',
         'jours',
+        'rencontre',
+        'debrouille',
+        'exprimer',
       ])
+      expect(langue.lecons.map((l) => l.niveau)).toEqual([1, 1, 1, 1, 1, 1, 2, 2, 2])
       for (const lecon of langue.lecons) {
         expect(lecon.mots).toHaveLength(8)
         expect(new Set(lecon.mots.map((m) => m.id)).size).toBe(8)
@@ -27,7 +31,7 @@ describe('données des langues', () => {
   })
 
   it('les écritures non latines portent toutes une romanisation', () => {
-    for (const id of ['fa', 'hi', 'zh', 'ja']) {
+    for (const id of ['fa', 'hi', 'zh', 'ja', 'ar']) {
       const langue = LANGUES.find((l) => l.id === id)
       for (const lecon of langue.lecons) {
         for (const mot of lecon.mots) {
