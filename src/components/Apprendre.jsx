@@ -34,7 +34,7 @@ export function Apprendre({ t, locale, progres, langue, surLecon, surJeu }) {
             <Fragment key={lecon.id}>
               {nouveauNiveau ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: i === 0 ? 0 : 8 }}>
-                  <span className="surtitre">{lecon.niveau === 2 ? t.niveau2 : t.niveau1}</span>
+                  <span className="surtitre">{lecon.niveau === 3 ? t.niveau3 : lecon.niveau === 2 ? t.niveau2 : t.niveau1}</span>
                   <span style={{ flex: '1 1 auto', borderTop: '1px dashed var(--ligne-2)' }}></span>
                 </div>
               ) : null}

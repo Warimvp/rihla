@@ -3,6 +3,7 @@ import { OBJECTIFS_JOUR, jourLocal } from '../lib/progression.js'
 import { exporterProgres, importerProgres } from '../lib/sauvegarde.js'
 import { BoiteIcone, CarnetIcone, PartagerIcone } from './Icones.jsx'
 import { reglerSons, sonsActifs } from '../lib/sons.js'
+import { HEURE_DEFAUT, activerRappel, desactiverRappel, heureRappel, rappelActif, rappelDisponible } from '../lib/rappel.js'
 import { MarqueRihla } from './Logo.jsx'
 
 export function Reglages({
@@ -23,6 +24,9 @@ export function Reglages({
   surEffacer,
 }) {
   const [sons, setSons] = useState(() => sonsActifs())
+  const [rappel, setRappel] = useState(() => rappelActif())
+  const [heure, setHeure] = useState(() => heureRappel())
+  const natifDispo = rappelDisponible()
   const [message, setMessage] = useState(null)
   const [zoneRestaure, setZoneRestaure] = useState(null)
 
@@ -53,6 +57,29 @@ export function Reglages({
     surRestaurer(resultat.progres)
     setZoneRestaure(null)
     annoncer(t.sauvegarde.succes)
+  }
+
+  const basculerRappel = async (valeur) => {
+    if (!valeur) {
+      await desactiverRappel()
+      setRappel(false)
+      return
+    }
+    const etat = await activerRappel(heure, { titre: t.rappel.notifTitre, corps: t.rappel.notifCorps })
+    if (etat === 'ok') {
+      setRappel(true)
+      annoncer(t.rappel.pose(heure))
+    } else {
+      setRappel(false)
+      annoncer(etat === 'refuse' ? t.rappel.refuse : t.rappel.indisponible)
+    }
+  }
+
+  const changerHeure = async (valeur) => {
+    setHeure(valeur || HEURE_DEFAUT)
+    if (!rappel) return
+    const etat = await activerRappel(valeur, { titre: t.rappel.notifTitre, corps: t.rappel.notifCorps })
+    if (etat === 'ok') annoncer(t.rappel.pose(valeur))
   }
 
   const partager = async () => {
@@ -163,6 +190,49 @@ export function Reglages({
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.rappel.titre}</span>
+          <span className="texte-2" style={{ fontSize: 12.5 }}>
+            {natifDispo ? t.rappel.sousTitre : t.rappel.indisponible}
+          </span>
+        </div>
+        <div className="segmente">
+          {[true, false].map((valeur) => (
+            <button
+              key={String(valeur)}
+              type="button"
+              className={`segmente__choix ${rappel === valeur ? 'segmente__choix--actif' : ''}`}
+              disabled={!natifDispo}
+              style={{ opacity: natifDispo ? 1 : 0.5 }}
+              onClick={() => basculerRappel(valeur)}
+            >
+              {valeur ? t.rappel.actif : t.rappel.inactif}
+            </button>
+          ))}
+        </div>
+        {rappel && natifDispo ? (
+          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <span className="texte-2" style={{ fontSize: 13 }}>{t.rappel.heure}</span>
+            <input
+              type="time"
+              value={heure}
+              onChange={(e) => changerHeure(e.target.value)}
+              style={{
+                minHeight: 44,
+                borderRadius: 12,
+                border: '1.5px solid var(--ligne)',
+                background: 'var(--sable)',
+                color: 'var(--encre)',
+                padding: '0 12px',
+                fontSize: 15,
+                fontFamily: 'var(--police-ui)',
+              }}
+            />
+          </label>
+        ) : null}
       </div>
 
       <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>

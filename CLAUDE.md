@@ -56,8 +56,14 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - **Semaine d'activité** au Passeport : 7 barres depuis `progres.xpJours` (menthe = objectif atteint, safran sinon).
 - **Partager** (Web Share API, repli presse-papiers) et **Proposer une amélioration** (issues GitHub) dans les Réglages.
 
-## Contenu : niveaux
-- 9 leçons par destination : 6 de **niveau 1** (mots) + 3 de **niveau 2 « Conversation »** (phrases : rencontre, debrouille, exprimer). `LECONS_META[].niveau` regroupe l'affichage dans Apprendre (en-têtes N1/N2). Le visa exige les 9. Ajouter une leçon = 8 concepts communs (fr+ar) + 8 entrées × 10 langues, romanisation obligatoire pour fa/hi/zh/ja/ar — le garde-fou `langues.test.js` veille.
+## Contenu : 14 destinations × 12 leçons (1 344 mots)
+- Route ordonnée par km : es 400 · **pt 700** · it 2100 · **de 2600** · en 2900 · tr 3200 · ar 3600 · **ru 5200** · fa 5400 · sw 6600 · hi 7900 · zh 11300 · **ko 12500** · ja 13400.
+- 12 leçons par destination : 6 de **niveau 1** (mots), 3 de **niveau 2 « Conversation »** (rencontre, debrouille, exprimer), 3 de **niveau 3 « Récits »** (hotel, sante, telephone). `LECONS_META[].niveau` groupe l'affichage (en-têtes N1/N2/N3). Le visa exige les 12.
+- Ajouter une leçon = 8 concepts communs (fr+ar) + 8 entrées × 14 langues, romanisation obligatoire pour fa/hi/zh/ja/ar/**ru**/**ko** — le garde-fou `langues.test.js` veille.
+- ⚠️ Insertion d'une langue dans `BRUTES` : ancrer sur la fin COMPLÈTE d'un bloc (dernier mot + `],` + `},` mots + `},` langue). S'arrêter au `},` de `mots` insère la langue DANS l'objet précédent (erreur de syntaxe silencieuse jusqu'au parse).
+
+## Rappel quotidien (`src/lib/rappel.js`)
+- Notification locale via `@capacitor/local-notifications`, id fixe `1325`, planification `{ on: { hour, minute } }` (quotidienne). **Natif seulement** : sur le web les boutons sont désactivés avec un message honnête (une notification programmée ne survit pas à la fermeture de l'onglet). Réglages : Activé/Coupé + heure. Clés `rihla.rappel` / `rihla.rappel.heure`.
 
 ## Mécaniques « niveau Duolingo » (2026-09-06)
 - **Exercices variés en leçon** (`construireQuiz`, cycle `CYCLE_EXERCICES`) : comprendre → écouter → produire → épeler. Replis AUTOMATIQUES : sans TTS, écouter → comprendre ; cible > 10 caractères (`cibleEpellation`), épeler → produire. L'épellation partagée vit dans `src/lib/epellation.js` (Caravane + leçons).

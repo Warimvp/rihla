@@ -4,7 +4,7 @@
 
 En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla** (« le voyage ») reprend sa route : chaque langue est une **destination**, chaque leçon une **étape**, chaque réussite un **tampon** dans ton passeport.
 
-- 10 destinations : Grenade (espagnol), Venise (italien), Londres (anglais), Istanbul (turc), Le Caire (arabe), Ispahan (persan), Mombasa (swahili), Delhi (hindi), Pékin (mandarin), Tokyo (japonais)
+- 14 destinations : Grenade (espagnol), **Lisbonne (portugais)**, Venise (italien), **Vienne (allemand)**, Londres (anglais), Istanbul (turc), Le Caire (arabe), **Saraï (russe)**, Ispahan (persan), Mombasa (swahili), Delhi (hindi), Pékin (mandarin), **Séoul (coréen)**, Tokyo (japonais)
 - **Langue des définitions au choix** (Réglages) : apprends l'anglais avec des sens en arabe, ou l'arabe avec des sens en français — indépendamment de la langue de l'interface
 - Leçons en deux temps : cartes-mots (avec prononciation) puis quiz
 - Cinq jeux de révision par destination : **Zellige des paires** (memory), **Le Souk** (45 s chrono, combos), **La Caravane** (épellation, l'étoile avance sur la piste), **L'Oreille** (compréhension orale pure) et **Le Duel** (2 joueurs face à face sur un seul téléphone)
@@ -14,9 +14,10 @@ En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla*
 - **Sauvegarde de ton voyage** : copie ta progression en un bouton, restaure-la sur un autre appareil (rien n'est envoyé nulle part)
 - **Ta semaine** : 7 jours d'activité en un coup d'œil dans le passeport
 - **Ton cap, ton choix** : au premier lancement, « Où va ta rihla ? » — suis la route d'Ibn Battuta ou épingle la langue de ton choix ; « Reprendre » et l'onglet Apprendre suivent ton cap (changeable dans les Réglages)
-- **Deux niveaux par destination** : Niveau 1 · Survie (6 étapes de vocabulaire) puis **Niveau 2 · Conversation** (3 étapes de vraies phrases : faire connaissance, se débrouiller, exprimer) — 72 mots et phrases par langue
+- **Trois niveaux par destination** : Niveau 1 · Survie (6 étapes de vocabulaire), Niveau 2 · Conversation (faire connaissance, se débrouiller, exprimer) et **Niveau 3 · Récits** (à l'hôtel, chez le médecin, au téléphone) — 96 mots et phrases par langue, 1 344 au total
 - **Leçons à exercices variés** : compréhension, écoute pure, production et épellation à tuiles s'enchaînent dans chaque étape
 - **Objectif du jour** (10/20/30 XP) avec barre de progression, et le **Caravansérail** : réserve une nuit (150 XP) pour couvrir un jour manqué — ta série survit
+- **Rappel quotidien** : une notification locale à l'heure de ton choix (app installée iPhone/Android)
 - **Sons et vibrations** de feedback, synthétisés (zéro téléchargement), coupables dans les Réglages
 - XP, kilomètres parcourus, série de « jours de voyage », visas à collectionner
 - Interface **français / arabe (RTL)** — pensée pour le Maroc
