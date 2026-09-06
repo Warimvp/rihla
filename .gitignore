@@ -10,3 +10,7 @@ ios/App/App/public/
 
 # Produits de compilation Xcode (contiennent le profil de provisionnement — UDID)
 ios/build/
+ios/build-sim/
+
+# Captures pour App Store Connect — régénérables au simulateur
+captures/

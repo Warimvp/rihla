@@ -143,13 +143,20 @@ body {
 .app {
   max-width: 480px;
   margin-inline: auto;
-  min-height: 100dvh;
+  /* Hauteur DÉFINIE (pas min-height) : sinon la coquille grandit avec le
+     contenu, la vue ne scrolle pas toute seule et la barre d'onglets part
+     sous la ligne de flottaison sur les grands écrans. */
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
 .vue {
   flex: 1 1 auto;
+  /* Sans min-height: 0, un enfant flex ne descend jamais sous la taille de son
+     contenu : la vue ne scrollait pas, elle poussait la barre d'onglets hors
+     de l'écran dès que la liste était longue. */
+  min-height: 0;
   overflow-y: auto;
   padding: calc(20px + env(safe-area-inset-top)) 20px 16px;
   display: flex;
