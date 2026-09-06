@@ -62,6 +62,12 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Ajouter une leçon = 8 concepts communs (fr+ar) + 8 entrées × 14 langues, romanisation obligatoire pour fa/hi/zh/ja/ar/**ru**/**ko** — le garde-fou `langues.test.js` veille.
 - ⚠️ Insertion d'une langue dans `BRUTES` : ancrer sur la fin COMPLÈTE d'un bloc (dernier mot + `],` + `},` mots + `},` langue). S'arrêter au `},` de `mots` insère la langue DANS l'objet précédent (erreur de syntaxe silencieuse jusqu'au parse).
 
+## Publicité (socle éteint) — `src/lib/pub.js`
+- **Décision produit** : pas de paywall ; revenus par pub RÉCOMPENSÉE d'abord (opt-in, échangée contre une nuit de caravansérail via `offrirGel`), interstitielle plafonnée en appoint, **jamais de bannière**, **jamais de pub pendant une leçon / un jeu / une révision / l'étape du jour**.
+- Aucun SDK n'est installé : `brancherFournisseur()` reste vide → `pubsDisponibles()` est faux → le bouton du Passeport n'existe pas et l'app est identique à aujourd'hui. Brancher AdMob = installer `@capacitor-community/admob` + appeler `brancherFournisseur()` dans `main.jsx`.
+- Quota des interstitielles (pur, testé) : ≥ 3 étapes ET ≥ 5 minutes (`peutMontrerInterstitiel`).
+- ⚠️ Le jour de l'activation : réécrire les 3 textes qui promettent « sans pub » (README, `t.gratuit`, guide FR+AR), ajouter consentement UMP + ATT, mettre à jour la page de confidentialité et les étiquettes App Store. Stratégie complète : artifact « Monétiser Rihla ».
+
 ## Rappel quotidien (`src/lib/rappel.js`)
 - Notification locale via `@capacitor/local-notifications`, id fixe `1325`, planification `{ on: { hour, minute } }` (quotidienne). **Natif seulement** : sur le web les boutons sont désactivés avec un message honnête (une notification programmée ne survit pas à la fermeture de l'onglet). Réglages : Activé/Coupé + heure. Clés `rihla.rappel` / `rihla.rappel.heure`.
 

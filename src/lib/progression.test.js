@@ -8,6 +8,7 @@ import {
   enregistrerDefi,
   enregistrerEtape,
   majSerieAvecGels,
+  offrirGel,
   reglerObjectif,
   xpDuJour,
   kmParcourus,
@@ -192,6 +193,18 @@ describe('acheterGel', () => {
     expect(deux.progres.gels).toBe(2)
     expect(acheterGel(deux.progres).achete).toBe(false)
     expect(acheterGel({ ...progresInitial(), xp: 100 }).achete).toBe(false)
+  })
+})
+
+describe('offrirGel', () => {
+  it('ajoute une nuit sans coûter d’XP, et respecte le plafond', () => {
+    const base = { ...progresInitial(), xp: 40 }
+    const une = offrirGel(base)
+    expect(une.gels).toBe(1)
+    expect(une.xp).toBe(40)
+    const deux = offrirGel(une)
+    expect(deux.gels).toBe(2)
+    expect(offrirGel(deux)).toBe(deux)
   })
 })
 

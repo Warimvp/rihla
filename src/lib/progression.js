@@ -81,6 +81,12 @@ export function majSerieAvecGels(serie, gels, jour) {
 export const PRIX_GEL = 150
 export const MAX_GELS = 2
 
+// Nuit obtenue autrement qu'en XP (pub récompensée) : même plafond.
+export function offrirGel(progres) {
+  const gels = progres.gels ?? 0
+  return gels >= MAX_GELS ? progres : { ...progres, gels: gels + 1 }
+}
+
 export function acheterGel(progres) {
   const gels = progres.gels ?? 0
   if (progres.xp < PRIX_GEL || gels >= MAX_GELS) return { progres, achete: false }

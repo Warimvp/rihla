@@ -4,6 +4,7 @@ import { defaultLocale, getDictionary, getDirection, locales } from './i18n.js'
 import {
   acheterGel,
   ajouterXp,
+  offrirGel,
   attribuerXpDuJour,
   chargerProgres,
   enregistrerDefi,
@@ -301,6 +302,10 @@ export default function App() {
           surAcheterGel={() => {
             const resultat = acheterGel(progres)
             if (resultat.achete) majProgres(resultat.progres)
+          }}
+          surNuitOfferte={(etat) => {
+            // Récompense créditée seulement si la vidéo a été vue jusqu'au bout.
+            if (etat === 'ok') majProgres(offrirGel(progres))
           }}
         />
       ) : null}

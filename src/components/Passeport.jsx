@@ -2,11 +2,12 @@ import { LANGUES, nomLangue, nomVille } from '../data/langues.js'
 import { MAX_GELS, PRIX_GEL, etapesValidees, kmParcourus, nbVisas, visaObtenu } from '../lib/progression.js'
 import { jourLocal } from '../lib/progression.js'
 import { semaineActivite } from '../lib/sauvegarde.js'
+import { pubsDisponibles, regarderPourUneNuit } from '../lib/pub.js'
 import { TenteIcone } from './Icones.jsx'
 import { MarqueRihla } from './Logo.jsx'
 import { TamponVisa } from './TamponVisa.jsx'
 
-export function Passeport({ t, locale, progres, surAcheterGel }) {
+export function Passeport({ t, locale, progres, surAcheterGel, surNuitOfferte }) {
   const visas = nbVisas(progres, LANGUES)
   const km = kmParcourus(progres, LANGUES)
   const gels = progres.gels ?? 0
@@ -14,6 +15,9 @@ export function Passeport({ t, locale, progres, surAcheterGel }) {
   const maxSemaine = Math.max(progres.objectifJour ?? 20, ...semaine.map((j) => j.xp))
   const totalSemaine = semaine.reduce((somme, j) => somme + j.xp, 0)
   const achatPossible = gels < MAX_GELS && progres.xp >= PRIX_GEL
+  // La pub récompensée : opt-in, jamais dans l'apprentissage. Invisible tant
+  // qu'aucun fournisseur n'est branché (voir src/lib/pub.js).
+  const pubPossible = gels < MAX_GELS && pubsDisponibles()
 
   return (
     <div className="vue" style={{ padding: 0, gap: 0 }}>
@@ -129,6 +133,19 @@ export function Passeport({ t, locale, progres, surAcheterGel }) {
         >
           {gels >= MAX_GELS ? t.gel.plein : t.gel.acheter}
         </button>
+        {pubPossible ? (
+          <button
+            type="button"
+            className="bouton bouton--fantome bouton--pleine"
+            style={{ minHeight: 44, fontSize: 14 }}
+            onClick={async () => {
+              const etat = await regarderPourUneNuit()
+              surNuitOfferte(etat)
+            }}
+          >
+            {t.gel.regarder}
+          </button>
+        ) : null}
       </div>
 
       <div style={{ padding: '20px 20px 0', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
