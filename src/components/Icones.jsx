@@ -136,6 +136,24 @@ export const TenteIcone = (props) => (
   </Svg>
 )
 
+export const BoiteIcone = (props) => (
+  <Svg {...props}>
+    <path d="M3 8.5L12 4l9 4.5v7L12 20l-9-4.5z" />
+    <path d="M3 8.5l9 4.5 9-4.5" />
+    <path d="M12 13v7" />
+  </Svg>
+)
+
+export const PartagerIcone = (props) => (
+  <Svg {...props}>
+    <circle cx="18" cy="6" r="2.6" />
+    <circle cx="6" cy="12" r="2.6" />
+    <circle cx="18" cy="18" r="2.6" />
+    <path d="M8.4 10.8l7.2-3.6" />
+    <path d="M8.4 13.2l7.2 3.6" />
+  </Svg>
+)
+
 export const CarnetIcone = (props) => (
   <Svg {...props}>
     <rect x="5" y="3" width="14" height="18" rx="2" />

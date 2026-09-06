@@ -50,6 +50,12 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 ## Cap du voyage (choix de la langue d'apprentissage)
 - `rihla.cap` (localStorage) : `'route'` (suivre la route d'Ibn Battuta, comportement historique) ou un id de langue. `null` = jamais choisi → l'écran `Cap.jsx` s'affiche une fois (non annulable) ; ensuite modifiable via Réglages → « Changer » (annulable). `prochaineEtape(progres, langues, cap)` fait passer la langue choisie devant tant qu'elle n'a pas son visa, puis retombe sur la logique route. Choisir une langue aligne aussi `rihla.destination` (onglet Apprendre).
 
+## Aide à l'utilisation (2026-09-06)
+- **Guide du voyageur** (`Guide.jsx`, ouvert des Réglages) : 9 sections FR/AR qui expliquent visas, exercices, XP/objectif, série+caravansérail, Carnet, étape du jour, jeux, cap, hors-ligne. À MAJ quand une mécanique change.
+- **Sauvegarde** (`src/lib/sauvegarde.js`) : export/import du progrès en texte via le presse-papiers (l'app est 100 % locale — vider le navigateur efface tout). `importerProgres` est tolérant aux champs absents, strict sur la marque/version/cohérence ; il ne remplace jamais un voyage par du bruit. Toujours passer par `surRestaurer` (App) qui écrit ET sauve.
+- **Semaine d'activité** au Passeport : 7 barres depuis `progres.xpJours` (menthe = objectif atteint, safran sinon).
+- **Partager** (Web Share API, repli presse-papiers) et **Proposer une amélioration** (issues GitHub) dans les Réglages.
+
 ## Contenu : niveaux
 - 9 leçons par destination : 6 de **niveau 1** (mots) + 3 de **niveau 2 « Conversation »** (phrases : rencontre, debrouille, exprimer). `LECONS_META[].niveau` regroupe l'affichage dans Apprendre (en-têtes N1/N2). Le visa exige les 9. Ajouter une leçon = 8 concepts communs (fr+ar) + 8 entrées × 10 langues, romanisation obligatoire pour fa/hi/zh/ja/ar — le garde-fou `langues.test.js` veille.
 

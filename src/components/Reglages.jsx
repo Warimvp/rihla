@@ -1,10 +1,74 @@
 import { useState } from 'react'
-import { OBJECTIFS_JOUR } from '../lib/progression.js'
+import { OBJECTIFS_JOUR, jourLocal } from '../lib/progression.js'
+import { exporterProgres, importerProgres } from '../lib/sauvegarde.js'
+import { BoiteIcone, CarnetIcone, PartagerIcone } from './Icones.jsx'
 import { reglerSons, sonsActifs } from '../lib/sons.js'
 import { MarqueRihla } from './Logo.jsx'
 
-export function Reglages({ t, locale, surLocale, theme, surTheme, sourceChoix, surSource, objectifJour, surObjectif, libelleCap, surChangerCap, surEffacer }) {
+export function Reglages({
+  t,
+  locale,
+  surLocale,
+  theme,
+  surTheme,
+  sourceChoix,
+  surSource,
+  objectifJour,
+  surObjectif,
+  libelleCap,
+  surChangerCap,
+  surGuide,
+  progres,
+  surRestaurer,
+  surEffacer,
+}) {
   const [sons, setSons] = useState(() => sonsActifs())
+  const [message, setMessage] = useState(null)
+  const [zoneRestaure, setZoneRestaure] = useState(null)
+
+  const annoncer = (texte) => {
+    setMessage(texte)
+    setTimeout(() => setMessage(null), 3500)
+  }
+
+  const copierSauvegarde = async () => {
+    const texte = exporterProgres(progres, jourLocal())
+    try {
+      await navigator.clipboard.writeText(texte)
+      annoncer(t.sauvegarde.copie)
+    } catch {
+      setZoneRestaure(null)
+      annoncer(t.sauvegarde.echecCopie)
+      setMessage(t.sauvegarde.echecCopie)
+    }
+  }
+
+  const validerRestauration = () => {
+    const resultat = importerProgres(zoneRestaure ?? '')
+    if (!resultat.ok) {
+      annoncer(t.sauvegarde.erreurs[resultat.erreur] ?? t.sauvegarde.erreurs.corrompu)
+      return
+    }
+    if (!window.confirm(t.sauvegarde.confirmer)) return
+    surRestaurer(resultat.progres)
+    setZoneRestaure(null)
+    annoncer(t.sauvegarde.succes)
+  }
+
+  const partager = async () => {
+    const url = 'https://warimvp.github.io/rihla/'
+    const donnees = { title: 'Rihla', text: t.partager.texte, url }
+    try {
+      if (navigator.share) {
+        await navigator.share(donnees)
+        return
+      }
+      await navigator.clipboard.writeText(`${t.partager.texte} ${url}`)
+      annoncer(t.partager.copie)
+    } catch {
+      /* partage annulé par l'utilisateur : rien à signaler */
+    }
+  }
   return (
     <div className="vue">
       <h1>{t.onglets.reglages}</h1>
@@ -115,6 +179,104 @@ export function Reglages({ t, locale, surLocale, theme, surTheme, sourceChoix, s
             </button>
           ))}
         </div>
+      </div>
+
+      <button
+        type="button"
+        className="carte"
+        onClick={surGuide}
+        style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: 13, cursor: 'pointer', fontFamily: 'var(--police-ui)', textAlign: 'start', color: 'var(--encre)' }}
+      >
+        <span style={{ width: 42, height: 42, borderRadius: 14, background: 'var(--majorelle-pale)', color: 'var(--majorelle-fonce)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
+          <CarnetIcone taille={22} trait={1.8} />
+        </span>
+        <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.guide.ouvrir}</span>
+          <span className="texte-2" style={{ fontSize: 12.5 }}>{t.guide.sousTitre}</span>
+        </span>
+      </button>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 13 }}>
+          <span style={{ width: 42, height: 42, borderRadius: 14, background: 'var(--menthe-pale)', color: 'var(--menthe-fonce)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
+            <BoiteIcone taille={22} trait={1.8} />
+          </span>
+          <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.sauvegarde.titre}</span>
+            <span className="texte-2" style={{ fontSize: 12.5 }}>{t.sauvegarde.sousTitre}</span>
+          </span>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <button type="button" className="bouton bouton--secondaire bouton--pleine" style={{ minHeight: 44, fontSize: 14 }} onClick={copierSauvegarde}>
+            {t.sauvegarde.copier}
+          </button>
+          {zoneRestaure === null ? (
+            <button type="button" className="bouton bouton--fantome bouton--pleine" style={{ minHeight: 44, fontSize: 14 }} onClick={() => setZoneRestaure('')}>
+              {t.sauvegarde.restaurer}
+            </button>
+          ) : (
+            <>
+              <textarea
+                value={zoneRestaure}
+                onChange={(e) => setZoneRestaure(e.target.value)}
+                placeholder={t.sauvegarde.coller}
+                rows={4}
+                style={{
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  borderRadius: 14,
+                  border: '1.5px solid var(--ligne)',
+                  background: 'var(--sable)',
+                  color: 'var(--encre)',
+                  padding: 12,
+                  fontSize: 12.5,
+                  fontFamily: 'ui-monospace, monospace',
+                  resize: 'vertical',
+                }}
+              />
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button type="button" className="bouton bouton--primaire" style={{ flex: '1 1 auto', minHeight: 44, fontSize: 14 }} onClick={validerRestauration}>
+                  {t.sauvegarde.valider}
+                </button>
+                <button type="button" className="bouton bouton--fantome" style={{ flex: '0 0 auto', minHeight: 44, fontSize: 14 }} onClick={() => setZoneRestaure(null)}>
+                  {t.sauvegarde.annuler}
+                </button>
+              </div>
+            </>
+          )}
+          {message ? (
+            <p className="texte-2" style={{ fontSize: 12.5, margin: 0 }} role="status">{message}</p>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: 13 }}>
+        <span style={{ width: 42, height: 42, borderRadius: 14, background: 'var(--safran-pale)', color: 'var(--safran-fonce)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
+          <PartagerIcone taille={22} trait={1.8} />
+        </span>
+        <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.partager.titre}</span>
+          <span className="texte-2" style={{ fontSize: 12.5 }}>{t.partager.sousTitre}</span>
+        </span>
+        <button type="button" className="bouton bouton--secondaire" style={{ minHeight: 40, padding: '0 14px', fontSize: 13, flex: '0 0 auto' }} onClick={partager}>
+          {t.partager.bouton}
+        </button>
+      </div>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.ameliorer.titre}</span>
+          <span className="texte-2" style={{ fontSize: 12.5 }}>{t.ameliorer.sousTitre}</span>
+        </div>
+        <a
+          className="bouton bouton--secondaire bouton--pleine"
+          style={{ minHeight: 44, fontSize: 14, textDecoration: 'none' }}
+          href="https://github.com/Warimvp/rihla/issues/new"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t.ameliorer.bouton}
+        </a>
       </div>
 
       <div className="carte" style={{ padding: '18px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>

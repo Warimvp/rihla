@@ -1,5 +1,7 @@
 import { LANGUES, nomLangue, nomVille } from '../data/langues.js'
 import { MAX_GELS, PRIX_GEL, etapesValidees, kmParcourus, nbVisas, visaObtenu } from '../lib/progression.js'
+import { jourLocal } from '../lib/progression.js'
+import { semaineActivite } from '../lib/sauvegarde.js'
 import { TenteIcone } from './Icones.jsx'
 import { MarqueRihla } from './Logo.jsx'
 import { TamponVisa } from './TamponVisa.jsx'
@@ -8,6 +10,9 @@ export function Passeport({ t, locale, progres, surAcheterGel }) {
   const visas = nbVisas(progres, LANGUES)
   const km = kmParcourus(progres, LANGUES)
   const gels = progres.gels ?? 0
+  const semaine = semaineActivite(progres, jourLocal())
+  const maxSemaine = Math.max(progres.objectifJour ?? 20, ...semaine.map((j) => j.xp))
+  const totalSemaine = semaine.reduce((somme, j) => somme + j.xp, 0)
   const achatPossible = gels < MAX_GELS && progres.xp >= PRIX_GEL
 
   return (
@@ -48,6 +53,46 @@ export function Passeport({ t, locale, progres, surAcheterGel }) {
           <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--menthe-fonce)' }}>{progres.serie.compte}</span>
           <span className="texte-2" style={{ fontSize: 11.5 }}>{t.joursVoyage}</span>
         </div>
+      </div>
+
+      <div className="carte" style={{ margin: '14px 16px 0', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 15, fontWeight: 600 }}>{t.semaine.titre}</span>
+          <span className="texte-2" style={{ fontSize: 12.5 }}>
+            {totalSemaine > 0 ? t.plusXp(totalSemaine) : null}
+          </span>
+        </div>
+        {totalSemaine > 0 ? (
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8, height: 78 }}>
+            {semaine.map((j, i) => {
+              const objectif = progres.objectifJour ?? 20
+              const atteint = j.xp >= objectif
+              const hauteur = j.xp > 0 ? Math.max(6, Math.round((j.xp / maxSemaine) * 58)) : 3
+              return (
+                <div key={j.jour} style={{ flex: '1 1 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                  <span
+                    title={`${j.jour} · ${j.xp} XP`}
+                    style={{
+                      width: '100%',
+                      maxWidth: 26,
+                      height: hauteur,
+                      borderRadius: 6,
+                      background: j.xp === 0 ? 'var(--piste)' : atteint ? 'var(--menthe)' : 'var(--safran)',
+                    }}
+                  ></span>
+                  <span
+                    className="texte-2"
+                    style={{ fontSize: 11, fontWeight: i === semaine.length - 1 ? 700 : 400, color: i === semaine.length - 1 ? 'var(--encre)' : undefined }}
+                  >
+                    {t.semaine.jours[j.jourSemaine]}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="texte-2" style={{ fontSize: 12.5, margin: 0 }}>{t.semaine.rien}</p>
+        )}
       </div>
 
       <div className="carte" style={{ margin: '14px 16px 0', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>

@@ -24,6 +24,7 @@ import { Reglages } from './components/Reglages.jsx'
 import { BarreOnglets } from './components/Communs.jsx'
 import { Carnet } from './components/Carnet.jsx'
 import { Defi } from './components/Defi.jsx'
+import { Guide } from './components/Guide.jsx'
 import { JeuCaravane } from './components/JeuCaravane.jsx'
 import { JeuDuel } from './components/JeuDuel.jsx'
 import { JeuOreille } from './components/JeuOreille.jsx'
@@ -118,6 +119,7 @@ export default function App() {
   // null = jamais choisi → l'écran de choix s'affiche une fois.
   const [cap, setCap] = useState(() => capValide(lireLocal('rihla.cap', null)) ?? (stockageDispo() ? null : 'route'))
   const [capOuvert, setCapOuvert] = useState(false)
+  const [guideOuvert, setGuideOuvert] = useState(false)
   const [leconActive, setLeconActive] = useState(null)
   const [jeuActif, setJeuActif] = useState(null)
   const [defiActif, setDefiActif] = useState(false)
@@ -157,6 +159,14 @@ export default function App() {
 
   const effacer = () => {
     if (window.confirm(t.confirmEffacer)) majProgres(progresInitial())
+  }
+
+  if (guideOuvert) {
+    return (
+      <div className="app">
+        <Guide t={t} surFermer={() => setGuideOuvert(false)} />
+      </div>
+    )
   }
 
   if (cap === null || capOuvert) {
@@ -311,6 +321,12 @@ export default function App() {
               : t.cap.actuelRoute
           }
           surChangerCap={() => setCapOuvert(true)}
+          surGuide={() => setGuideOuvert(true)}
+          progres={progres}
+          surRestaurer={(restaure) => {
+            setProgres(restaure)
+            sauverProgres(restaure)
+          }}
           surEffacer={effacer}
         />
       ) : null}
