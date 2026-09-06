@@ -2,7 +2,7 @@ import { LANGUES, nomLangue, nomVille, titreLecon } from '../data/langues.js'
 import { joursAvantProchaine, motsDus, tailleCarnet } from '../lib/carnet.js'
 import { defiDuJour, etapesValidees, jourLocal, prochaineEtape, visaObtenu, xpDuJour } from '../lib/progression.js'
 import { AnneauProgres, ChipSerie, Pastille } from './Communs.jsx'
-import { CarnetIcone, ChevronAvant, Coche, Etoile8, FlecheAvant } from './Icones.jsx'
+import { Boussole, CarnetIcone, ChevronAvant, Coche, Etoile8, FlecheAvant } from './Icones.jsx'
 
 export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi, surCarnet, cap = 'route' }) {
   const suite = prochaineEtape(progres, LANGUES, cap)
@@ -234,8 +234,22 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
             >
               <Pastille langue={langue} estompee={!visa && !entamee} />
               <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <span style={{ fontSize: 15.5, fontWeight: 600, color: visa || entamee ? 'var(--encre)' : 'var(--encre-2)' }}>
+                <span
+                  style={{
+                    fontSize: 15.5,
+                    fontWeight: 600,
+                    color: visa || entamee ? 'var(--encre)' : 'var(--encre-2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
                   {nomVille(langue, locale)}
+                  {cap === langue.id ? (
+                    <span title={t.cap.monCap} aria-label={t.cap.monCap} style={{ color: 'var(--majorelle-fonce)', display: 'inline-flex' }}>
+                      <Boussole taille={15} trait={2} />
+                    </span>
+                  ) : null}
                 </span>
                 <span
                   style={{

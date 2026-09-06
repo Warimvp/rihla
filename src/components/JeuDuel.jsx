@@ -199,7 +199,7 @@ export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
         <button
           type="button"
           onClick={surQuitter}
-          aria-label={t.quitterLecon}
+          aria-label={t.fermer}
           style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--encre-2)' }}
         >
           <Croix taille={18} trait={2.2} />

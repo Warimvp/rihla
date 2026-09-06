@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Young+Serif');
+    @import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700');
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700');
+    body { margin: 0; font-family: 'Readex Pro', 'Avenir Next', 'Segoe UI', sans-serif; color: #2B1E12; }
+    a { color: #4E46C8; } a:hover { color: #3A34A0; }
+    .vignette { background: #FDF8EE; border: 1px solid #E5DAC4; border-radius: 18px; box-shadow: 0 2px 10px rgba(43,30,18,0.08); padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-sizing: border-box; }
+    .vignette--active { border: 1.5px solid #4E46C8; }
+    .pastille { width: 40px; height: 40px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .ville { font-size: 14.5px; font-weight: 600; }
+    .langue { font-size: 12px; color: #7A6A55; }
+  </style>
+</helmet>
+<div style="width: 390px; height: 1180px; box-sizing: border-box; background: #F7F0E3; display: flex; flex-direction: column; gap: 18px; padding: 64px 20px 24px; overflow: hidden;">
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; margin-top: 18px;">
+    <svg width="56" height="56" viewBox="0 0 64 64" aria-hidden="true">
+      <g fill="#4E46C8"><rect x="10" y="10" width="44" height="44" rx="10"></rect><rect x="10" y="10" width="44" height="44" rx="10" transform="rotate(45 32 32)"></rect></g>
+      <circle cx="32" cy="32" r="15" fill="#FDF8EE"></circle>
+      <polygon points="39 25 34.5 34.5 25 39 29.5 29.5" fill="#C8552F"></polygon>
+    </svg>
+    <div style="font-family: 'Young Serif', Georgia, serif; font-size: 26px;">Où va ta rihla ?</div>
+    <div style="font-size: 13.5px; color: #7A6A55; line-height: 1.6; max-width: 34ch;">Choisis la langue de ton voyage — tu pourras changer de cap à tout moment.</div>
+  </div>
+
+  <div style="background: #FDF8EE; border: 1.5px solid #4E46C8; border-radius: 18px; box-shadow: 0 2px 10px rgba(43,30,18,0.08); padding: 14px 16px; display: flex; align-items: center; gap: 13px;">
+    <span style="width: 44px; height: 44px; border-radius: 14px; background: #E4E2F8; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3A34A0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"></circle>
+        <polygon points="15.5 8.5 13 13 8.5 15.5 11 11" fill="#3A34A0" stroke="none"></polygon>
+      </svg>
+    </span>
+    <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;">
+      <span style="font-size: 15.5px; font-weight: 600;">Suivre la route d'Ibn Battuta</span>
+      <span style="font-size: 12.5px; color: #7A6A55;">Destination après destination, de Grenade à Tokyo</span>
+    </span>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto;"><path d="M9 6l6 6-6 6"></path></svg>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <span style="font-size: 12.5px; color: #7A6A55; letter-spacing: 0.06em; text-transform: uppercase;">ou choisis ta destination</span>
+    <span style="flex: 1 1 auto; border-top: 1px dashed #E0D5BE;"></span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+    <div class="vignette"><span class="pastille" style="background: #C8552F; color: #FDF8EE;">ES</span><span class="ville">Grenade</span><span class="langue">Espagnol</span></div>
+    <div class="vignette"><span class="pastille" style="background: #17553F; color: #FDF8EE;">IT</span><span class="ville">Venise</span><span class="langue">Italien</span></div>
+    <div class="vignette"><span class="pastille" style="background: #4E46C8; color: #FDF8EE;">EN</span><span class="ville">Londres</span><span class="langue">Anglais</span></div>
+    <div class="vignette vignette--active"><span class="pastille" style="background: #E9A319; color: #2B1E12;">TR</span><span class="ville">Istanbul</span><span class="langue">Turc</span></div>
+    <div class="vignette"><span class="pastille" style="background: #7A5107; color: #FDF8EE;">AR</span><span class="ville">Le Caire</span><span class="langue">Arabe</span></div>
+    <div class="vignette"><span class="pastille" style="background: #3A34A0; color: #FDF8EE;">FA</span><span class="ville">Ispahan</span><span class="langue">Persan</span></div>
+    <div class="vignette"><span class="pastille" style="background: #C8552F; color: #FDF8EE;">SW</span><span class="ville">Mombasa</span><span class="langue">Swahili</span></div>
+    <div class="vignette"><span class="pastille" style="background: #23795B; color: #FDF8EE;">HI</span><span class="ville">Delhi</span><span class="langue">Hindi</span></div>
+    <div class="vignette"><span class="pastille" style="background: #A84523; color: #FDF8EE;">ZH</span><span class="ville">Pékin</span><span class="langue">Mandarin</span></div>
+    <div class="vignette"><span class="pastille" style="background: #2B1E12; color: #FDF8EE;">JA</span><span class="ville">Tokyo</span><span class="langue">Japonais</span></div>
+  </div>
+
+  <div style="font-size: 11.5px; color: #A79A83; text-align: center; line-height: 1.55;">Premier lancement : écran non annulable. Ensuite : Réglages → Cap du voyage → Changer (croix de fermeture en haut).</div>
+</div>
+<script data-dc-script data-props='{"$preview":{"width":390,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</x-dc>
+</body>
+</html>

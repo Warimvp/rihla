@@ -29,6 +29,7 @@ const fr = {
   suivant: 'Suivant',
   continuer: 'Continuer',
   quitterLecon: 'Quitter la leçon',
+  fermer: 'Fermer',
   promptComprendre: 'Que veut dire cette expression ?',
   promptProduire: (langue) => `Comment dit-on cela en ${langue.toLowerCase()} ?`,
   bonneReponse: 'Bonne réponse !',
@@ -136,6 +137,7 @@ const fr = {
     reglage: 'Cap du voyage',
     changer: 'Changer',
     actuelRoute: 'La route d’Ibn Battuta',
+    monCap: 'Ton cap',
   },
   carnet: {
     titre: 'Le Carnet',
@@ -175,6 +177,7 @@ const ar = {
   suivant: 'التالي',
   continuer: 'واصل',
   quitterLecon: 'غادر الدرس',
+  fermer: 'إغلاق',
   promptComprendre: 'ما معنى هذه العبارة؟',
   promptProduire: (langue) => `كيف نقول هذا بـ${langue}؟`,
   bonneReponse: 'إجابة صحيحة!',
@@ -282,6 +285,7 @@ const ar = {
     reglage: 'وجهة الرحلة',
     changer: 'غيّر',
     actuelRoute: 'طريق ابن بطوطة',
+    monCap: 'وجهتك',
   },
   carnet: {
     titre: 'الدفتر',

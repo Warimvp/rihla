@@ -79,7 +79,7 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
         <button
           type="button"
           onClick={surQuitter}
-          aria-label={t.quitterLecon}
+          aria-label={t.fermer}
           style={{
             width: 44,
             height: 44,

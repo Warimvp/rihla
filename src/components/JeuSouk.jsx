@@ -125,7 +125,7 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
         <button
           type="button"
           onClick={surQuitter}
-          aria-label={t.quitterLecon}
+          aria-label={t.fermer}
           style={{
             width: 44,
             height: 44,

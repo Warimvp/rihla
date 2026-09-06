@@ -1,32 +1,218 @@
 {
   "artboards": [
-    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 960, "h": 600, "title": "Rihla — Couverture" },
-    { "file": "Logo.dc.html", "x": 1040, "y": 0, "w": 960, "h": 640, "title": "Logo & icône d'app" },
-    { "file": "Fondations.dc.html", "x": 0, "y": 700, "w": 960, "h": 760, "title": "Couleurs & typographie" },
-    { "file": "Composants.dc.html", "x": 1040, "y": 740, "w": 960, "h": 880, "title": "Composants UI" },
-    { "file": "EcranAccueil.dc.html", "x": 0, "y": 1720, "w": 390, "h": 844, "title": "Écran — Itinéraire" },
-    { "file": "EcranLecon.dc.html", "x": 470, "y": 1720, "w": 390, "h": 844, "title": "Écran — Leçon" },
-    { "file": "EcranPasseport.dc.html", "x": 940, "y": 1720, "w": 390, "h": 844, "title": "Écran — Passeport" },
-    { "file": "EcranArabe.dc.html", "x": 1410, "y": 1720, "w": 390, "h": 844, "title": "Écran — Accueil (AR/RTL)" },
-    { "file": "EcranDefi.dc.html", "x": 1880, "y": 1720, "w": 390, "h": 844, "title": "Écran — L'étape du jour" },
-    { "file": "EcranNuit.dc.html", "x": 2820, "y": 1720, "w": 390, "h": 844, "title": "Écran — Mode nuit « Nuit d'encre »" },
-    { "file": "EcranJeux.dc.html", "x": 0, "y": 2700, "w": 390, "h": 1040, "title": "Écran — Jeu : Le Souk" },
-    { "file": "EcranDuel.dc.html", "x": 470, "y": 2700, "w": 390, "h": 844, "title": "Écran — Jeu : Le Duel (2 joueurs)" },
-    { "file": "EcranOreille.dc.html", "x": 940, "y": 2700, "w": 390, "h": 844, "title": "Écran — Jeu : L'Oreille" },
-    { "file": "EcranZellige.dc.html", "x": 1410, "y": 2700, "w": 390, "h": 844, "title": "Écran — Jeu : Zellige des paires" },
-    { "file": "EcranCaravane.dc.html", "x": 1880, "y": 2700, "w": 390, "h": 844, "title": "Écran — Jeu : La Caravane" },
-    { "file": "EcranCarnet.dc.html", "x": 2350, "y": 2700, "w": 390, "h": 844, "title": "Écran — Le Carnet (révision espacée)" },
-    { "file": "EcranDestination.dc.html", "x": 0, "y": 3820, "w": 390, "h": 1420, "title": "Écran — Destination (vue complète)" },
-    { "file": "DirectionB.dc.html", "x": 470, "y": 3820, "w": 720, "h": 540, "title": "Piste B — Néo-Atlas" },
-    { "file": "DirectionC.dc.html", "x": 1270, "y": 3820, "w": 720, "h": 540, "title": "Piste C — Nuit d'encre" }
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 960,
+      "h": 600,
+      "title": "Rihla — Couverture"
+    },
+    {
+      "file": "Logo.dc.html",
+      "x": 1040,
+      "y": 0,
+      "w": 960,
+      "h": 640,
+      "title": "Logo & icône d'app"
+    },
+    {
+      "file": "Fondations.dc.html",
+      "x": 0,
+      "y": 700,
+      "w": 960,
+      "h": 760,
+      "title": "Couleurs & typographie"
+    },
+    {
+      "file": "Composants.dc.html",
+      "x": 1040,
+      "y": 740,
+      "w": 960,
+      "h": 880,
+      "title": "Composants UI"
+    },
+    {
+      "file": "EcranCap.dc.html",
+      "x": 3290,
+      "y": 2700,
+      "w": 390,
+      "h": 1180,
+      "title": "Écran — Cap du voyage (1er lancement)"
+    },
+    {
+      "file": "EcranAccueil.dc.html",
+      "x": 0,
+      "y": 1720,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — Itinéraire"
+    },
+    {
+      "file": "EcranLecon.dc.html",
+      "x": 470,
+      "y": 1720,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — Leçon"
+    },
+    {
+      "file": "EcranPasseport.dc.html",
+      "x": 940,
+      "y": 1720,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — Passeport"
+    },
+    {
+      "file": "EcranArabe.dc.html",
+      "x": 1410,
+      "y": 1720,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — Accueil (AR/RTL)"
+    },
+    {
+      "file": "EcranDefi.dc.html",
+      "x": 1880,
+      "y": 1720,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — L'étape du jour"
+    },
+    {
+      "file": "EcranNuit.dc.html",
+      "x": 2820,
+      "y": 1720,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — Mode nuit « Nuit d'encre »"
+    },
+    {
+      "file": "EcranJeux.dc.html",
+      "x": 0,
+      "y": 2700,
+      "w": 390,
+      "h": 1040,
+      "title": "Écran — Jeu : Le Souk"
+    },
+    {
+      "file": "EcranDuel.dc.html",
+      "x": 470,
+      "y": 2700,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — Jeu : Le Duel (2 joueurs)"
+    },
+    {
+      "file": "EcranOreille.dc.html",
+      "x": 940,
+      "y": 2700,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — Jeu : L'Oreille"
+    },
+    {
+      "file": "EcranZellige.dc.html",
+      "x": 1410,
+      "y": 2700,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — Jeu : Zellige des paires"
+    },
+    {
+      "file": "EcranCaravane.dc.html",
+      "x": 1880,
+      "y": 2700,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — Jeu : La Caravane"
+    },
+    {
+      "file": "EcranCarnet.dc.html",
+      "x": 2350,
+      "y": 2700,
+      "w": 390,
+      "h": 844,
+      "title": "Écran — Le Carnet (révision espacée)"
+    },
+    {
+      "file": "EcranDestination.dc.html",
+      "x": 0,
+      "y": 3820,
+      "w": 390,
+      "h": 1700,
+      "title": "Écran — Destination (vue complète)"
+    },
+    {
+      "file": "DirectionB.dc.html",
+      "x": 470,
+      "y": 3820,
+      "w": 720,
+      "h": 540,
+      "title": "Piste B — Néo-Atlas"
+    },
+    {
+      "file": "DirectionC.dc.html",
+      "x": 1270,
+      "y": 3820,
+      "w": 720,
+      "h": 540,
+      "title": "Piste C — Nuit d'encre"
+    }
   ],
   "annotations": [
-    { "id": "note-piste", "x": 2350, "y": 1720, "w": 300, "text": "Piste retenue : « Carnet de voyage » — zellige, bleu Majorelle, terracotta, safran.\nJetons exacts dans la planche « Couleurs & typographie » ; le code de l'app reprend les mêmes variables CSS." },
-    { "id": "note-duel", "x": 2820, "y": 2700, "w": 300, "text": "Le Duel : téléphone posé à plat entre deux joueurs — la moitié haute est pivotée à 180°.\nPremier sur la bonne réponse = le point ; une erreur verrouille la manche (« Raté ! »)." },
-    { "id": "note-carnet", "x": 2820, "y": 3020, "w": 300, "text": "Le Carnet : révision espacée (Leitner, 5 rangs — 1/2/4/8/16 jours).\nChaque étape validée y verse ses mots ; carte dédiée sur l'Accueil (mots dus / à jour / vide)." },
-    { "id": "note-defi", "x": 2350, "y": 2020, "w": 300, "text": "L'étape du jour : 10 questions dans les 10 langues, même tirage pour tout le monde (graine datée).\nPremière réussite du jour : XP + la série de jours avance." },
-    { "id": "note-nuit", "x": 3290, "y": 1720, "w": 300, "text": "Mode nuit « Nuit d'encre » — la Piste C devenue réelle : mêmes jetons, rôles inversés (les -fonce deviennent des textes clairs, les -pale des fonds sombres), Majorelle éclairci.\nRéglable : Clair / Auto (suit le système) / Nuit." },
-    { "id": "note-alternatives", "x": 470, "y": 4420, "w": 300, "text": "Deux pistes alternatives, volontairement basse fidélité.\nSi tu préfères l'une d'elles, dis-le : je décline tout le thème et le CSS de l'app dans cette direction." }
+    {
+      "id": "note-piste",
+      "x": 2350,
+      "y": 1720,
+      "w": 300,
+      "text": "Piste retenue : « Carnet de voyage » — zellige, bleu Majorelle, terracotta, safran.\nJetons exacts dans la planche « Couleurs & typographie » ; le code de l'app reprend les mêmes variables CSS."
+    },
+    {
+      "id": "note-duel",
+      "x": 2820,
+      "y": 2700,
+      "w": 300,
+      "text": "Le Duel : téléphone posé à plat entre deux joueurs — la moitié haute est pivotée à 180°.\nPremier sur la bonne réponse = le point ; une erreur verrouille la manche (« Raté ! »)."
+    },
+    {
+      "id": "note-carnet",
+      "x": 2820,
+      "y": 3020,
+      "w": 300,
+      "text": "Le Carnet : révision espacée (Leitner, 5 rangs — 1/2/4/8/16 jours).\nChaque étape validée y verse ses mots ; carte dédiée sur l'Accueil (mots dus / à jour / vide)."
+    },
+    {
+      "id": "note-defi",
+      "x": 2350,
+      "y": 2020,
+      "w": 300,
+      "text": "L'étape du jour : 10 questions dans les 10 langues, même tirage pour tout le monde (graine datée).\nPremière réussite du jour : XP + la série de jours avance."
+    },
+    {
+      "id": "note-nuit",
+      "x": 3290,
+      "y": 1720,
+      "w": 300,
+      "text": "Mode nuit « Nuit d'encre » — la Piste C devenue réelle : mêmes jetons, rôles inversés (les -fonce deviennent des textes clairs, les -pale des fonds sombres), Majorelle éclairci.\nRéglable : Clair / Auto (suit le système) / Nuit."
+    },
+    {
+      "id": "note-alternatives",
+      "x": 470,
+      "y": 4420,
+      "w": 300,
+      "text": "Deux pistes alternatives, volontairement basse fidélité.\nSi tu préfères l'une d'elles, dis-le : je décline tout le thème et le CSS de l'app dans cette direction."
+    },
+    {
+      "id": "note-cap",
+      "x": 3290,
+      "y": 3920,
+      "w": 300,
+      "text": "Le Cap : au premier lancement, suivre la route d'Ibn Battuta OU épingler une langue.\nLe cap pilote « Reprendre » et l'onglet Apprendre ; une boussole le marque dans l'itinéraire. Changeable dans les Réglages."
+    }
   ],
-  "launch": { "view": "canvas" }
+  "launch": {
+    "view": "canvas"
+  }
 }

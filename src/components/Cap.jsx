@@ -14,7 +14,7 @@ export function Cap({ t, locale, capActuel, annulable = false, surChoisir, surFe
         <button
           type="button"
           onClick={surFermer}
-          aria-label={t.quitterLecon}
+          aria-label={t.fermer}
           style={{
             width: 44,
             height: 44,

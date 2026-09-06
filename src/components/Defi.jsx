@@ -69,7 +69,7 @@ export function Defi({ t, locale, source, surTerminer, surQuitter }) {
         <button
           type="button"
           onClick={surQuitter}
-          aria-label={t.quitterLecon}
+          aria-label={t.fermer}
           style={{
             width: 44,
             height: 44,
