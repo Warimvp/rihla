@@ -20,17 +20,19 @@ Tout ce qu'il faut copier-coller dans App Store Connect. Le `.ipa` signé est pr
 
 ## Description (FR)
 
-> En 1325, Ibn Battuta quittait Tanger pour le plus grand voyage de son siècle. Rihla (« le voyage ») te fait reprendre sa route : 9 langues, 9 destinations, un passeport à tamponner.
+> En 1325, Ibn Battuta quittait Tanger pour le plus grand voyage de son siècle. Rihla (« le voyage ») te fait reprendre sa route : 14 langues, 14 destinations, un passeport à tamponner.
 >
-> **10 LANGUES DU MONDE** — arabe, espagnol, italien, anglais, turc, persan, swahili, hindi, mandarin, japonais : de Grenade à Tokyo, chaque langue est une destination sur ta carte. Et tu choisis la langue de tes définitions : apprends l'anglais avec des sens en arabe, ou l'arabe avec des sens en français.
+> **14 LANGUES DU MONDE** — arabe, espagnol, portugais, italien, allemand, anglais, turc, russe, persan, swahili, hindi, mandarin, coréen, japonais : de Grenade à Tokyo, chaque langue est une destination sur ta carte. Et tu choisis la langue de tes définitions : apprends l'anglais avec des sens en arabe, ou l'arabe avec des sens en français.
 >
-> **DES LEÇONS COURTES** — cartes-mots avec prononciation, puis quiz. Valide tes 6 étapes et décroche le visa de la ville.
+> **TROIS NIVEAUX PAR DESTINATION** — Survie (les mots), Conversation (faire connaissance, se débrouiller) et Récits (à l'hôtel, chez le médecin, au téléphone). Cartes-mots avec prononciation, puis des exercices variés : compréhension, écoute pure, production, épellation. Valide tes 12 étapes et décroche le visa de la ville.
 >
 > **5 JEUX POUR RÉVISER** — le memory Zellige, le Souk chrono, la Caravane d'épellation, l'Oreille (compréhension orale) et le Duel à deux sur un seul téléphone.
 >
 > **L'ÉTAPE DU JOUR** — un défi quotidien qui mélange toutes les langues, le même pour tous les voyageurs.
 >
 > **LE CARNET** — la révision espacée : les mots reviennent juste avant que tu les oublies (1, 2, 4, 8, 16 jours).
+>
+> **TON RYTHME** — choisis ton cap (une langue précise ou la route d'Ibn Battuta), ton objectif quotidien, et un rappel à l'heure qui t'arrange. Sauvegarde ton voyage quand tu veux : il est à toi.
 >
 > **GRATUIT, POUR TOUJOURS** — pas de compte, pas de publicité, pas d'abonnement, aucune collecte de données. Tout fonctionne hors-ligne, en avion comme au fond du Rif.
 >
@@ -40,10 +42,10 @@ Tout ce qu'il faut copier-coller dans App Store Connect. Le `.ipa` signé est pr
 
 ## Description (AR)
 
-> سنة 1325 غادر ابن بطوطة طنجة في أعظم رحلة في قرنه. «رحلة» تعيدك إلى دربه: 9 لغات، 9 وجهات، وجواز سفر تملؤه الأختام.
+> سنة 1325 غادر ابن بطوطة طنجة في أعظم رحلة في قرنه. «رحلة» تعيدك إلى دربه: 14 لغة، 14 وجهة، وجواز سفر تملؤه الأختام.
 >
-> • 10 لغات من العالم: العربية، الإسبانية، الإيطالية، الإنجليزية، التركية، الفارسية، السواحلية، الهندية، الصينية، اليابانية — وتختار أنت لغة الشرح (تعلّم الإنجليزية بشرح عربي، أو العربية بشرح فرنسي).
-> • دروس قصيرة: بطاقات كلمات مع النطق، ثم اختبار. أكمل مراحلك واحصل على تأشيرة المدينة.
+> • 14 لغة من العالم: العربية، الإسبانية، البرتغالية، الإيطالية، الألمانية، الإنجليزية، التركية، الروسية، الفارسية، السواحلية، الهندية، الصينية، الكورية، اليابانية — وتختار أنت لغة الشرح (تعلّم الإنجليزية بشرح عربي، أو العربية بشرح فرنسي).
+> • ثلاثة مستويات لكل وجهة: البقاء، المحادثة، الحكايات. بطاقات كلمات مع النطق ثم تمارين متنوعة. أكمل 12 مرحلة واحصل على تأشيرة المدينة.
 > • 5 ألعاب للمراجعة، ومرحلة اليوم، ودفتر المراجعة المتباعدة.
 > • مجاني إلى الأبد: بلا حساب، بلا إعلانات، بلا جمع للبيانات — ويعمل بدون أنترنت.
 >
@@ -51,11 +53,11 @@ Tout ce qu'il faut copier-coller dans App Store Connect. Le `.ipa` signé est pr
 
 ## Mots-clés (100 c. max)
 
-`langues,apprendre,arabe,vocabulaire,espagnol,turc,japonais,voyage,gratuit,hors-ligne,quiz,maroc`
+`langues,apprendre,arabe,vocabulaire,espagnol,turc,japonais,russe,voyage,gratuit,hors-ligne,maroc`
 
 ## Nouveautés v1.0
 
-> Premier départ de Tanger : 10 langues (arabe compris), 480 mots, 5 jeux, l'étape du jour, le carnet de révision espacée, mode nuit, langue des définitions au choix, FR/AR.
+> Premier départ de Tanger : 14 langues, 1 344 mots et phrases sur 3 niveaux, 5 jeux, l'étape du jour, le carnet de révision espacée, l'objectif quotidien, le rappel, la sauvegarde du voyage, mode nuit, langue des définitions au choix, FR/AR.
 
 ## Questionnaire « Confidentialité de l'app »
 
@@ -64,8 +66,16 @@ Réponse unique : **« Données non collectées »** (Data Not Collected) — au
 ## Captures d'écran (obligatoires)
 
 - Taille requise : **6,9″ — 1320 × 2868 px** (iPhone 16/17 Pro Max ; le simulateur les produit à la bonne taille).
-- Jeu conseillé (5-6 captures, mode clair + 1-2 en nuit) : Itinéraire, une carte-mot, le Souk, le Passeport avec visas, le Duel, l'Accueil en mode nuit.
+- Jeu conseillé (5-6 captures, mode clair + 1-2 en nuit) : l'écran « Où va ta rihla ? », l'Itinéraire, une carte-mot, le Souk, le Passeport (semaine + visas), le Duel, l'Accueil en mode nuit.
 - L'iPad n'est pas obligatoire si l'app est déclarée iPhone uniquement.
+
+## ⚠️ Le jour où la publicité est activée
+
+La fiche ci-dessus promet « pas de publicité » et « Données non collectées ». Ces deux
+réponses deviennent FAUSSES dès qu'un fournisseur de pub est branché (`src/lib/pub.js`) :
+il faut alors refaire le questionnaire de confidentialité (identifiants + données d'usage),
+retirer la mention « pas de publicité » de la description FR et AR, et mettre à jour la
+page de confidentialité. Voir la note de stratégie « Monétiser Rihla ».
 
 ## Checklist de soumission
 
