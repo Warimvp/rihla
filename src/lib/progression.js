@@ -187,9 +187,16 @@ export function kmParcourus(progres, langues) {
   return Math.round(total)
 }
 
-// Prochaine étape à jouer : d'abord une destination entamée, sinon la première
+// Prochaine étape à jouer. Si un cap est choisi (id de langue), cette langue
+// passe devant tant qu'elle n'est pas terminée ; sinon (cap 'route', inconnu,
+// ou langue déjà finie) : d'abord une destination entamée, puis la première
 // non terminée sur la route.
-export function prochaineEtape(progres, langues) {
+export function prochaineEtape(progres, langues, cap = 'route') {
+  const choisie = cap !== 'route' ? langues.find((l) => l.id === cap) : null
+  if (choisie && !visaObtenu(progres, choisie)) {
+    const lecon = choisie.lecons.find((le) => !etapeValidee(progres, choisie.id, le.id))
+    if (lecon) return { langue: choisie, lecon }
+  }
   const entamee = langues.find((l) => {
     const n = etapesValidees(progres, l)
     return n > 0 && n < l.lecons.length

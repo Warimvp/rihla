@@ -127,6 +127,16 @@ const fr = {
     utilise: 'Nuit au caravansérail utilisée — série sauvée !',
   },
   sons: { titre: 'Sons et vibrations', oui: 'Activés', non: 'Coupés' },
+  cap: {
+    titre: 'Où va ta rihla ?',
+    sousTitre: 'Choisis la langue de ton voyage — tu pourras changer de cap à tout moment.',
+    route: 'Suivre la route d’Ibn Battuta',
+    routeDesc: 'Destination après destination, de Grenade à Tokyo',
+    ou: 'ou choisis ta destination',
+    reglage: 'Cap du voyage',
+    changer: 'Changer',
+    actuelRoute: 'La route d’Ibn Battuta',
+  },
   carnet: {
     titre: 'Le Carnet',
     aReviser: (n) => `${n} mot${n > 1 ? 's' : ''} à réviser`,
@@ -263,6 +273,16 @@ const ar = {
     utilise: 'استُخدمت ليلة الخان — نجت السلسلة!',
   },
   sons: { titre: 'الأصوات والاهتزاز', oui: 'مفعّلة', non: 'مقطوعة' },
+  cap: {
+    titre: 'إلى أين رحلتك؟',
+    sousTitre: 'اختر لغة رحلتك — يمكنك تغيير الوجهة متى شئت.',
+    route: 'اتباع طريق ابن بطوطة',
+    routeDesc: 'وجهة بعد وجهة، من غرناطة إلى طوكيو',
+    ou: 'أو اختر وجهتك',
+    reglage: 'وجهة الرحلة',
+    changer: 'غيّر',
+    actuelRoute: 'طريق ابن بطوطة',
+  },
   carnet: {
     titre: 'الدفتر',
     aReviser: (n) => `${n} كلمات للمراجعة`,

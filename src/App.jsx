@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { LANGUES, langueParId } from './data/langues.js'
+import { LANGUES, langueParId, nomLangue, nomVille } from './data/langues.js'
 import { defaultLocale, getDictionary, getDirection, locales } from './i18n.js'
 import {
   acheterGel,
@@ -16,6 +16,7 @@ import {
 } from './lib/progression.js'
 import { ajouterAuCarnet, reviserMot } from './lib/carnet.js'
 import { Accueil } from './components/Accueil.jsx'
+import { Cap } from './components/Cap.jsx'
 import { Apprendre } from './components/Apprendre.jsx'
 import { Lecon } from './components/Lecon.jsx'
 import { Passeport } from './components/Passeport.jsx'
@@ -46,6 +47,23 @@ const ecrireLocal = (cle, valeur) => {
     // Stockage indisponible (navigation privée…) : l'app fonctionne sans persistance.
   }
 }
+
+// Sans stockage, un choix ne survit pas au rechargement : inutile alors de
+// bloquer chaque lancement sur l'écran de cap — on suit la route par défaut.
+const stockageDispo = () => {
+  try {
+    localStorage.setItem('rihla.test', '1')
+    localStorage.removeItem('rihla.test')
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Le cap est soit 'route', soit l'id d'une langue du catalogue : une valeur
+// corrompue est ignorée, comme pour la locale et le thème.
+const capValide = (valeur) =>
+  valeur === 'route' || LANGUES.some((l) => l.id === valeur) ? valeur : null
 
 export default function App() {
   const [locale, setLocale] = useState(() => {
@@ -96,6 +114,10 @@ export default function App() {
   const [progres, setProgres] = useState(() => chargerProgres())
   const [onglet, setOnglet] = useState('carte')
   const [destinationId, setDestinationId] = useState(() => lireLocal('rihla.destination', LANGUES[0].id))
+  // Le cap : 'route' (suivre la route d'Ibn Battuta) ou l'id d'une langue.
+  // null = jamais choisi → l'écran de choix s'affiche une fois.
+  const [cap, setCap] = useState(() => capValide(lireLocal('rihla.cap', null)) ?? (stockageDispo() ? null : 'route'))
+  const [capOuvert, setCapOuvert] = useState(false)
   const [leconActive, setLeconActive] = useState(null)
   const [jeuActif, setJeuActif] = useState(null)
   const [defiActif, setDefiActif] = useState(false)
@@ -118,6 +140,16 @@ export default function App() {
     setOnglet('apprendre')
   }
 
+  const choisirCap = (valeur) => {
+    const change = valeur !== cap
+    setCap(valeur)
+    ecrireLocal('rihla.cap', valeur)
+    // Aligner la destination seulement sur un VRAI changement : reconfirmer le
+    // cap en place ne doit pas déplacer l'onglet Apprendre en cours de lecture.
+    if (change && valeur !== 'route') setDestinationId(valeur)
+    setCapOuvert(false)
+  }
+
   const ouvrirLecon = (langue, lecon) => {
     setDestinationId(langue.id)
     setLeconActive({ langueId: langue.id, leconId: lecon.id })
@@ -125,6 +157,21 @@ export default function App() {
 
   const effacer = () => {
     if (window.confirm(t.confirmEffacer)) majProgres(progresInitial())
+  }
+
+  if (cap === null || capOuvert) {
+    return (
+      <div className="app">
+        <Cap
+          t={t}
+          locale={locale}
+          capActuel={cap ?? 'route'}
+          annulable={capOuvert}
+          surChoisir={choisirCap}
+          surFermer={() => setCapOuvert(false)}
+        />
+      </div>
+    )
   }
 
   if (carnetActif) {
@@ -223,6 +270,7 @@ export default function App() {
           surLecon={ouvrirLecon}
           surDefi={() => setDefiActif(true)}
           surCarnet={() => setCarnetActif({ progresDepart: progres })}
+          cap={cap ?? 'route'}
         />
       ) : null}
       {onglet === 'apprendre' ? (
@@ -257,6 +305,12 @@ export default function App() {
           surSource={setSourceChoix}
           objectifJour={progres.objectifJour ?? 20}
           surObjectif={(objectif) => majProgres(reglerObjectif(progres, objectif))}
+          libelleCap={
+            cap && cap !== 'route' && langueParId(cap)
+              ? `${nomVille(langueParId(cap), locale)} · ${nomLangue(langueParId(cap), locale)}`
+              : t.cap.actuelRoute
+          }
+          surChangerCap={() => setCapOuvert(true)}
           surEffacer={effacer}
         />
       ) : null}

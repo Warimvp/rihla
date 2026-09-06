@@ -4,8 +4,8 @@ import { defiDuJour, etapesValidees, jourLocal, prochaineEtape, visaObtenu, xpDu
 import { AnneauProgres, ChipSerie, Pastille } from './Communs.jsx'
 import { CarnetIcone, ChevronAvant, Coche, Etoile8, FlecheAvant } from './Icones.jsx'
 
-export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi, surCarnet }) {
-  const suite = prochaineEtape(progres, LANGUES)
+export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi, surCarnet, cap = 'route' }) {
+  const suite = prochaineEtape(progres, LANGUES, cap)
   const aCommence = Object.keys(progres.etapes).length > 0
   const defiFait = defiDuJour(progres)
   const jour = jourLocal()

@@ -47,6 +47,9 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Carte « Le Carnet » sur l'Accueil : active si mots dus, sinon « À jour — reviens dans X j » (ou invite à valider une étape si vide).
 - Stockage : `progres.carnet` = `{ "langueId:motId": { boite, jour } }` — clés stables, ne pas renommer les ids de mots.
 
+## Cap du voyage (choix de la langue d'apprentissage)
+- `rihla.cap` (localStorage) : `'route'` (suivre la route d'Ibn Battuta, comportement historique) ou un id de langue. `null` = jamais choisi → l'écran `Cap.jsx` s'affiche une fois (non annulable) ; ensuite modifiable via Réglages → « Changer » (annulable). `prochaineEtape(progres, langues, cap)` fait passer la langue choisie devant tant qu'elle n'a pas son visa, puis retombe sur la logique route. Choisir une langue aligne aussi `rihla.destination` (onglet Apprendre).
+
 ## Contenu : niveaux
 - 9 leçons par destination : 6 de **niveau 1** (mots) + 3 de **niveau 2 « Conversation »** (phrases : rencontre, debrouille, exprimer). `LECONS_META[].niveau` regroupe l'affichage dans Apprendre (en-têtes N1/N2). Le visa exige les 9. Ajouter une leçon = 8 concepts communs (fr+ar) + 8 entrées × 10 langues, romanisation obligatoire pour fa/hi/zh/ja/ar — le garde-fou `langues.test.js` veille.
 

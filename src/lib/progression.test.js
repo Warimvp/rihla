@@ -262,6 +262,24 @@ describe('prochaineEtape', () => {
     expect(suite.langue.id).toBe('tr')
     expect(suite.lecon.id).toBe('enroute')
   })
+
+  it('le cap choisi passe devant tout, même une destination entamée ailleurs', () => {
+    const progres = enregistrerEtape(progresInitial(), 'es', 'salutations', 8, 8, '2026-08-30').progres
+    const suite = prochaineEtape(progres, LANGUES, 'ja')
+    expect(suite.langue.id).toBe('ja')
+    expect(suite.lecon.id).toBe('salutations')
+  })
+
+  it('cap terminé ou inconnu : retour au comportement de la route', () => {
+    let progres = progresInitial()
+    const tr = LANGUES.find((l) => l.id === 'tr')
+    for (const lecon of tr.lecons) {
+      progres = enregistrerEtape(progres, 'tr', lecon.id, 8, 8, '2026-08-30').progres
+    }
+    expect(prochaineEtape(progres, LANGUES, 'tr').langue.id).toBe(LANGUES[0].id)
+    expect(prochaineEtape(progresInitial(), LANGUES, 'xx').langue.id).toBe(LANGUES[0].id)
+    expect(prochaineEtape(progresInitial(), LANGUES, 'route').langue.id).toBe(LANGUES[0].id)
+  })
 })
 
 describe('stockage', () => {

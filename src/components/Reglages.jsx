@@ -3,11 +3,26 @@ import { OBJECTIFS_JOUR } from '../lib/progression.js'
 import { reglerSons, sonsActifs } from '../lib/sons.js'
 import { MarqueRihla } from './Logo.jsx'
 
-export function Reglages({ t, locale, surLocale, theme, surTheme, sourceChoix, surSource, objectifJour, surObjectif, surEffacer }) {
+export function Reglages({ t, locale, surLocale, theme, surTheme, sourceChoix, surSource, objectifJour, surObjectif, libelleCap, surChangerCap, surEffacer }) {
   const [sons, setSons] = useState(() => sonsActifs())
   return (
     <div className="vue">
       <h1>{t.onglets.reglages}</h1>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: 13 }}>
+        <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.cap.reglage}</span>
+          <span className="texte-2" style={{ fontSize: 12.5 }}>{libelleCap}</span>
+        </span>
+        <button
+          type="button"
+          className="bouton bouton--secondaire"
+          style={{ minHeight: 40, padding: '0 14px', fontSize: 13, flex: '0 0 auto' }}
+          onClick={surChangerCap}
+        >
+          {t.cap.changer}
+        </button>
+      </div>
 
       <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.langueInterface}</span>
