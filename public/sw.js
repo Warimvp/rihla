@@ -1,6 +1,6 @@
 // Service worker minimal : cache-first sur la même origine, pour que Rihla
 // fonctionne hors-ligne une fois visitée (les leçons sont 100 % locales).
-const CACHE = 'rihla-v1'
+const CACHE = 'rihla-v2'
 
 self.addEventListener('install', (e) => {
   // './' se résout contre l'emplacement du SW : racine ou sous-chemin, même code.

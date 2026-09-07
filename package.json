@@ -9,7 +9,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "ios:sync": "vite build && cap sync ios"
+    "ios:sync": "vite build && cap sync ios",
+    "version:build": "node scripts/version.mjs build",
+    "version:app": "node scripts/version.mjs app",
+    "ios:release": "vite build && cap sync ios && bash scripts/archiver.sh"
   },
   "dependencies": {
     "@capacitor/core": "^8.5.0",

@@ -1,14 +1,16 @@
 # Dossier App Store — Rihla
 
-Tout ce qu'il faut copier-coller dans App Store Connect. Le `.ipa` signé est produit par :
-`pnpm ios:sync` → `xcodebuild archive` → `xcodebuild -exportArchive` (voir `ios/ExportOptions.plist`) → `ios/build/export/App.ipa`.
+Tout ce qu'il faut copier-coller dans App Store Connect. Le `.ipa` signé est produit par
+`pnpm ios:release` (build web + `cap sync` + archive + export → `ios/build/export/App.ipa`).
+Pour une **mise à jour**, incrémenter d'abord le build, sinon Apple refuse le paquet (ITMS-4238) :
+`pnpm version:build && pnpm ios:release`.
 
 ## Fiche
 
 | Champ | Valeur |
 |---|---|
 | Nom | **Rihla — les langues du monde** (si « Rihla » seul est pris) |
-| Sous-titre (30 c. max) | `Apprends en voyageant. Gratuit.` |
+| Sous-titre (30 c. max) | `Apprends en voyageant. Gratuit` |
 | Bundle ID | `ma.rihla.app` |
 | SKU | `rihla-001` |
 | Catégorie | Éducation (secondaire : Voyages) |
@@ -84,8 +86,11 @@ page de confidentialité. Voir la note de stratégie « Monétiser Rihla ».
 3. [ ] Téléverser `ios/build/export/App.ipa` via l'app **Transporter** (Mac App Store, gratuite) ou Xcode → Organizer
 4. [ ] Ajouter les captures 6,9″
 5. [ ] Questionnaire confidentialité : « Données non collectées » · Classification 4+
-6. [ ] « Soumettre pour examen » (examen : ~24-48 h)
+6. [ ] Droits de contenu (App Information) : **non**, l'app ne contient pas de contenu tiers — textes et jeux originaux, polices sous licence libre OFL
+7. [ ] Statut de professionnel / **DSA** (Business → Trader Status) : à déclarer, sinon l'app est retirée des boutiques de l'UE
+8. [ ] Conformité à l'exportation : **rien à faire**, `ITSAppUsesNonExemptEncryption = false` est dans `ios/App/App/Info.plist`
+9. [ ] « Soumettre pour examen » (examen : ~24-48 h)
 
 ## Rejet possible & parade
 
-Ligne directrice **4.2 (minimum de fonctionnalité)** : certaines apps web-encapsulées sont refusées. Arguments Rihla : 100 % hors-ligne, jeux interactifs, progression locale, aucun contenu distant. Si rejet malgré tout : ajouter le retour haptique natif (plugin Capacitor Haptics) et resoumettre avec une note d'examen expliquant le fonctionnement hors-ligne.
+Ligne directrice **4.2 (minimum de fonctionnalité)** : certaines apps web-encapsulées sont refusées. Arguments Rihla : 100 % hors-ligne, jeux interactifs, progression locale, aucun contenu distant — le binaire ne fait **aucune** requête réseau (polices embarquées depuis le 7 septembre 2026, vérifié en dézippant le `.ipa`). Si rejet malgré tout : ajouter le retour haptique natif (plugin Capacitor Haptics) et resoumettre avec une note d'examen expliquant le fonctionnement hors-ligne.
