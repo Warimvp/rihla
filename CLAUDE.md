@@ -1,6 +1,6 @@
 # Rihla (رحلة) — les langues du monde, gratuites pour toujours
 
-App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 10 destinations sur la route d'Ibn Battuta (Grenade → Tokyo, dont Le Caire pour l'arabe), leçons = étapes, réussites = tampons dans un passeport. Cible Maroc : interface FR/AR + RTL.
+App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 14 destinations sur la route d'Ibn Battuta (Grenade → Tokyo, dont Le Caire pour l'arabe), leçons = étapes, réussites = tampons dans un passeport. Cible Maroc : interface FR/AR + RTL.
 
 ## Stack
 - Vite + React 18, **JS/JSX (pas de TS)**, CSS vanilla (`src/styles.css` — les variables CSS = jetons du thème).
@@ -38,7 +38,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
   - **La Caravane** : épeler 8 mots avec des tuiles-lettres (romanisation si écriture non latine, mots ≤ 10 caractères) ; 10 XP sans faute, 5 sinon. Rangées de lettres en `dir="ltr"` forcé même en AR.
   - **L'Oreille** : compréhension orale pure (aucun texte à lire, TTS obligatoire — carte désactivée si `peutParler()` est faux) ; 10 manches auto-avancées, 8 XP par bonne.
   - **Le Duel** : 2 joueurs sur le même téléphone, moitié haute pivotée à 180° (`.duel-moitie--haut`), premier sur la bonne réponse marque, une erreur verrouille la manche ; 8 manches, 30 XP forfaitaires.
-- **L'étape du jour** (`Defi.jsx` + `src/lib/defi.js`, carte safran sur l'Accueil) : 10 questions dans les 9 langues, tirage déterministe par date (graine = AAAAMMJJ, même défi pour tous). Première réussite du jour : score×4 XP (+10 si parfait) **et la série avance** (quel que soit le score — c'est un rituel, pas un examen ; idempotent si une étape a déjà compté le jour). Rejouer le même jour : 0 XP, meilleur score conservé (`enregistrerDefi`).
+- **L'étape du jour** (`Defi.jsx` + `src/lib/defi.js`, carte safran sur l'Accueil) : 10 questions dans les 14 langues, tirage déterministe par date (graine = AAAAMMJJ, même défi pour tous). Première réussite du jour : score×4 XP (+10 si parfait) **et la série avance** (quel que soit le score — c'est un rituel, pas un examen ; idempotent si une étape a déjà compté le jour). Rejouer le même jour : 0 XP, meilleur score conservé (`enregistrerDefi`).
 - Animations : `.anim-pop` / `.anim-secouer` (réponses), flip 3D `.tuile`, `EclatEtoiles` (pluie de khatams), tampon `tamponner` — toutes coupées par `prefers-reduced-motion`.
 
 ## Le Carnet — révision espacée (`src/lib/carnet.js`, `src/components/Carnet.jsx`)
