@@ -14,7 +14,7 @@ En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla*
 - **Sauvegarde de ton voyage** : copie ta progression en un bouton, restaure-la sur un autre appareil (rien n'est envoyé nulle part)
 - **Ta semaine** : 7 jours d'activité en un coup d'œil dans le passeport
 - **Ton cap, ton choix** : au premier lancement, « Où va ta rihla ? » — suis la route d'Ibn Battuta ou épingle la langue de ton choix ; « Reprendre » et l'onglet Apprendre suivent ton cap (changeable dans les Réglages)
-- **Trois niveaux par destination** : Niveau 1 · Survie (6 étapes de vocabulaire), Niveau 2 · Conversation (faire connaissance, se débrouiller, exprimer) et **Niveau 3 · Récits** (à l'hôtel, chez le médecin, au téléphone) — 96 mots et phrases par langue, 1 344 au total
+- **Cinq niveaux par destination** : Niveau 1 · Survie (8 étapes de vocabulaire), Niveau 2 · Conversation (faire connaissance, se débrouiller, exprimer, le temps qu'il fait, l'heure), Niveau 3 · Récits (à l'hôtel, chez le médecin, au téléphone, prendre la route), Niveau 4 · Le quotidien (la ville, la maison, le corps, travail et études) et **Niveau 5 · Nuances** (raconter hier, parler de demain, donner son avis) — 192 mots et phrases par langue, 2 688 au total
 - **Leçons à exercices variés** : compréhension, écoute pure, production et épellation à tuiles s'enchaînent dans chaque étape
 - **Objectif du jour** (10/20/30 XP) avec barre de progression, et le **Caravansérail** : réserve une nuit (150 XP) pour couvrir un jour manqué — ta série survit
 - **Rappel quotidien** : une notification locale à l'heure de ton choix (app installée iPhone/Android)
@@ -60,7 +60,7 @@ Google Play : compte développeur à 25 $ **une seule fois** — ou distribution
 
 ```
 src/
-  data/langues.js      # 9 langues × 2 leçons × 8 mots (sens FR/AR partagés par index)
+  data/langues.js      # 14 langues × 24 leçons × 8 mots (sens FR/AR partagés par index)
   lib/progression.js   # XP, série de jours, visas, km — pur + localStorage injectable
   lib/quiz.js          # quiz déterministe (rng injectable) : compréhension ↔ production
   lib/tts.js           # prononciation via la synthèse vocale du système (gratuite, hors-ligne)

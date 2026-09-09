@@ -56,9 +56,10 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - **Semaine d'activité** au Passeport : 7 barres depuis `progres.xpJours` (menthe = objectif atteint, safran sinon).
 - **Partager** (Web Share API, repli presse-papiers) et **Proposer une amélioration** (issues GitHub) dans les Réglages.
 
-## Contenu : 14 destinations × 12 leçons (1 344 mots)
+## Contenu : 14 destinations × 24 leçons (2 688 mots)
 - Route ordonnée par km : es 400 · **pt 700** · it 2100 · **de 2600** · en 2900 · tr 3200 · ar 3600 · **ru 5200** · fa 5400 · sw 6600 · hi 7900 · zh 11300 · **ko 12500** · ja 13400.
-- 12 leçons par destination : 6 de **niveau 1** (mots), 3 de **niveau 2 « Conversation »** (rencontre, debrouille, exprimer), 3 de **niveau 3 « Récits »** (hotel, sante, telephone). `LECONS_META[].niveau` groupe l'affichage (en-têtes N1/N2/N3). Le visa exige les 12.
+- 24 leçons par destination sur **5 niveaux** : N1 « Survie » (salutations, enroute, atable, nombres, marche, jours, couleurs, famille), N2 « Conversation » (rencontre, debrouille, exprimer, meteo, heure), N3 « Récits » (hotel, sante, telephone, transport), N4 « Le quotidien » (ville, maison, corps, travail), N5 « Nuances » (souvenirs, projets, opinions). `LECONS_META[].niveau` groupe l'affichage ; le libellé se lit `t[\`niveau${niveau}\`]` dans `Apprendre.jsx` — un niveau de plus = une clé `niveauN` FR **et** AR dans `i18n.js`. Le visa exige les 24.
+- Les mots sont **uniques dans une langue** (id ET texte cible) et les sens FR/AR uniques entre leçons : deux tuiles jumelles au Zellige ou deux bonnes réponses au quiz seraient un bug. `langues.test.js` le vérifie.
 - Ajouter une leçon = 8 concepts communs (fr+ar) + 8 entrées × 14 langues, romanisation obligatoire pour fa/hi/zh/ja/ar/**ru**/**ko** — le garde-fou `langues.test.js` veille.
 - ⚠️ Insertion d'une langue dans `BRUTES` : ancrer sur la fin COMPLÈTE d'un bloc (dernier mot + `],` + `},` mots + `},` langue). S'arrêter au `},` de `mots` insère la langue DANS l'objet précédent (erreur de syntaxe silencieuse jusqu'au parse).
 

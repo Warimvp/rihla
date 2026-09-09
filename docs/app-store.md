@@ -26,7 +26,7 @@ Pour une **mise à jour**, incrémenter d'abord le build, sinon Apple refuse le 
 >
 > **14 LANGUES DU MONDE** — arabe, espagnol, portugais, italien, allemand, anglais, turc, russe, persan, swahili, hindi, mandarin, coréen, japonais : de Grenade à Tokyo, chaque langue est une destination sur ta carte. Et tu choisis la langue de tes définitions : apprends l'anglais avec des sens en arabe, ou l'arabe avec des sens en français.
 >
-> **TROIS NIVEAUX PAR DESTINATION** — Survie (les mots), Conversation (faire connaissance, se débrouiller) et Récits (à l'hôtel, chez le médecin, au téléphone). Cartes-mots avec prononciation, puis des exercices variés : compréhension, écoute pure, production, épellation. Valide tes 12 étapes et décroche le visa de la ville.
+> **CINQ NIVEAUX PAR DESTINATION** — Survie (les mots), Conversation (faire connaissance, se débrouiller, le temps qu'il fait), Récits (à l'hôtel, chez le médecin, prendre la route), Le quotidien (la ville, la maison, le corps, le travail) et Nuances (raconter hier, parler de demain, donner son avis). Cartes-mots avec prononciation, puis des exercices variés : compréhension, écoute pure, production, épellation. Valide tes 24 étapes et décroche le visa de la ville.
 >
 > **5 JEUX POUR RÉVISER** — le memory Zellige, le Souk chrono, la Caravane d'épellation, l'Oreille (compréhension orale) et le Duel à deux sur un seul téléphone.
 >
@@ -47,7 +47,7 @@ Pour une **mise à jour**, incrémenter d'abord le build, sinon Apple refuse le 
 > سنة 1325 غادر ابن بطوطة طنجة في أعظم رحلة في قرنه. «رحلة» تعيدك إلى دربه: 14 لغة، 14 وجهة، وجواز سفر تملؤه الأختام.
 >
 > • 14 لغة من العالم: العربية، الإسبانية، البرتغالية، الإيطالية، الألمانية، الإنجليزية، التركية، الروسية، الفارسية، السواحلية، الهندية، الصينية، الكورية، اليابانية — وتختار أنت لغة الشرح (تعلّم الإنجليزية بشرح عربي، أو العربية بشرح فرنسي).
-> • ثلاثة مستويات لكل وجهة: البقاء، المحادثة، الحكايات. بطاقات كلمات مع النطق ثم تمارين متنوعة. أكمل 12 مرحلة واحصل على تأشيرة المدينة.
+> • خمسة مستويات لكل وجهة: البقاء، المحادثة، الحكايات، الحياة اليومية، الفروق. بطاقات كلمات مع النطق ثم تمارين متنوعة. أكمل 24 مرحلة واحصل على تأشيرة المدينة.
 > • 5 ألعاب للمراجعة، ومرحلة اليوم، ودفتر المراجعة المتباعدة.
 > • مجاني إلى الأبد: بلا حساب، بلا إعلانات، بلا جمع للبيانات — ويعمل بدون أنترنت.
 >
@@ -59,7 +59,7 @@ Pour une **mise à jour**, incrémenter d'abord le build, sinon Apple refuse le 
 
 ## Nouveautés v1.0
 
-> Premier départ de Tanger : 14 langues, 1 344 mots et phrases sur 3 niveaux, 5 jeux, l'étape du jour, le carnet de révision espacée, l'objectif quotidien, le rappel, la sauvegarde du voyage, mode nuit, langue des définitions au choix, FR/AR.
+> Premier départ de Tanger : 14 langues, 2 688 mots et phrases sur 5 niveaux, 5 jeux, l'étape du jour, le carnet de révision espacée, l'objectif quotidien, le rappel, la sauvegarde du voyage, mode nuit, langue des définitions au choix, FR/AR.
 
 ## Questionnaire « Confidentialité de l'app »
 
