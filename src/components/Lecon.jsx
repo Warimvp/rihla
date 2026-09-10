@@ -9,6 +9,7 @@ import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { TamponVisa } from './TamponVisa.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
+import { VisuelConcept, aUnVisuel, visuelDeQuiz } from '../lib/visuels.jsx'
 
 export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTerminer, surSuivante, surQuitter }) {
   const [phase, setPhase] = useState('cartes')
@@ -20,7 +21,13 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   // La valeur au démarrage fait foi : réévaluer ce memo quand les voix arrivent
   // remélangerait les questions sous les doigts de l'apprenant.
   const questions = useMemo(
-    () => construireQuiz(lecon.mots, Math.random, { audio: peutParler(langue.tts) }),
+    () =>
+      construireQuiz(lecon.mots, Math.random, {
+        audio: peutParler(langue.tts),
+        // Injectée, jamais importée par le moteur : seuls les visuels sans
+        // ambiguïté (couleurs, nombres, jours) deviennent des questions.
+        aVisuel: (mot) => visuelDeQuiz(mot.id),
+      }),
     [lecon, tour]
   )
   const [iQuestion, setIQuestion] = useState(0)
@@ -178,23 +185,31 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   // <bdi>, sinon sa ponctuation suit la direction de la phrase. La cible
   // d'épellation est la romanisation quand l'écriture n'est pas latine — pas
   // de `lang` dans ce cas.
+  // Les types dont les options sont des mots cibles (et non des sens).
+  const optionsEnCible = question?.type === 'produire' || question?.type === 'voir'
   const corrigeTexte = question
     ? question.type === 'epeler'
       ? <MotCible texte={question.cible} langue={question.mot.r ? null : langue} />
-      : question.type === 'produire'
-        ? <MotCible texte={bonne?.t} langue={langue} />
-        : bonne
-          ? sensPour(bonne, source, langue.id)
-          : ''
+      : question.type === 'lire'
+        ? <Romanisation texte={bonne?.r} />
+        : optionsEnCible
+          ? <MotCible texte={bonne?.t} langue={langue} />
+          : bonne
+            ? sensPour(bonne, source, langue.id)
+            : ''
     : ''
   const promptTexte = question
     ? question.type === 'comprendre'
       ? t.promptComprendre
-      : question.type === 'ecouter'
-        ? t.jeux.ecouteSens
-        : question.type === 'epeler'
-          ? t.jeux.epelle
-          : t.promptProduire(nomLangue(langue, locale))
+      : question.type === 'lire'
+        ? t.promptLire
+        : question.type === 'voir'
+          ? t.promptVoir
+          : question.type === 'ecouter'
+            ? t.jeux.ecouteSens
+            : question.type === 'epeler'
+              ? t.jeux.epelle
+              : t.promptProduire(nomLangue(langue, locale))
     : ''
   const utilisees = new Set(placees.map((p) => p.cle))
   let curseurFentes = 0
@@ -271,6 +286,8 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                 {mots[iCarte].r ? <Romanisation balise="div" texte={mots[iCarte].r} /> : null}
               </div>
               <div className="carte-mot__face carte-mot__face--verso fond-zellige" style={{ borderRadius: 'var(--r-carte)' }}>
+                {/* Décoratif : le sens est écrit juste en dessous. */}
+                {aUnVisuel(mots[iCarte].id) ? <VisuelConcept id={mots[iCarte].id} taille={64} /> : null}
                 <div className="mot-cible" style={{ color: 'var(--sur-majorelle)', fontSize: 27 }}>
                   {sensPour(mots[iCarte], source, langue.id)}
                 </div>
@@ -315,6 +332,16 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                 <MotCible balise="div" className="mot-cible" texte={question.mot.t} langue={langue} />
                 {question.mot.r ? <Romanisation balise="div" texte={question.mot.r} /> : null}
               </>
+            ) : question.type === 'lire' ? (
+              // L'écriture seule : ni romanisation ni haut-parleur, c'est
+              // justement ce qu'on demande de lire.
+              <MotCible balise="div" className="mot-cible" texte={question.mot.t} langue={langue} />
+            ) : question.type === 'voir' ? (
+              // Pour un lecteur d'écran, l'image porte le sens : la question
+              // redevient une production, jamais une énigme.
+              <div className="visuel-quiz">
+                <VisuelConcept id={question.mot.id} taille={128} etiquette={sensPour(question.mot, source, langue.id)} />
+              </div>
             ) : question.type === 'ecouter' ? (
               <>
                 <button
@@ -426,10 +453,14 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                 return (
                   <button key={option.id} type="button" className={classe} aria-disabled={revele} onClick={() => choisir(option)}>
                     <span>
-                      {question.type === 'produire' ? <MotCible texte={option.t} langue={langue} /> : sensPour(option, source, langue.id)}
-                      {question.type === 'produire' && option.r ? (
-                        <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} />
-                      ) : null}
+                      {question.type === 'lire' ? (
+                        <Romanisation texte={option.r} />
+                      ) : optionsEnCible ? (
+                        <MotCible texte={option.t} langue={langue} />
+                      ) : (
+                        sensPour(option, source, langue.id)
+                      )}
+                      {optionsEnCible && option.r ? <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} /> : null}
                     </span>
                     {estCorrecte ? <Coche taille={20} trait={2.4} /> : null}
                     {estFausse ? <Croix taille={20} trait={2.4} /> : null}

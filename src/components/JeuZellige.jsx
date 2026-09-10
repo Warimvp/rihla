@@ -7,6 +7,7 @@ import { parler } from '../lib/tts.js'
 import { Croix, Etoile8 } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { MotCible } from './MotCible.jsx'
+import { VisuelConcept, aUnVisuel } from '../lib/visuels.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_PAIRES = 6
@@ -19,7 +20,15 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
     () =>
       melanger([
         ...paires.map((mot) => ({ motId: mot.id, face: 't', texte: mot.t, tts: true })),
-        ...paires.map((mot) => ({ motId: mot.id, face: 'sens', texte: sensPour(mot, source, langue.id), tts: false })),
+        // La face « sens » montre l'image du concept quand il en a une : la
+        // paire devient image ↔ mot, sans traduction. Le texte reste l'étiquette.
+        ...paires.map((mot) => ({
+          motId: mot.id,
+          face: 'sens',
+          texte: sensPour(mot, source, langue.id),
+          visuel: aUnVisuel(mot.id) ? mot.id : null,
+          tts: false,
+        })),
       ]).map((tuile, idx) => ({ ...tuile, idx })),
     [paires, source, langue]
   )
@@ -140,7 +149,13 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
                   <Etoile8 taille={30} couleur="var(--majorelle-pale)" />
                 </span>
                 <span className="tuile__face tuile__face--mot">
-                  {tuile.face === 't' ? <MotCible texte={tuile.texte} langue={langue} /> : tuile.texte}
+                  {tuile.face === 't' ? (
+                    <MotCible texte={tuile.texte} langue={langue} />
+                  ) : tuile.visuel ? (
+                    <VisuelConcept id={tuile.visuel} taille={44} style={{ color: 'var(--majorelle)' }} />
+                  ) : (
+                    tuile.texte
+                  )}
                 </span>
               </span>
             </button>

@@ -576,6 +576,20 @@ p {
   color: var(--encre-2);
 }
 
+/* ————— Visuels de concepts (src/lib/visuels.jsx) ————— */
+
+.visuel-quiz {
+  display: flex;
+  justify-content: center;
+  color: var(--majorelle);
+}
+
+/* La bande de la semaine se lit dans le sens de la page : lundi à droite
+   sous interface arabe. Un SVG ne se retourne pas tout seul avec `dir`. */
+[dir='rtl'] .visuel-semaine {
+  transform: scaleX(-1);
+}
+
 /* ————— Leçon : quiz ————— */
 
 .option {

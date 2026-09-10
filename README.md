@@ -6,7 +6,8 @@ En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla*
 
 - 14 destinations : Grenade (espagnol), **Lisbonne (portugais)**, Venise (italien), **Vienne (allemand)**, Londres (anglais), Istanbul (turc), Le Caire (arabe), **Saraï (russe)**, Ispahan (persan), Mombasa (swahili), Delhi (hindi), Pékin (mandarin), **Séoul (coréen)**, Tokyo (japonais)
 - **Langue des définitions au choix** (Réglages) : apprends l'anglais avec des sens en arabe, ou l'arabe avec des sens en français — indépendamment de la langue de l'interface
-- Leçons en deux temps : cartes-mots (avec prononciation) puis quiz
+- Leçons en deux temps : cartes-mots (avec prononciation) puis quiz — six exercices : comprendre, écouter, produire, épeler, lire l'écriture, et **voir** (retrouver le mot d'après une image, sans passer par la traduction)
+- **Des images pour apprendre sans traduire** : couleurs, nombres et jours engendrés par le code ; pictogrammes de la ville, du corps et de la maison sur les cartes-mots et dans le Zellige
 - Cinq jeux de révision par destination : **Zellige des paires** (memory), **Le Souk** (45 s chrono, combos), **La Caravane** (épellation, l'étoile avance sur la piste), **L'Oreille** (compréhension orale pure) et **Le Duel** (2 joueurs face à face sur un seul téléphone)
 - **L'étape du jour** : un défi quotidien qui mélange les 14 langues — même tirage pour tout le monde, et il fait avancer ta série de jours de voyage
 - **Le Carnet** : la révision espacée du voyageur (Leitner, 6 rangs — 1/3/7/16/35/90 jours, les mots fragiles d'abord) : chaque étape validée y verse ses mots, et ils reviennent juste avant que tu les oublies
