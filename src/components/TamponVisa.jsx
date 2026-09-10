@@ -1,8 +1,10 @@
 import { nomLangue, nomVille } from '../data/langues.js'
+import { VignetteVille } from './Vignettes.jsx'
 
-// Tampon de visa : trois formes et trois encres qui tournent, léger désaxage
-// comme un vrai coup de tampon. Couleurs en jetons CSS (via style, pas en
-// attributs SVG) pour rester lisibles en mode nuit.
+// Tampon de visa : la vignette de la ville au centre, trois formes et trois
+// encres qui tournent à des cadences différentes, léger désaxage comme un
+// vrai coup de tampon. Couleurs en jetons CSS (via style, pas en attributs
+// SVG) pour rester lisibles en mode nuit. Quatorze tampons, quatorze dessins.
 
 const ENCRES = [
   { trait: 'var(--terracotta)', texte: 'var(--terracotta-fonce)' },
@@ -11,20 +13,13 @@ const ENCRES = [
 ]
 
 const ROTATIONS = [-5, 4, -3, 5, -4, 3]
-
-function Etoile8({ couleur, x, y, cote }) {
-  const centre = { x: x + cote / 2, y: y + cote / 2 }
-  return (
-    <g style={{ fill: couleur }}>
-      <rect x={x} y={y} width={cote} height={cote} />
-      <rect x={x} y={y} width={cote} height={cote} transform={`rotate(45 ${centre.x} ${centre.y})`} />
-    </g>
-  )
-}
+const FORMES = 3
 
 export function TamponVisa({ langue, index = 0, locale = 'fr', anime = false }) {
   const encre = ENCRES[index % ENCRES.length]
-  const forme = index % 3
+  // La forme change quand les encres ont fait un tour : `index % 3` pour les
+  // deux donnait la même période, donc trois combinaisons pour quatorze villes.
+  const forme = Math.floor(index / ENCRES.length) % FORMES
   const rotation = ROTATIONS[index % ROTATIONS.length]
   const ville = nomVille(langue, locale).toUpperCase()
   const nom = nomLangue(langue, locale).toUpperCase()
@@ -59,7 +54,7 @@ export function TamponVisa({ langue, index = 0, locale = 'fr', anime = false }) 
             style={styleTrait}
           />
         )}
-        <Etoile8 couleur={encre.trait} x={41.5} y={31} cote={13} />
+        <VignetteVille langue={langue} x={30} y={16} taille={36} trait={3} style={{ color: encre.trait }} />
         <text
           x="48"
           y="64"

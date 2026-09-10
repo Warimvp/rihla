@@ -4,6 +4,7 @@ import { cleEtape } from '../lib/progression.js'
 import { Pastille } from './Communs.jsx'
 import { ChevronAvant, Coche } from './Icones.jsx'
 import { SectionJeux } from './Jeux.jsx'
+import { VignetteVille } from './Vignettes.jsx'
 
 export function Apprendre({ t, locale, progres, langue, surLecon, surJeu }) {
   return (
@@ -18,9 +19,13 @@ export function Apprendre({ t, locale, progres, langue, surLecon, surJeu }) {
         </div>
       </header>
 
-      <div className="carte" style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <span className="surtitre">{t.histoireIci}</span>
-        <p style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--encre-2)' }}>{histoire(langue, locale)}</p>
+      <div className="carte" style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: '1 1 auto' }}>
+          <span className="surtitre">{t.histoireIci}</span>
+          <p style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--encre-2)' }}>{histoire(langue, locale)}</p>
+        </div>
+        {/* Décorative : la ville est nommée dans l'en-tête juste au-dessus. */}
+        <VignetteVille langue={langue} taille={60} style={{ color: 'var(--encre-2)', flex: '0 0 auto' }} />
       </div>
 
       <h2>{t.etapesVoyage}</h2>
