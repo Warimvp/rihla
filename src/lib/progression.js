@@ -13,6 +13,10 @@ export const progresInitial = () => ({
   xpJours: {},
   objectifJour: 20,
   gels: 0,
+  // Figés au moment où ils sont acquis (voir figerAvancement) : un tampon
+  // décroché et des kilomètres parcourus ne se reprennent pas.
+  visas: {},
+  parcours: {},
 })
 
 const stockageParDefaut = () => (typeof localStorage === 'undefined' ? null : localStorage)
@@ -180,14 +184,49 @@ export const etapeValidee = (progres, langueId, leconId) =>
 export const etapesValidees = (progres, langue) =>
   langue.lecons.filter((lecon) => etapeValidee(progres, langue.id, lecon.id)).length
 
-export const visaObtenu = (progres, langue) => etapesValidees(progres, langue) === langue.lecons.length
+const fractionValidee = (progres, langue) =>
+  langue.lecons.length ? etapesValidees(progres, langue) / langue.lecons.length : 0
+
+// Le visa et l'avancement d'une destination sont FIGÉS au moment où ils sont
+// acquis, jamais recalculés : ajouter des leçons à une destination ne doit ni
+// révoquer un tampon déjà décroché, ni amputer les kilomètres parcourus.
+// `visas[langueId]` date le tampon ; `parcours[langueId]` garde la meilleure
+// fraction d'étapes atteinte. À appeler après chaque étape enregistrée.
+export function figerAvancement(progres, langue, jour) {
+  const fraction = fractionValidee(progres, langue)
+  const parcours = { ...(progres.parcours ?? {}) }
+  if (fraction > (parcours[langue.id] ?? 0)) parcours[langue.id] = fraction
+  const visas = { ...(progres.visas ?? {}) }
+  if (fraction === 1 && !visas[langue.id]) visas[langue.id] = { jour }
+  return { ...progres, visas, parcours }
+}
+
+// À l'ouverture : un voyage enregistré avant l'historisation reçoit ses visas
+// et son avancement d'après les étapes déjà validées — datés de la dernière
+// étape de la destination, pas d'aujourd'hui. Idempotent.
+export function figerAvancements(progres, langues, jour = jourLocal()) {
+  return langues.reduce((p, langue) => {
+    const jours = langue.lecons
+      .map((lecon) => p.etapes[cleEtape(langue.id, lecon.id)]?.jour)
+      .filter(Boolean)
+      .sort()
+    return figerAvancement(p, langue, jours[jours.length - 1] ?? jour)
+  }, progres)
+}
+
+export const visaObtenu = (progres, langue) =>
+  Boolean(progres.visas?.[langue.id]) || (langue.lecons.length > 0 && fractionValidee(progres, langue) === 1)
 
 export const nbVisas = (progres, langues) => langues.filter((l) => visaObtenu(progres, l)).length
 
-// Km « parcourus » : chaque destination compte au prorata de ses étapes validées.
+// Km « parcourus » : chaque destination compte au prorata de ses étapes
+// validées — ou de la meilleure fraction jamais atteinte si elle est plus
+// haute (une destination terminée reste parcourue en entier, quoi qu'on
+// lui ajoute ensuite).
 export function kmParcourus(progres, langues) {
   const total = langues.reduce(
-    (somme, langue) => somme + (langue.km * etapesValidees(progres, langue)) / langue.lecons.length,
+    (somme, langue) =>
+      somme + langue.km * Math.max(fractionValidee(progres, langue), progres.parcours?.[langue.id] ?? 0),
     0
   )
   return Math.round(total)

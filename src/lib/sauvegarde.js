@@ -47,6 +47,8 @@ export function importerProgres(texte) {
       carnet: estObjet(p.carnet) ? p.carnet : {},
       xpJours: estObjet(p.xpJours) ? p.xpJours : {},
       gels: typeof p.gels === 'number' && p.gels >= 0 ? p.gels : 0,
+      visas: estObjet(p.visas) ? p.visas : {},
+      parcours: estObjet(p.parcours) ? p.parcours : {},
     },
   }
 }

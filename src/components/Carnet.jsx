@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { sensPour } from '../i18n.js'
 import { LANGUES, nomLangue } from '../data/langues.js'
 import { INTERVALLES, XP_PAR_MOT, construireRevision, motsDus, prochaineBoite } from '../lib/carnet.js'
@@ -21,9 +21,15 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
   const [choix, setChoix] = useState(null)
   const [bonnes, setBonnes] = useState(0)
   const [fin, setFin] = useState(null)
+  // Le focus suit la question (le bouton « Continuer » disparaît à chaque avancée).
+  const invite = useRef(null)
 
   const total = session.length
   const question = session[iQuestion]
+
+  useEffect(() => {
+    invite.current?.focus()
+  }, [iQuestion])
 
   const choisir = (option) => {
     if (choix || !question) return
@@ -125,7 +131,7 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
         )}
       </div>
 
-      <p style={{ fontSize: 15, fontWeight: 500 }}>
+      <p ref={invite} tabIndex={-1} style={{ fontSize: 15, fontWeight: 500, outline: 'none' }}>
         {question.type === 'comprendre' ? t.promptComprendre : t.promptProduire(nomLangue(question.langue, locale))}
       </p>
 
@@ -139,7 +145,7 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
               ? 'option option--fausse anim-secouer'
               : 'option'
           return (
-            <button key={option.id} type="button" className={classe} disabled={aRepondu} onClick={() => choisir(option)}>
+            <button key={option.id} type="button" className={classe} aria-disabled={aRepondu} onClick={() => choisir(option)}>
               <span>
                 {question.type === 'comprendre' ? sensPour(option, source, question.langue.id) : <MotCible texte={option.t} langue={question.langue} />}
                 {question.type === 'produire' && option.r ? (
@@ -154,9 +160,15 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
       </div>
 
       <div style={{ flex: '1 1 auto' }}></div>
-      {aRepondu ? (
-        <>
-          <div className={`bandeau-reponse ${aReussi ? 'bandeau-reponse--bonne' : 'bandeau-reponse--mauvaise'}`}>
+      {/* Toujours monté, même vide : un lecteur d'écran n'annonce un
+          role="status" que si le nœud existait AVANT que son texte change. */}
+      <div
+        role="status"
+        aria-live="polite"
+        className={aRepondu ? `bandeau-reponse ${aReussi ? 'bandeau-reponse--bonne' : 'bandeau-reponse--mauvaise'}` : 'lecteur-seul'}
+      >
+        {aRepondu ? (
+          <>
             <span
               style={{
                 width: 30,
@@ -187,11 +199,13 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
                     )}
               </span>
             </span>
-          </div>
-          <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={continuer}>
-            {t.continuer}
-          </button>
-        </>
+          </>
+        ) : null}
+      </div>
+      {aRepondu ? (
+        <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={continuer}>
+          {t.continuer}
+        </button>
       ) : null}
     </div>
   )

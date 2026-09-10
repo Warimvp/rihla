@@ -7,6 +7,8 @@ import {
   defiDuJour,
   enregistrerDefi,
   enregistrerEtape,
+  figerAvancement,
+  figerAvancements,
   majSerieAvecGels,
   offrirGel,
   reglerObjectif,
@@ -259,6 +261,58 @@ describe('visas et kilomètres', () => {
     const es = LANGUES.find((l) => l.id === 'es')
     const progres = enregistrerEtape(progresInitial(), 'es', es.lecons[0].id, 8, 8, '2026-08-30').progres
     expect(kmParcourus(progres, LANGUES)).toBe(Math.round(es.km / es.lecons.length))
+  })
+
+  // Le passage de 12 à 24 leçons a révoqué en silence tous les visas décrochés
+  // et amputé les km : plus jamais. Une fois figé, l'acquis ne se reprend pas.
+  it('garde le visa et les km quand la destination gagne des leçons', () => {
+    const tr = LANGUES.find((l) => l.id === 'tr')
+    let progres = progresInitial()
+    for (const lecon of tr.lecons) {
+      progres = enregistrerEtape(progres, 'tr', lecon.id, 8, 8, '2026-08-30').progres
+    }
+    progres = figerAvancement(progres, tr, '2026-08-30')
+    expect(progres.visas.tr).toEqual({ jour: '2026-08-30' })
+    expect(progres.parcours.tr).toBe(1)
+
+    const trEtendu = { ...tr, lecons: [...tr.lecons, { id: 'nouvelle', mots: [] }] }
+    expect(visaObtenu(progres, trEtendu)).toBe(true)
+    expect(kmParcourus(progres, [trEtendu])).toBe(tr.km)
+
+    // La même donnée sans historisation perdrait les deux.
+    const oublie = { ...progres, visas: {}, parcours: {} }
+    expect(visaObtenu(oublie, trEtendu)).toBe(false)
+    expect(kmParcourus(oublie, [trEtendu])).toBeLessThan(tr.km)
+  })
+
+  it('borne les km à la meilleure fraction atteinte, sans jamais les gonfler', () => {
+    const es = LANGUES.find((l) => l.id === 'es')
+    let progres = progresInitial()
+    for (const lecon of es.lecons.slice(0, 12)) {
+      progres = enregistrerEtape(progres, 'es', lecon.id, 8, 8, '2026-08-30').progres
+    }
+    progres = figerAvancement(progres, es, '2026-08-30')
+    expect(progres.parcours.es).toBe(0.5)
+    const esEtendu = { ...es, lecons: [...es.lecons, ...es.lecons.map((l) => ({ ...l, id: `${l.id}-bis` }))] }
+    // Étendue à 48 leçons, la fraction courante tombe à 0,25 : les km restent à la moitié.
+    expect(kmParcourus(progres, [esEtendu])).toBe(Math.round(es.km / 2))
+    // Une 13e étape validée ne change rien tant qu'elle ne dépasse pas l'acquis.
+    progres = figerAvancement(enregistrerEtape(progres, 'es', es.lecons[12].id, 8, 8, '2026-09-01').progres, esEtendu, '2026-09-01')
+    expect(progres.parcours.es).toBe(0.5)
+  })
+
+  it('date les visas des voyages antérieurs de leur dernière étape, pas d’aujourd’hui', () => {
+    const es = LANGUES.find((l) => l.id === 'es')
+    let progres = progresInitial()
+    es.lecons.forEach((lecon, i) => {
+      progres = enregistrerEtape(progres, 'es', lecon.id, 8, 8, i === 5 ? '2026-09-02' : '2026-08-30').progres
+    })
+    expect(progres.visas).toEqual({})
+    const fige = figerAvancements(progres, LANGUES, '2026-09-10')
+    expect(fige.visas.es).toEqual({ jour: '2026-09-02' })
+    expect(fige.parcours.es).toBe(1)
+    expect(fige.visas.tr).toBeUndefined()
+    expect(figerAvancements(fige, LANGUES, '2026-09-11')).toEqual(fige)
   })
 })
 

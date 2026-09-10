@@ -500,6 +500,27 @@ p {
 .carte-mot {
   perspective: 1000px;
   min-height: 300px;
+  border-radius: var(--r-carte);
+}
+
+.carte-mot:focus-visible {
+  outline: 3px solid var(--majorelle-fonce);
+  outline-offset: 4px;
+}
+
+/* Présent pour les lecteurs d'écran, invisible à l'œil (et sans place dans
+   la mise en page) : sert aux zones d'annonce tant qu'elles sont vides. */
+.lecteur-seul {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .carte-mot__interieur {
@@ -598,6 +619,13 @@ p {
   background: var(--terracotta-pale);
   border-color: var(--terracotta);
   color: var(--terracotta-fonce);
+}
+
+/* Après la révélation, les options ne sont plus `disabled` mais
+   `aria-disabled` (+ garde dans le handler) : `disabled` sort l'élément du
+   DOM accessible et éjecte le focus qu'on vient d'y poser. */
+.option[aria-disabled='true'] {
+  cursor: default;
 }
 
 .option:disabled {

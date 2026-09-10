@@ -1,11 +1,14 @@
-// Le Carnet : la révision espacée du voyageur (système de Leitner, 5 rangs).
+// Le Carnet : la révision espacée du voyageur (système de Leitner, 6 rangs).
 // Chaque étape validée verse ses mots au carnet ; un mot revient à intervalles
 // croissants — bonne réponse : il monte d'un rang, erreur : retour au rang 1.
 // Tout est pur et daté en 'YYYY-MM-DD' local, comme la progression.
 
 import { melanger } from './quiz.js'
 
-export const INTERVALLES = [1, 2, 4, 8, 16]
+// Le dernier rang plafonnait à 16 jours : une destination terminée (192 mots)
+// y renvoyait 12 mots par jour — toute la session — et la file ne se vidait
+// plus dès la deuxième destination. Six rangs jusqu'à 90 jours.
+export const INTERVALLES = [1, 3, 7, 16, 35, 90]
 export const RANG_MAX = INTERVALLES.length
 export const TAILLE_SESSION = 12
 export const XP_PAR_MOT = 3
@@ -17,13 +20,15 @@ const plusJours = (jour, n) => {
   return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10)
 }
 
-// Les mots d'une étape validée entrent au rang 1 — sans écraser ceux qui
-// voyagent déjà dans le carnet.
-export function ajouterAuCarnet(progres, langueId, mots, jour) {
+// Les mots d'une étape validée entrent au carnet — sans écraser ceux qui
+// voyagent déjà. Un mot réussi pendant la leçon part du rang 2 : la leçon
+// vient de mesurer qu'il tient, jeter cette information reviendrait à faire
+// démarrer la répétition espacée les yeux fermés. Un mot raté part du rang 1.
+export function ajouterAuCarnet(progres, langueId, mots, jour, reussis = {}) {
   const carnet = { ...(progres.carnet ?? {}) }
   for (const mot of mots) {
     const cle = cleMot(langueId, mot.id)
-    if (!carnet[cle]) carnet[cle] = { boite: 1, jour }
+    if (!carnet[cle]) carnet[cle] = { boite: reussis[mot.id] ? 2 : 1, jour }
   }
   return { ...progres, carnet }
 }
@@ -73,10 +78,27 @@ export function joursAvantProchaine(progres, jour) {
 
 const tousLesMots = (langue) => langue.lecons.flatMap((lecon) => lecon.mots)
 
+// Les mots fragiles : rang 1 ou 2, c'est-à-dire tout juste appris ou tout
+// juste ratés. C'est eux que la mémoire est en train de perdre.
+export const RANG_FRAGILE = 2
+
+// Compose la session : la moitié des places est réservée aux mots fragiles,
+// les plus RÉCENTS d'abord (un mot raté hier passe avant un mot négligé depuis
+// un mois — l'inverse le repousserait derrière tout l'arriéré, comme avant) ;
+// le reste revient aux mots dus les plus anciens.
+export function composerSession(dus, taille = TAILLE_SESSION) {
+  const fragiles = dus
+    .filter((du) => du.entree.boite <= RANG_FRAGILE)
+    .sort((a, b) => (a.entree.jour > b.entree.jour ? -1 : a.entree.jour < b.entree.jour ? 1 : 0))
+  const pris = fragiles.slice(0, Math.ceil(taille / 2))
+  const reste = dus.filter((du) => !pris.includes(du))
+  return [...pris, ...reste].slice(0, taille)
+}
+
 // La session : au plus TAILLE_SESSION mots dus, chacun avec 3 distracteurs
 // pris dans SA langue, en alternant compréhension et production.
 export function construireRevision(dus, alea = Math.random) {
-  return dus.slice(0, TAILLE_SESSION).map((du, i) => {
+  return composerSession(dus).map((du, i) => {
     const options = [du.mot]
     for (const autre of melanger(tousLesMots(du.langue), alea)) {
       if (options.length === 4) break

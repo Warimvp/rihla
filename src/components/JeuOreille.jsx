@@ -56,21 +56,24 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
   const choisir = (option) => {
     if (choix || fin) return
     const bonne = option.id === manche.mot.id
-    const scoreApres = bonne ? score + 1 : score
     setChoix(option)
-    if (bonne) setScore(scoreApres)
+    if (bonne) setScore(score + 1)
     retourReponse(bonne)
-    setTimeout(() => {
-      if (iManche + 1 < manches.length) {
-        setIManche(iManche + 1)
-        setChoix(null)
-      } else {
-        const xp = scoreApres * 8
-        if (xp > 0) surXp(xp)
-        if (xp > 0) fanfare()
-        setFin({ xp, score: scoreApres })
-      }
-    }, 950)
+  }
+
+  // Pas d'enchaînement automatique : le jeu n'est pas chronométré, et 950 ms
+  // ne laissaient ni le temps de lire la correction, ni celui de l'entendre
+  // au lecteur d'écran. C'est le joueur qui continue.
+  const continuer = () => {
+    if (iManche + 1 < manches.length) {
+      setIManche(iManche + 1)
+      setChoix(null)
+    } else {
+      const xp = score * 8
+      if (xp > 0) surXp(xp)
+      if (xp > 0) fanfare()
+      setFin({ xp, score })
+    }
   }
 
   if (!peutParler(langue.tts)) {
@@ -182,7 +185,7 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
               ? 'option option--fausse anim-secouer'
               : 'option'
           return (
-            <button key={option.id} type="button" className={classe} disabled={revele} onClick={() => choisir(option)}>
+            <button key={option.id} type="button" className={classe} aria-disabled={revele} onClick={() => choisir(option)}>
               <span>
                 {manche.type === 'sens' ? sensPour(option, source, langue.id) : <MotCible texte={option.t} langue={langue} />}
                 {manche.type === 'mot' && option.r ? (
@@ -195,6 +198,25 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
           )
         })}
       </div>
+
+      <div style={{ flex: '1 1 auto' }}></div>
+      {/* Toujours monté : voir Lecon.jsx. */}
+      <div
+        role="status"
+        aria-live="polite"
+        className={choix ? `bandeau-reponse ${choix.id === manche.mot.id ? 'bandeau-reponse--bonne' : 'bandeau-reponse--mauvaise'}` : 'lecteur-seul'}
+      >
+        {choix ? (
+          <span style={{ fontSize: 14, fontWeight: 600 }}>
+            {choix.id === manche.mot.id ? t.bonneReponse : t.mauvaiseReponse}
+          </span>
+        ) : null}
+      </div>
+      {choix ? (
+        <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={continuer}>
+          {t.continuer}
+        </button>
+      ) : null}
 
       <div style={{ flex: '1 1 auto' }}></div>
       <p className="texte-2" style={{ fontSize: 12.5, textAlign: 'center' }}>{t.jeux.score(score)}</p>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { sensPour } from '../i18n.js'
 import { nomLangue, nomVille, titreLecon } from '../data/langues.js'
 import { assembler } from '../lib/epellation.js'
@@ -10,7 +10,7 @@ import { TamponVisa } from './TamponVisa.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
 
-export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTerminer, surQuitter }) {
+export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTerminer, surSuivante, surQuitter }) {
   const [phase, setPhase] = useState('cartes')
   const [tour, setTour] = useState(0)
   const [iCarte, setICarte] = useState(0)
@@ -28,7 +28,13 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   const [placees, setPlacees] = useState([])
   const [reponse, setReponse] = useState(null)
   const [score, setScore] = useState(0)
+  // Ce que la leçon a mesuré, mot par mot : le Carnet s'en sert pour faire
+  // partir du rang 2 ce qui tient déjà.
+  const [reussis, setReussis] = useState({})
   const [bilan, setBilan] = useState(null)
+  // Le focus suit la question : le bouton « Continuer » disparaît à chaque
+  // avancée, sans ça le focus retombe sur <body> huit fois par leçon.
+  const invite = useRef(null)
   // Vrai quand parler() a renoncé (liste des voix arrivée sans voix pour la
   // langue) : la question d'écoute le dit au lieu de rester muette.
   const [muet, setMuet] = useState(false)
@@ -46,6 +52,10 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
     }
   }, [phase, iQuestion, questions, langue])
 
+  useEffect(() => {
+    if (phase === 'quiz') invite.current?.focus()
+  }, [phase, iQuestion])
+
   const rejouer = () => {
     setPhase('cartes')
     setTour(tour + 1)
@@ -56,6 +66,7 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
     setPlacees([])
     setReponse(null)
     setScore(0)
+    setReussis({})
     setBilan(null)
   }
 
@@ -70,6 +81,7 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
 
   const repondre = (bonne) => {
     if (bonne) setScore(score + 1)
+    setReussis({ ...reussis, [question.mot.id]: bonne })
     setReponse({ bonne })
     retourReponse(bonne)
     parler(question.mot.t, langue.tts)
@@ -105,7 +117,7 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
       setPlacees([])
       setReponse(null)
     } else {
-      const resultat = surTerminer(score, total)
+      const resultat = surTerminer(score, total, reussis)
       if (resultat.valide) fanfare()
       setBilan(resultat)
       setPhase('fin')
@@ -137,11 +149,24 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
         {bilan.gelConsomme ? <span className="chip chip--menthe">{t.gel.utilise}</span> : null}
         {!bilan.valide ? <p className="texte-2" style={{ maxWidth: '30ch' }}>{t.etapeRatee}</p> : null}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 10 }}>
-          <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={surQuitter}>
-            {t.retourEtapes}
-          </button>
-          <button type="button" className="bouton bouton--secondaire bouton--pleine" onClick={rejouer}>
+          {bilan.suivante ? (
+            <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={() => surSuivante(bilan.suivante)}>
+              {t.etapeSuivante} · {titreLecon(bilan.suivante.lecon, locale)}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className={`bouton ${bilan.suivante ? 'bouton--secondaire' : 'bouton--primaire'} bouton--pleine`}
+            onClick={rejouer}
+          >
             {t.rejouer}
+          </button>
+          <button
+            type="button"
+            className={`bouton ${bilan.suivante ? 'bouton--fantome' : 'bouton--secondaire'} bouton--pleine`}
+            onClick={surQuitter}
+          >
+            {t.retourEtapes}
           </button>
         </div>
       </div>
@@ -211,9 +236,22 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
 
       {phase === 'cartes' ? (
         <>
+          {/* Un vrai <button> est impossible ici (le haut-parleur en est déjà
+              un, et un bouton dans un bouton n'existe pas) : la carte reste un
+              conteneur, mais un conteneur qu'on atteint et retourne au clavier. */}
           <div
             className={`carte-mot ${retournee ? 'carte-mot--retournee' : ''}`}
+            role="button"
+            tabIndex={0}
+            aria-label={t.retournerCarte}
+            aria-pressed={retournee}
             onClick={() => setRetournee(!retournee)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setRetournee(!retournee)
+              }
+            }}
             style={{ flex: '0 0 auto', cursor: 'pointer' }}
           >
             <div className="carte-mot__interieur">
@@ -241,22 +279,22 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
             </div>
           </div>
           <div style={{ flex: '1 1 auto' }}></div>
-          {!retournee ? (
-            <button
-              type="button"
-              className="bouton bouton--primaire bouton--pleine"
-              onClick={() => {
-                setRetournee(true)
-                parler(mots[iCarte].t, langue.tts)
-              }}
-            >
-              {t.voirReponse}
-            </button>
-          ) : (
-            <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={suivantCarte}>
-              {t.suivant}
-            </button>
-          )}
+          {/* Un seul bouton qui change d'étiquette, pas deux qui se remplacent :
+              le même nœud garde le focus d'une carte à l'autre. */}
+          <button
+            type="button"
+            className="bouton bouton--primaire bouton--pleine"
+            onClick={
+              retournee
+                ? suivantCarte
+                : () => {
+                    setRetournee(true)
+                    parler(mots[iCarte].t, langue.tts)
+                  }
+            }
+          >
+            {retournee ? t.suivant : t.voirReponse}
+          </button>
         </>
       ) : (
         <>
@@ -343,7 +381,9 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
               <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)' }}>{sensPour(question.mot, source, langue.id)}</div>
             )}
           </div>
-          <p style={{ fontSize: 15, fontWeight: 500 }}>{promptTexte}</p>
+          <p ref={invite} tabIndex={-1} style={{ fontSize: 15, fontWeight: 500, outline: 'none' }}>
+            {promptTexte}
+          </p>
           {question.type === 'epeler' ? (
             <>
               <div dir="ltr" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
@@ -352,7 +392,8 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                     key={tuile.cle}
                     type="button"
                     className="lettre"
-                    disabled={utilisees.has(tuile.cle) || reponse !== null}
+                    disabled={utilisees.has(tuile.cle)}
+                    aria-disabled={reponse !== null || undefined}
                     onClick={() => placer(tuile)}
                   >
                     {tuile.c}
@@ -383,7 +424,7 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                     ? 'option option--fausse anim-secouer'
                     : 'option'
                 return (
-                  <button key={option.id} type="button" className={classe} disabled={revele} onClick={() => choisir(option)}>
+                  <button key={option.id} type="button" className={classe} aria-disabled={revele} onClick={() => choisir(option)}>
                     <span>
                       {question.type === 'produire' ? <MotCible texte={option.t} langue={langue} /> : sensPour(option, source, langue.id)}
                       {question.type === 'produire' && option.r ? (
@@ -398,9 +439,17 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
             </div>
           )}
           <div style={{ flex: '1 1 auto' }}></div>
-          {reponse !== null ? (
-            <>
-              <div className={`bandeau-reponse ${reponse.bonne ? 'bandeau-reponse--bonne' : 'bandeau-reponse--mauvaise'}`}>
+          {/* Toujours monté, même vide : un lecteur d'écran n'annonce un
+              role="status" que si le nœud existait AVANT que son texte change. */}
+          <div
+            role="status"
+            aria-live="polite"
+            className={
+              reponse !== null ? `bandeau-reponse ${reponse.bonne ? 'bandeau-reponse--bonne' : 'bandeau-reponse--mauvaise'}` : 'lecteur-seul'
+            }
+          >
+            {reponse !== null ? (
+              <>
                 <span
                   style={{
                     width: 30,
@@ -424,11 +473,13 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                     {reponse.bonne ? t.encoreQuestions(total - iQuestion - 1) : <>{t.laBonneEtait} {corrigeTexte}</>}
                   </span>
                 </span>
-              </div>
-              <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={continuerQuiz}>
-                {t.continuer}
-              </button>
-            </>
+              </>
+            ) : null}
+          </div>
+          {reponse !== null ? (
+            <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={continuerQuiz}>
+              {t.continuer}
+            </button>
           ) : null}
         </>
       )}

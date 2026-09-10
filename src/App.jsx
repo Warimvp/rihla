@@ -9,7 +9,10 @@ import {
   chargerProgres,
   enregistrerDefi,
   enregistrerEtape,
+  figerAvancement,
+  figerAvancements,
   jourLocal,
+  prochaineEtape,
   progresInitial,
   reglerObjectif,
   sauverProgres,
@@ -113,7 +116,9 @@ export default function App() {
     ecrireLocal('rihla.source', sourceChoix)
   }, [sourceChoix])
 
-  const [progres, setProgres] = useState(() => chargerProgres())
+  // Les voyages enregistrés avant l'historisation des visas reçoivent leurs
+  // tampons et leur avancement d'après les étapes déjà validées (idempotent).
+  const [progres, setProgres] = useState(() => figerAvancements(chargerProgres(), LANGUES))
   const [onglet, setOnglet] = useState('carte')
   const [destinationId, setDestinationId] = useState(() => lireLocal('rihla.destination', LANGUES[0].id))
   // Le cap : 'route' (suivre la route d'Ibn Battuta) ou l'id d'une langue.
@@ -236,22 +241,36 @@ export default function App() {
   if (leconActive) {
     const langue = langueParId(leconActive.langueId)
     const lecon = langue.lecons.find((l) => l.id === leconActive.leconId)
-    const terminer = (score, total) => {
+    const terminer = (score, total, reussis) => {
       const visaAvant = visaObtenu(progres, langue)
       const resultat = enregistrerEtape(progres, langue.id, lecon.id, score, total)
-      const progresFinal = resultat.valide
-        ? ajouterAuCarnet(resultat.progres, langue.id, lecon.mots, jourLocal())
-        : resultat.progres
+      const jour = jourLocal()
+      // Le Carnet apprend des réponses de la leçon (rang 2 pour un mot réussi),
+      // puis visa et km sont figés — ils ne se reprennent plus.
+      const progresFinal = figerAvancement(
+        resultat.valide ? ajouterAuCarnet(resultat.progres, langue.id, lecon.mots, jour, reussis) : resultat.progres,
+        langue,
+        jour
+      )
       majProgres(progresFinal)
+      // L'étape à enchaîner dans CETTE destination — jamais celle qu'on vient de
+      // rater (« Rejouer » est là pour ça), jamais lancée toute seule.
+      const suite = prochaineEtape(progresFinal, [langue], 'route')
       return {
         xpGagne: resultat.xpGagne,
         valide: resultat.valide,
+        gelConsomme: resultat.gelConsomme,
         nouveauVisa: visaObtenu(progresFinal, langue) && !visaAvant,
+        suivante: suite && suite.lecon.id !== lecon.id ? suite : null,
       }
     }
     return (
       <div className="app">
         <Lecon
+          // La clé force un remontage quand on enchaîne sur l'étape suivante :
+          // `questions` est mémoïsé mais phase, score et bilan ne se
+          // réinitialiseraient pas d'eux-mêmes.
+          key={`${langue.id}:${lecon.id}`}
           t={t}
           locale={locale}
           source={source}
@@ -259,6 +278,7 @@ export default function App() {
           lecon={lecon}
           indexLangue={LANGUES.indexOf(langue)}
           surTerminer={terminer}
+          surSuivante={(suite) => ouvrirLecon(suite.langue, suite.lecon)}
           surQuitter={() => {
             setLeconActive(null)
             setOnglet('apprendre')
