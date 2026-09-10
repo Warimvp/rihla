@@ -8,6 +8,7 @@ import { parler } from '../lib/tts.js'
 import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { Pastille } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { MotCible, Romanisation } from './MotCible.jsx'
 
 // L'étape du jour : 10 questions, toutes les langues, même tirage pour tous.
 export function Defi({ t, locale, source, surTerminer, surQuitter }) {
@@ -101,8 +102,8 @@ export function Defi({ t, locale, source, surTerminer, surQuitter }) {
           <Pastille langue={question.langue} taille={26} />
           <span className="texte-2" style={{ fontSize: 13, fontWeight: 500 }}>{nomLangue(question.langue, locale)}</span>
         </div>
-        <div className="mot-cible" style={{ fontSize: 27 }}>{question.mot.t}</div>
-        {question.mot.r ? <div className="romanisation">{question.mot.r}</div> : null}
+        <MotCible balise="div" className="mot-cible" style={{ fontSize: 27 }} texte={question.mot.t} langue={question.langue} />
+        {question.mot.r ? <Romanisation balise="div" texte={question.mot.r} /> : null}
         <button type="button" className="bouton bouton--rond" style={{ width: 44, height: 44 }} aria-label={t.ecouter} onClick={() => parler(question.mot.t, question.langue.tts)}>
           <HautParleur taille={20} trait={1.8} />
         </button>

@@ -6,6 +6,7 @@ import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { Croix, Etoile8 } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { MotCible } from './MotCible.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_PAIRES = 6
@@ -138,7 +139,9 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
                 <span className="tuile__face tuile__face--cachee">
                   <Etoile8 taille={30} couleur="var(--majorelle-pale)" />
                 </span>
-                <span className="tuile__face tuile__face--mot">{tuile.texte}</span>
+                <span className="tuile__face tuile__face--mot">
+                  {tuile.face === 't' ? <MotCible texte={tuile.texte} langue={langue} /> : tuile.texte}
+                </span>
               </span>
             </button>
           )

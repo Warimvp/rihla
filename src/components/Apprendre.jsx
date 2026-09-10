@@ -85,7 +85,7 @@ export function Apprendre({ t, locale, progres, langue, surLecon, surJeu }) {
         })}
       </div>
 
-      <SectionJeux t={t} surJeu={surJeu} />
+      <SectionJeux t={t} langue={langue} surJeu={surJeu} />
     </div>
   )
 }

@@ -1,5 +1,15 @@
-import { peutParler } from '../lib/tts.js'
+import { useEffect, useState } from 'react'
+import { peutParler, surVoixPretes } from '../lib/tts.js'
 import { Auvent, CaravaneIcone, ChevronAvant, DuelIcone, Onde, TuileZellige } from './Icones.jsx'
+
+// La liste des voix du système arrive APRÈS le premier rendu (`voiceschanged`).
+// Ce hook force un re-rendu quand elle est là, pour que `peutParler(langue.tts)`
+// soit réévalué. À n'utiliser que là où changer d'avis est sans danger — jamais
+// pour reconstruire le quiz d'une leçon en cours.
+export function useVoixPretes() {
+  const [, setTick] = useState(0)
+  useEffect(() => surVoixPretes(() => setTick((n) => n + 1)), [])
+}
 
 const JEUX = [
   { id: 'zellige', Icone: TuileZellige },
@@ -10,9 +20,12 @@ const JEUX = [
 ]
 
 // La section « Jeux du voyage » d'une destination : cinq façons de réviser
-// le vocabulaire en s'amusant, XP à la clé. L'Oreille exige la synthèse vocale.
-export function SectionJeux({ t, surJeu }) {
-  const audioOk = peutParler()
+// le vocabulaire en s'amusant, XP à la clé. L'Oreille exige une voix POUR LA
+// LANGUE de la destination — sans elle, le jeu ferait deviner un mot swahili
+// prononcé à la française. Sans `langue`, on retombe sur « l'API existe-t-elle ? ».
+export function SectionJeux({ t, langue, surJeu }) {
+  useVoixPretes()
+  const audioOk = peutParler(langue?.tts)
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
@@ -27,7 +40,7 @@ export function SectionJeux({ t, surJeu }) {
               key={id}
               type="button"
               className="carte carte-jeu apparition"
-              style={{ animationDelay: `${i * 60}ms`, opacity: desactive ? 0.55 : 1, cursor: desactive ? 'default' : 'pointer' }}
+              style={{ animationDelay: `${i * 60}ms`, color: desactive ? 'var(--encre-2)' : undefined, cursor: desactive ? 'default' : 'pointer' }}
               disabled={desactive}
               onClick={() => surJeu(id)}
             >

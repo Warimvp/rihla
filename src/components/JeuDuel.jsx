@@ -6,6 +6,7 @@ import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { Croix, DuelIcone, Etoile8 } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { MotCible, Romanisation } from './MotCible.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_MANCHES = 8
@@ -162,8 +163,8 @@ export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
           className="carte"
           style={{ padding: '10px 14px', textAlign: 'center', fontFamily: 'var(--police-titre)', fontSize: 21, lineHeight: 1.25, borderColor: couleur, borderWidth: 1.5, flex: '0 0 auto' }}
         >
-          {manche.cible.t}
-          {manche.cible.r ? <span className="romanisation" style={{ marginInlineStart: 8, fontFamily: 'var(--police-ui)' }}>{manche.cible.r}</span> : null}
+          <MotCible texte={manche.cible.t} langue={langue} />
+          {manche.cible.r ? <Romanisation texte={manche.cible.r} style={{ marginInlineStart: 8, fontFamily: 'var(--police-ui)' }} /> : null}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8, flex: '1 1 auto', minHeight: 0 }}>
           {manche.options.map((option) => {

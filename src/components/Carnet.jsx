@@ -8,6 +8,7 @@ import { parler } from '../lib/tts.js'
 import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { Pastille } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { MotCible, Romanisation } from './MotCible.jsx'
 
 // La session de révision espacée : les mots dus du carnet, toutes langues
 // mêlées, avec le mouvement de rang annoncé après chaque réponse.
@@ -113,8 +114,8 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
         </div>
         {question.type === 'comprendre' ? (
           <>
-            <div className="mot-cible" style={{ fontSize: 26 }}>{question.mot.t}</div>
-            {question.mot.r ? <div className="romanisation">{question.mot.r}</div> : null}
+            <MotCible balise="div" className="mot-cible" style={{ fontSize: 26 }} texte={question.mot.t} langue={question.langue} />
+            {question.mot.r ? <Romanisation balise="div" texte={question.mot.r} /> : null}
             <button type="button" className="bouton bouton--rond" style={{ width: 44, height: 44 }} aria-label={t.ecouter} onClick={() => parler(question.mot.t, question.langue.tts)}>
               <HautParleur taille={20} trait={1.8} />
             </button>
@@ -140,9 +141,9 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
           return (
             <button key={option.id} type="button" className={classe} disabled={aRepondu} onClick={() => choisir(option)}>
               <span>
-                {question.type === 'comprendre' ? sensPour(option, source, question.langue.id) : option.t}
+                {question.type === 'comprendre' ? sensPour(option, source, question.langue.id) : <MotCible texte={option.t} langue={question.langue} />}
                 {question.type === 'produire' && option.r ? (
-                  <span className="romanisation" style={{ marginInlineStart: 8 }}>{option.r}</span>
+                  <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} />
                 ) : null}
               </span>
               {estCorrecte ? <Coche taille={20} trait={2.4} /> : null}
@@ -176,7 +177,14 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
               <span style={{ fontSize: 12.5 }}>
                 {aReussi
                   ? t.carnet.rangMonte(rangApres, INTERVALLES[rangApres - 1])
-                  : `${t.laBonneEtait} ${question.type === 'comprendre' ? sensPour(bonneOption, source, question.langue.id) : bonneOption.t} · ${t.carnet.rangRetombe}`}
+                  : (
+                      <>
+                        {t.laBonneEtait}{' '}
+                        {question.type === 'comprendre' ? sensPour(bonneOption, source, question.langue.id) : <MotCible texte={bonneOption.t} langue={question.langue} />}
+                        {' · '}
+                        {t.carnet.rangRetombe}
+                      </>
+                    )}
               </span>
             </span>
           </div>

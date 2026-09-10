@@ -6,7 +6,12 @@
   --papier: #fdf8ee;
   --encre: #2b1e12;
   --encre-2: #7a6a55;
-  --encre-3: #a79a83;
+  /* Encre 3 = texte tertiaire (Passeport « Espagnol · 12/24 », pastilles
+     estompées). L'ancien #a79a83 tombait à 2,44:1 sur Sable : illisible.
+     Le papier chaud n'offre pas de place pour un 3e niveau d'encre à la fois
+     AA et visiblement plus clair que l'Encre 2 — de jour les deux se rejoignent
+     donc presque ; de nuit la hiérarchie reste franche (5,46:1 vs 7,33:1). */
+  --encre-3: #7b6b56;
   --majorelle: #4e46c8;
   --majorelle-fonce: #3a34a0;
   --majorelle-pale: #e4e2f8;
@@ -37,9 +42,11 @@
   --police-titre: 'Amiri', 'Geeza Pro', Georgia, serif;
 }
 
-/* Toujours lisible sur fond Majorelle, quel que soit le thème. */
+/* Toujours lisible sur fond Majorelle, quel que soit le thème — ce jeton est
+   donc RÉÉCRIT dans les deux blocs nuit plus bas (le Majorelle de nuit est plus
+   clair : il faut une encre plus blanche pour tenir AA). */
 :root {
-  --sur-majorelle: #e4e2f8;
+  --sur-majorelle: #f2f0fd;
   --safran-bord: #edd9a8;
 }
 
@@ -55,10 +62,11 @@
     --papier: #211a15;
     --encre: #f2e9d8;
     --encre-2: #b5a88f;
-    --encre-3: #7a6f5c;
+    --encre-3: #9c907a;
     --majorelle: #6a62e0;
     --majorelle-fonce: #a8a2f5;
     --majorelle-pale: #2a2650;
+    --sur-majorelle: #fdfcff;
     --terracotta: #e07850;
     --terracotta-fonce: #f0977a;
     --terracotta-pale: #3a241b;
@@ -87,10 +95,11 @@
   --papier: #211a15;
   --encre: #f2e9d8;
   --encre-2: #b5a88f;
-  --encre-3: #7a6f5c;
+  --encre-3: #9c907a;
   --majorelle: #6a62e0;
   --majorelle-fonce: #a8a2f5;
   --majorelle-pale: #2a2650;
+  --sur-majorelle: #fdfcff;
   --terracotta: #e07850;
   --terracotta-fonce: #f0977a;
   --terracotta-pale: #3a241b;
@@ -237,23 +246,34 @@ p {
 }
 
 .bouton:focus-visible {
-  outline: 3px solid var(--majorelle-pale);
+  outline: 3px solid var(--majorelle-fonce);
   outline-offset: 2px;
 }
 
 .bouton--primaire {
   background: var(--majorelle);
-  color: var(--papier);
+  /* Jamais --papier ici : de nuit le papier devient sombre et l'étiquette
+     tombait à 3,63:1 sur le Majorelle. --sur-majorelle est le jeton fait
+     pour ça, et il suit le thème. */
+  color: var(--sur-majorelle);
   box-shadow: var(--ombre-cta);
 }
 
+/* L'état appuyé assombrit le Majorelle au lieu de basculer sur
+   --majorelle-fonce : de nuit ce jeton est une couleur de TEXTE, il s'éclaircit
+   (#a8a2f5) et l'étiquette y tombait à 2,24:1. Un voile noir garde la même
+   étiquette lisible dans les deux thèmes (8,19:1 le jour, 6,57:1 la nuit) et
+   redonne #3e38a0 le jour, soit l'« Appuyé » du canvas. */
 .bouton--primaire:hover {
-  background: var(--majorelle-fonce);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
 }
 
+/* Commande inactive : exemptée du critère 1.4.3, mais 2,13:1 restait indigne.
+   --encre-2 est le plus foncé qu'on puisse poser sans que le bouton reprenne
+   l'air actif : 4,01:1 de jour, 7,03:1 de nuit. */
 .bouton--primaire:disabled {
   background: var(--desactive);
-  color: var(--encre-3);
+  color: var(--encre-2);
   box-shadow: none;
   cursor: default;
 }
@@ -289,8 +309,11 @@ p {
   color: var(--majorelle-fonce);
 }
 
+/* Voile plutôt qu'un hex figé : #d6d3f2 n'était jamais réécrit la nuit, et
+   l'icône (--majorelle-fonce, une couleur de TEXTE éclaircie de nuit) y
+   tombait à 1,58:1. Sur --majorelle-pale voilé : 6,37:1 le jour, 6,42:1 la nuit. */
 .bouton--rond:hover {
-  background: #d6d3f2;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.08));
 }
 
 /* ————— Cartes & chips ————— */
@@ -395,7 +418,7 @@ p {
 }
 
 .etape-itineraire:focus-visible {
-  outline: 3px solid var(--majorelle-pale);
+  outline: 3px solid var(--majorelle-fonce);
   outline-offset: 2px;
 }
 
@@ -416,8 +439,13 @@ p {
   border-color: var(--papier);
 }
 
+/* Pas d'opacité ici : l'étape à venir se lit déjà comme telle (pastille en
+   --desactive + --encre-3, libellés en --encre-2 posés par Accueil.jsx, pas de
+   carte ni d'ombre). Un voile de 0,75 en plus faisait retomber « Venise » et
+   « Italien · À découvrir » de 4,61:1 à 2,90:1 sur le Sable — il annulait le
+   relèvement de --encre-3 sur les pastilles estompées. La règle reste pour
+   nommer l'état ; elle n'a rien à déclarer. */
 .etape-itineraire--future {
-  opacity: 0.75;
 }
 
 /* ————— Barre d'onglets ————— */
@@ -453,7 +481,7 @@ p {
 }
 
 .onglet:focus-visible {
-  outline: 3px solid var(--majorelle-pale);
+  outline: 3px solid var(--majorelle-fonce);
   outline-offset: 2px;
 }
 
@@ -507,9 +535,11 @@ p {
   box-shadow: var(--ombre);
 }
 
+/* Le verso porte le fond-zellige (Majorelle) : texte en --sur-majorelle,
+   jamais --papier, qui devient sombre la nuit (3,63:1). */
 .carte-mot__face--verso {
   transform: rotateY(180deg);
-  color: var(--papier);
+  color: var(--sur-majorelle);
 }
 
 .mot-cible {
@@ -553,7 +583,7 @@ p {
 }
 
 .option:focus-visible {
-  outline: 3px solid var(--majorelle-pale);
+  outline: 3px solid var(--majorelle-fonce);
   outline-offset: 2px;
 }
 
@@ -664,7 +694,10 @@ p {
   font-family: var(--police-ui);
   font-size: 14.5px;
   font-weight: 600;
-  color: var(--encre-2);
+  /* Pleine encre, comme un segmenté iOS : c'est la pastille qui dit le choix.
+     --encre-2 sur --piste ne faisait que 4,25:1 (14,5 px semi-gras n'est pas
+     du « grand texte »). */
+  color: var(--encre);
   cursor: pointer;
 }
 
@@ -773,7 +806,7 @@ p {
 }
 
 .tuile:focus-visible {
-  outline: 3px solid var(--majorelle-pale);
+  outline: 3px solid var(--majorelle-fonce);
   outline-offset: 2px;
 }
 
@@ -917,7 +950,7 @@ p {
 }
 
 .lettre:focus-visible {
-  outline: 3px solid var(--majorelle-pale);
+  outline: 3px solid var(--majorelle-fonce);
   outline-offset: 2px;
 }
 

@@ -6,6 +6,8 @@ import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler, peutParler } from '../lib/tts.js'
 import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { useVoixPretes } from './Jeux.jsx'
+import { MotCible, Romanisation } from './MotCible.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_MANCHES = 10
@@ -32,6 +34,9 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
   const [choix, setChoix] = useState(null)
   const [score, setScore] = useState(0)
   const [fin, setFin] = useState(null)
+  // Si la liste des voix arrive en cours de route sans voix pour cette langue,
+  // on préfère afficher « son indisponible » que jouer une partie muette.
+  useVoixPretes()
 
   const manche = manches[iManche]
 
@@ -68,7 +73,7 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
     }, 950)
   }
 
-  if (!peutParler()) {
+  if (!peutParler(langue.tts)) {
     return (
       <div className="vue vue--pleine" style={{ alignItems: 'center', justifyContent: 'center', gap: 18, textAlign: 'center' }}>
         <p className="texte-2">{t.sonIndispo}</p>
@@ -149,7 +154,7 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
             borderRadius: 999,
             border: 'none',
             background: 'var(--majorelle)',
-            color: 'var(--papier)',
+            color: 'var(--sur-majorelle)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -179,9 +184,9 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
           return (
             <button key={option.id} type="button" className={classe} disabled={revele} onClick={() => choisir(option)}>
               <span>
-                {manche.type === 'sens' ? sensPour(option, source, langue.id) : option.t}
+                {manche.type === 'sens' ? sensPour(option, source, langue.id) : <MotCible texte={option.t} langue={langue} />}
                 {manche.type === 'mot' && option.r ? (
-                  <span className="romanisation" style={{ marginInlineStart: 8 }}>{option.r}</span>
+                  <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} />
                 ) : null}
               </span>
               {estCorrecte ? <Coche taille={20} trait={2.4} /> : null}

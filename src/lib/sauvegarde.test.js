@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { MARQUE, exporterProgres, importerProgres, semaineActivite } from './sauvegarde.js'
+import {
+  MARQUE,
+  VERSION_SAUVEGARDE,
+  exporterProgres,
+  importerProgres,
+  semaineActivite,
+} from './sauvegarde.js'
 import { ajouterXp, attribuerXpDuJour, enregistrerEtape, progresInitial } from './progression.js'
 
 const voyage = () => {
@@ -18,6 +24,27 @@ describe('exporter / importer', () => {
     expect(resultat.progres.serie).toEqual(avant.serie)
     expect(resultat.progres.gels).toBe(1)
     expect(resultat.progres.xpJours).toEqual(avant.xpJours)
+  })
+
+  it('exporte du texte compact : une seule ligne, pas d’indentation', () => {
+    const texte = exporterProgres(voyage(), '2026-09-06')
+    expect(texte).not.toMatch(/\n/)
+    expect(texte).not.toMatch(/": /)
+  })
+
+  // Un voyageur a pu coller sa sauvegarde dans ses notes du temps où l'export
+  // était indenté : elle doit toujours le ramener chez lui, à l'identique.
+  it('relit une sauvegarde de l’ancien export indenté', () => {
+    const avant = voyage()
+    const ancienne = JSON.stringify(
+      { marque: MARQUE, version: VERSION_SAUVEGARDE, jour: '2026-09-06', progres: avant },
+      null,
+      2
+    )
+    expect(ancienne).toMatch(/\n {2}"marque"/)
+    const resultat = importerProgres(ancienne)
+    expect(resultat.ok).toBe(true)
+    expect(resultat.progres).toEqual(importerProgres(exporterProgres(avant, '2026-09-06')).progres)
   })
 
   it('refuse le texte illisible, étranger, d’une autre version ou corrompu', () => {

@@ -163,14 +163,14 @@ const fr = {
     ouvrir: 'Guide du voyageur',
     sections: [
       { t: 'Les étapes et les visas', d: 'Chaque destination compte 24 étapes réparties sur 5 niveaux : Survie (8 étapes de vocabulaire), Conversation (5), Récits (4), Le quotidien (4) et Nuances (3, pour raconter hier, parler de demain et donner son avis). Une étape est validée à partir de 75 % de bonnes réponses. Termine les 24 et tu décroches le visa de la ville, tamponné dans ton passeport.' },
-      { t: 'Les exercices', d: 'Dans une étape : d’abord les cartes-mots (touche pour retourner, écoute la prononciation), puis le quiz qui alterne compréhension, écoute pure, production et épellation à tuiles.' },
+      { t: 'Les exercices', d: 'Dans une étape : d’abord les cartes-mots (touche pour retourner, écoute la prononciation), puis le quiz qui alterne compréhension, écoute pure, production et épellation à tuiles. L’écoute dépend des voix installées sur ton téléphone : sans voix pour une langue, l’app préfère se taire plutôt que de la prononcer de travers — l’exercice d’écoute et le jeu L’Oreille s’effacent alors pour cette destination.' },
       { t: 'Les XP et l’objectif du jour', d: 'Tout rapporte des XP : leçons, jeux, étape du jour, révisions. Choisis ton objectif quotidien (10, 20 ou 30 XP) dans les Réglages ; la barre de l’accueil suit ta journée.' },
       { t: 'La série et le caravansérail', d: 'Valide une étape ou l’étape du jour pour faire avancer ta série. Un jour manqué la remet à zéro — sauf si tu as réservé une nuit au caravansérail (150 XP au passeport) : elle couvre un jour d’absence.' },
       { t: 'Le Carnet', d: 'Chaque étape validée verse ses mots au Carnet. Ils reviennent à intervalles croissants (1, 2, 4, 8 puis 16 jours) : bonne réponse, le mot monte d’un rang ; erreur, il redescend au rang 1. C’est ce qui ancre la mémoire.' },
       { t: 'L’étape du jour', d: 'Un défi quotidien de 10 questions mélangeant les 14 langues — le même tirage pour tout le monde. La première réussite du jour fait avancer ta série.' },
       { t: 'Les jeux du voyage', d: 'Cinq façons de réviser : Zellige des paires (memory), Le Souk (45 s chrono), La Caravane (épellation), L’Oreille (écoute pure) et Le Duel (à deux sur un seul téléphone).' },
       { t: 'Le cap', d: 'Suis la route d’Ibn Battuta ou épingle la langue de ton choix : le bouton « Reprendre » et l’onglet Apprendre suivront ton cap. Changeable à tout moment dans les Réglages.' },
-      { t: 'Hors-ligne et vie privée', d: 'Tout reste sur ton appareil : aucun compte, aucune publicité, aucune donnée envoyée. Une fois l’app ouverte une première fois, elle fonctionne sans connexion — pense à sauvegarder ton voyage.' },
+      { t: 'Hors-ligne et vie privée', d: 'Tout reste sur ton appareil : aucun compte, aucune publicité, aucune donnée envoyée. Dès la première ouverture, toute l’app est gardée sur ton appareil, polices comprises : elle fonctionne sans connexion, et les mises à jour arrivent d’elles-mêmes au lancement suivant — pense à sauvegarder ton voyage.' },
     ],
   },
   sauvegarde: {
@@ -377,14 +377,14 @@ const ar = {
     ouvrir: 'دليل المسافر',
     sections: [
       { t: 'المراحل والتأشيرات', d: 'كل وجهة فيها 24 مرحلة على 5 مستويات: البقاء (8 مراحل للمفردات)، المحادثة (5)، الحكايات (4)، الحياة اليومية (4)، والفروق (3: حكاية الأمس، والحديث عن الغد، وإبداء الرأي). تُعتمد المرحلة ابتداءً من 75٪ من الإجابات الصحيحة. أكمل الأربع والعشرين لتنال تأشيرة المدينة في جواز سفرك.' },
-      { t: 'التمارين', d: 'في كل مرحلة: بطاقات الكلمات أولاً (اضغط لقلبها واستمع للنطق)، ثم اختبار يناوب بين الفهم والاستماع والإنتاج والتهجئة بالحروف.' },
+      { t: 'التمارين', d: 'في كل مرحلة: بطاقات الكلمات أولاً (اضغط لقلبها واستمع للنطق)، ثم اختبار يناوب بين الفهم والاستماع والإنتاج والتهجئة بالحروف. الاستماع يعتمد على الأصوات المثبتة في هاتفك: إن لم يوجد صوت للغة ما، يفضّل التطبيق الصمت على نطقها بشكل خاطئ — فيختفي تمرين الاستماع ولعبة الأذن لتلك الوجهة.' },
       { t: 'النقاط وهدف اليوم', d: 'كل شيء يمنح نقاطاً: الدروس والألعاب ومرحلة اليوم والمراجعات. اختر هدفك اليومي (10 أو 20 أو 30 نقطة) في الإعدادات؛ شريط الصفحة الرئيسية يتابع يومك.' },
       { t: 'السلسلة والخان', d: 'أكمل مرحلة أو مرحلة اليوم لتتقدم سلسلتك. يوم غياب واحد يصفّرها — إلا إذا حجزت ليلة في الخان (150 نقطة في جواز السفر): تغطي يوم غياب واحد.' },
       { t: 'الدفتر', d: 'كل مرحلة مكتملة تضع كلماتها في الدفتر. تعود على فترات متزايدة (1 ثم 2 ثم 4 ثم 8 ثم 16 يوماً): إجابة صحيحة ترفع الكلمة رتبة، وخطأ يعيدها إلى الرتبة 1. هكذا تترسخ الذاكرة.' },
       { t: 'مرحلة اليوم', d: 'تحدٍّ يومي من 10 أسئلة يخلط اللغات الأربع عشرة — نفس الأسئلة للجميع. أول إنجاز في اليوم يقدّم سلسلتك.' },
       { t: 'ألعاب الرحلة', d: 'خمس طرق للمراجعة: زليج الأزواج، السوق (45 ثانية)، القافلة (تهجئة)، الأذن (استماع فقط)، والمبارزة (لاعبان على هاتف واحد).' },
       { t: 'الوجهة', d: 'اتبع طريق ابن بطوطة أو ثبّت اللغة التي تريدها: زر «واصل» وتبويب «تعلّم» سيتبعان وجهتك. يمكن تغييرها في أي وقت من الإعدادات.' },
-      { t: 'بدون اتصال وخصوصية', d: 'كل شيء يبقى على جهازك: بلا حساب، بلا إعلانات، ولا بيانات تُرسل. بعد فتح التطبيق مرة واحدة يعمل بدون اتصال — واحرص على حفظ نسخة من رحلتك.' },
+      { t: 'بدون اتصال وخصوصية', d: 'كل شيء يبقى على جهازك: بلا حساب، بلا إعلانات، ولا بيانات تُرسل. منذ أول فتح يُحفظ التطبيق كله على جهازك، بما فيه الخطوط: يعمل بدون اتصال، والتحديثات تصل من تلقاء نفسها عند التشغيل التالي — واحرص على حفظ نسخة من رحلتك.' },
     ],
   },
   sauvegarde: {

@@ -8,14 +8,19 @@ import { parler, peutParler } from '../lib/tts.js'
 import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { TamponVisa } from './TamponVisa.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { MotCible, Romanisation } from './MotCible.jsx'
 
 export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTerminer, surQuitter }) {
   const [phase, setPhase] = useState('cartes')
   const [tour, setTour] = useState(0)
   const [iCarte, setICarte] = useState(0)
   const [retournee, setRetournee] = useState(false)
+  // `audio` se juge PAR LANGUE : sans voix pour la destination, l'exercice
+  // « écouter » n'existe pas (il ferait entendre du swahili à la française).
+  // La valeur au démarrage fait foi : réévaluer ce memo quand les voix arrivent
+  // remélangerait les questions sous les doigts de l'apprenant.
   const questions = useMemo(
-    () => construireQuiz(lecon.mots, Math.random, { audio: peutParler() }),
+    () => construireQuiz(lecon.mots, Math.random, { audio: peutParler(langue.tts) }),
     [lecon, tour]
   )
   const [iQuestion, setIQuestion] = useState(0)
@@ -24,6 +29,9 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   const [reponse, setReponse] = useState(null)
   const [score, setScore] = useState(0)
   const [bilan, setBilan] = useState(null)
+  // Vrai quand parler() a renoncé (liste des voix arrivée sans voix pour la
+  // langue) : la question d'écoute le dit au lieu de rester muette.
+  const [muet, setMuet] = useState(false)
 
   const mots = lecon.mots
   const total = questions.length
@@ -32,7 +40,9 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   // Les questions d'écoute se prononcent toutes seules à leur arrivée.
   useEffect(() => {
     if (phase === 'quiz' && questions[iQuestion]?.type === 'ecouter') {
-      parler(questions[iQuestion].mot.t, langue.tts)
+      setMuet(!parler(questions[iQuestion].mot.t, langue.tts))
+    } else {
+      setMuet(false)
     }
   }, [phase, iQuestion, questions, langue])
 
@@ -139,11 +149,15 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   }
 
   const bonne = question && question.options ? question.options.find((o) => estBonne(question, o)) : null
+  // La correction cite un mot cible dans une phrase d'interface : isolé par
+  // <bdi>, sinon sa ponctuation suit la direction de la phrase. La cible
+  // d'épellation est la romanisation quand l'écriture n'est pas latine — pas
+  // de `lang` dans ce cas.
   const corrigeTexte = question
     ? question.type === 'epeler'
-      ? question.cible
+      ? <MotCible texte={question.cible} langue={question.mot.r ? null : langue} />
       : question.type === 'produire'
-        ? bonne?.t
+        ? <MotCible texte={bonne?.t} langue={langue} />
         : bonne
           ? sensPour(bonne, source, langue.id)
           : ''
@@ -215,14 +229,14 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                 >
                   <HautParleur taille={24} trait={1.8} />
                 </button>
-                <div className="mot-cible">{mots[iCarte].t}</div>
-                {mots[iCarte].r ? <div className="romanisation">{mots[iCarte].r}</div> : null}
+                <MotCible balise="div" className="mot-cible" texte={mots[iCarte].t} langue={langue} />
+                {mots[iCarte].r ? <Romanisation balise="div" texte={mots[iCarte].r} /> : null}
               </div>
               <div className="carte-mot__face carte-mot__face--verso fond-zellige" style={{ borderRadius: 'var(--r-carte)' }}>
-                <div className="mot-cible" style={{ color: 'var(--papier)', fontSize: 27 }}>
+                <div className="mot-cible" style={{ color: 'var(--sur-majorelle)', fontSize: 27 }}>
                   {sensPour(mots[iCarte], source, langue.id)}
                 </div>
-                <div style={{ fontSize: 14, color: 'var(--sur-majorelle)' }}>{mots[iCarte].t}</div>
+                <MotCible balise="div" style={{ fontSize: 14, color: 'var(--sur-majorelle)' }} texte={mots[iCarte].t} langue={langue} />
               </div>
             </div>
           </div>
@@ -260,14 +274,14 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                 >
                   <HautParleur taille={24} trait={1.8} />
                 </button>
-                <div className="mot-cible">{question.mot.t}</div>
-                {question.mot.r ? <div className="romanisation">{question.mot.r}</div> : null}
+                <MotCible balise="div" className="mot-cible" texte={question.mot.t} langue={langue} />
+                {question.mot.r ? <Romanisation balise="div" texte={question.mot.r} /> : null}
               </>
             ) : question.type === 'ecouter' ? (
               <>
                 <button
                   type="button"
-                  onClick={() => parler(question.mot.t, langue.tts)}
+                  onClick={() => setMuet(!parler(question.mot.t, langue.tts))}
                   aria-label={t.jeux.reecouter}
                   style={{
                     width: 76,
@@ -275,7 +289,7 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                     borderRadius: 999,
                     border: 'none',
                     background: 'var(--majorelle)',
-                    color: 'var(--papier)',
+                    color: 'var(--sur-majorelle)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -285,7 +299,7 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                 >
                   <HautParleur taille={32} trait={1.8} />
                 </button>
-                <span className="texte-2" style={{ fontSize: 13 }}>{t.jeux.reecouter}</span>
+                <span className="texte-2" style={{ fontSize: 13 }}>{muet ? t.sonIndispo : t.jeux.reecouter}</span>
               </>
             ) : question.type === 'epeler' ? (
               <>
@@ -371,9 +385,9 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                 return (
                   <button key={option.id} type="button" className={classe} disabled={revele} onClick={() => choisir(option)}>
                     <span>
-                      {question.type === 'produire' ? option.t : sensPour(option, source, langue.id)}
+                      {question.type === 'produire' ? <MotCible texte={option.t} langue={langue} /> : sensPour(option, source, langue.id)}
                       {question.type === 'produire' && option.r ? (
-                        <span className="romanisation" style={{ marginInlineStart: 8 }}>{option.r}</span>
+                        <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} />
                       ) : null}
                     </span>
                     {estCorrecte ? <Coche taille={20} trait={2.4} /> : null}
@@ -407,7 +421,7 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                     {reponse.bonne ? t.bonneReponse : t.mauvaiseReponse}
                   </span>
                   <span style={{ fontSize: 12.5 }}>
-                    {reponse.bonne ? t.encoreQuestions(total - iQuestion - 1) : `${t.laBonneEtait} ${corrigeTexte}`}
+                    {reponse.bonne ? t.encoreQuestions(total - iQuestion - 1) : <>{t.laBonneEtait} {corrigeTexte}</>}
                   </span>
                 </span>
               </div>

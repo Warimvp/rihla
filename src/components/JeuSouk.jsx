@@ -6,6 +6,7 @@ import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { Croix, Etoile8, HautParleur } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { MotCible, Romanisation } from './MotCible.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const DUREE = 45
@@ -171,8 +172,8 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
             <button type="button" className="bouton bouton--rond" aria-label={t.ecouter} onClick={() => parler(cible.t, langue.tts)}>
               <HautParleur taille={24} trait={1.8} />
             </button>
-            <div className="mot-cible" style={{ fontSize: 26 }}>{cible.t}</div>
-            {cible.r ? <div className="romanisation">{cible.r}</div> : null}
+            <MotCible balise="div" className="mot-cible" style={{ fontSize: 26 }} texte={cible.t} langue={langue} />
+            {cible.r ? <Romanisation balise="div" texte={cible.r} /> : null}
           </>
         ) : (
           <div className="mot-cible" style={{ fontSize: 26 }}>{sensPour(cible, source, langue.id)}</div>
@@ -194,9 +195,9 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
           return (
             <button key={option.id} type="button" className={classe} onClick={() => repondre(option)}>
               <span>
-                {direction === 'versSens' ? sensPour(option, source, langue.id) : option.t}
+                {direction === 'versSens' ? sensPour(option, source, langue.id) : <MotCible texte={option.t} langue={langue} />}
                 {direction === 'versMot' && option.r ? (
-                  <span className="romanisation" style={{ marginInlineStart: 8 }}>{option.r}</span>
+                  <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} />
                 ) : null}
               </span>
             </button>

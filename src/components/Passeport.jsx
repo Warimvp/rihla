@@ -32,7 +32,7 @@ export function Passeport({ t, locale, progres, surAcheterGel, surNuitOfferte })
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <h1 style={{ color: 'var(--sable)', fontSize: 26 }}>{t.onglets.passeport}</h1>
+          <h1 style={{ color: 'var(--sur-majorelle)', fontSize: 26 }}>{t.onglets.passeport}</h1>
           <span dir="rtl" style={{ fontFamily: "'Amiri', 'Geeza Pro', serif", fontSize: 16, color: 'var(--sur-majorelle)', alignSelf: 'start' }}>
             جواز الرحلة
           </span>

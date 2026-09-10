@@ -6,8 +6,12 @@ import { progresInitial } from './progression.js'
 export const MARQUE = 'rihla-sauvegarde'
 export const VERSION_SAUVEGARDE = 1
 
+// Compact volontairement : ce texte transite par le presse-papiers, personne
+// ne le lit à l'œil, et l'indentation gonflait la sauvegarde de ~78 %.
+// Le format ne change pas pour autant : les anciennes sauvegardes indentées
+// restent lisibles par importerProgres (JSON.parse ignore la mise en page).
 export function exporterProgres(progres, jour) {
-  return JSON.stringify({ marque: MARQUE, version: VERSION_SAUVEGARDE, jour, progres }, null, 2)
+  return JSON.stringify({ marque: MARQUE, version: VERSION_SAUVEGARDE, jour, progres })
 }
 
 const estObjet = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)

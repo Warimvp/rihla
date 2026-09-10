@@ -72,7 +72,7 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
           }}
         >
           <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 7 }}>
-            <span style={{ color: 'var(--papier)', fontSize: 15.5, fontWeight: 600 }}>
+            <span style={{ color: 'var(--sur-majorelle)', fontSize: 15.5, fontWeight: 600 }}>
               {aCommence ? t.reprendre : t.commencer} — {nomVille(suite.langue, locale)}
             </span>
             <span style={{ color: 'var(--sur-majorelle)', fontSize: 12.5 }}>
@@ -83,7 +83,10 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
                 className="piste-progres__barre"
                 style={{
                   width: `${(etapesValidees(progres, suite.langue) / suite.langue.lecons.length) * 100}%`,
-                  background: 'var(--safran)',
+                  /* --papier, pas --safran : sur cette piste translucide le safran
+                     ne faisait que 1,94:1, et cette carte n'affiche aucun compte
+                     d'étapes qui aurait pu suppléer à la barre. */
+                  background: 'var(--papier)',
                 }}
               ></span>
             </span>
@@ -177,8 +180,9 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
           cursor: nbDus > 0 ? 'pointer' : 'default',
           fontFamily: 'var(--police-ui)',
           textAlign: 'start',
-          color: 'var(--encre)',
-          opacity: nbDus > 0 ? 1 : 0.6,
+          // Pas d'opacité pour dire « rien à réviser » : le texte tombait à
+          // 2,37:1. Une encre secondaire suffit, et reste lisible.
+          color: nbDus > 0 ? 'var(--encre)' : 'var(--encre-2)',
         }}
       >
         <span

@@ -6,7 +6,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Vite + React 18, **JS/JSX (pas de TS)**, CSS vanilla (`src/styles.css` — les variables CSS = jetons du thème).
 - Aucune lib UI, aucun backend : contenu dans `src/data/langues.js`, progrès en localStorage (`src/lib/progression.js`).
 - Logique pure testée avec vitest : `pnpm test` (quiz déterministe via rng injecté, série de jours, visas/km).
-- PWA : `public/manifest.webmanifest` + `public/sw.js` (cache-first même origine, enregistré en prod seulement).
+- PWA : `public/manifest.webmanifest` + `public/sw.js`, enregistré en prod seulement. **Réseau d'abord sur les navigations** (repli cache après 4 s ; l'app en cache passe devant toute réponse en erreur ; une page redirigée — portail captif — est servie mais jamais mise en cache), cache-first sur le reste (assets hachés). `BUILD` et `PRECACHE` sont injectés dans `dist/sw.js` par le plugin `rihla-sw` de `vite.config.js` (hash du contenu livré — rien à bumper à la main) : **les marqueurs `const BUILD = '…'` et `const PRECACHE = […]` doivent rester tels quels dans `public/sw.js`**, le build échoue sinon. Pas de rechargement forcé à l'activation (il tomberait en pleine leçon) : la nouvelle version arrive au lancement suivant. `src/lib/sw.test.js` évalue le SW dans un faux monde.
 
 ## Thème (source de vérité visuelle)
 - Canvas Claude Design : https://claude.ai/code/artifact/9646c563-567e-49f4-8bd9-cfcd80494524
@@ -20,6 +20,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Polices : Young Serif (titres FR), Amiri (titres AR — bascule via `--police-titre` sous `[dir='rtl']`), Readex Pro (UI, couvre latin **et** arabe).
 - **Langue des définitions** (`rihla.source` : auto/fr/ar, Réglages) : découplée de la langue d'interface. Tout affichage de SENS d'apprentissage passe par `sensPour(mot, source, langueId)` (i18n.js) — jamais `sens(mot, locale)` directement : il gère la bascule automatique quand la destination EST la langue des définitions (arabe → arabe ⇒ sens en français).
 - CSS logique partout (`margin-inline-*`, `inset-inline-*`) ; icônes directionnelles retournées par `.icone-directionnelle`.
+- **Tout mot dans la langue CIBLE** s'affiche via `<MotCible>` / `<Romanisation>` (`src/components/MotCible.jsx`) : `dir="auto"` + `lang` (BCP-47 de `langue.tts`). Jamais `mot.t` nu — sinon « ¿Cómo estás? » s'affiche à l'envers sous interface arabe (600 mots et 260 romanisations sont bordés de ponctuation neutre). Les SENS (`sensPour`) n'y passent pas. Ne jamais poser une marge sur l'élément `dir="ltr"` lui-même : une propriété logique s'y résout contre SA direction — `Romanisation` enrobe le style pour ça.
 
 ## Lancer
 - Serveur : `rihla-dev` (port 5183, strictPort) dans `~/.claude/launch.json`. Ne jamais lancer via Bash.
@@ -36,7 +37,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
   - **Zellige des paires** : memory 6 paires mot ↔ sens, bonus si peu de coups (30–50 XP).
   - **Le Souk** : 45 s chrono, 3 étals, combos (10 + 2×combo par bonne, plafond 100 XP/partie).
   - **La Caravane** : épeler 8 mots avec des tuiles-lettres (romanisation si écriture non latine, mots ≤ 10 caractères) ; 10 XP sans faute, 5 sinon. Rangées de lettres en `dir="ltr"` forcé même en AR.
-  - **L'Oreille** : compréhension orale pure (aucun texte à lire, TTS obligatoire — carte désactivée si `peutParler()` est faux) ; 10 manches auto-avancées, 8 XP par bonne.
+  - **L'Oreille** : compréhension orale pure (aucun texte à lire, TTS obligatoire — carte désactivée si `peutParler(langue.tts)` est faux : il faut une voix pour LA langue (`voixPour`, `src/lib/tts.js`), pas seulement l'API ; sans voix swahili l'app se tait plutôt que de le prononcer à la française, et la leçon perd aussi son exercice « écouter ») ; 10 manches auto-avancées, 8 XP par bonne.
   - **Le Duel** : 2 joueurs sur le même téléphone, moitié haute pivotée à 180° (`.duel-moitie--haut`), premier sur la bonne réponse marque, une erreur verrouille la manche ; 8 manches, 30 XP forfaitaires.
 - **L'étape du jour** (`Defi.jsx` + `src/lib/defi.js`, carte safran sur l'Accueil) : 10 questions dans les 14 langues, tirage déterministe par date (graine = AAAAMMJJ, même défi pour tous). Première réussite du jour : score×4 XP (+10 si parfait) **et la série avance** (quel que soit le score — c'est un rituel, pas un examen ; idempotent si une étape a déjà compté le jour). Rejouer le même jour : 0 XP, meilleur score conservé (`enregistrerDefi`).
 - Animations : `.anim-pop` / `.anim-secouer` (réponses), flip 3D `.tuile`, `EclatEtoiles` (pluie de khatams), tampon `tamponner` — toutes coupées par `prefers-reduced-motion`.
@@ -73,7 +74,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Notification locale via `@capacitor/local-notifications`, id fixe `1325`, planification `{ on: { hour, minute } }` (quotidienne). **Natif seulement** : sur le web les boutons sont désactivés avec un message honnête (une notification programmée ne survit pas à la fermeture de l'onglet). Réglages : Activé/Coupé + heure. Clés `rihla.rappel` / `rihla.rappel.heure`.
 
 ## Mécaniques « niveau Duolingo » (2026-09-06)
-- **Exercices variés en leçon** (`construireQuiz`, cycle `CYCLE_EXERCICES`) : comprendre → écouter → produire → épeler. Replis AUTOMATIQUES : sans TTS, écouter → comprendre ; cible > 10 caractères (`cibleEpellation`), épeler → produire. L'épellation partagée vit dans `src/lib/epellation.js` (Caravane + leçons).
+- **Exercices variés en leçon** (`construireQuiz`, cycle `CYCLE_EXERCICES`) : comprendre → écouter → produire → épeler. Replis AUTOMATIQUES : sans voix pour la langue (`peutParler(langue.tts)`), écouter → comprendre ; cible > 10 caractères (`cibleEpellation`), épeler → produire. L'épellation partagée vit dans `src/lib/epellation.js` (Caravane + leçons).
 - **Objectif du jour** (10/20/30 XP, Réglages) : chaque gain d'XP passe par `App.majProgres` → `attribuerXpDuJour` (14 jours conservés dans `progres.xpJours`). Barre sur l'Accueil. Les débits (achat de nuit) ne s'attribuent pas.
 - **Caravansérail** (gel de série) : 150 XP la nuit, stock max 2 (Passeport). `majSerieAvecGels` couvre EXACTEMENT un jour manqué (l'avant-veille) ; 2+ jours manqués → série perdue, nuits conservées. `gelConsomme` remonte jusqu'aux écrans de fin (chip menthe).
 - **Sons + haptique** (`src/lib/sons.js`) : WebAudio synthétisé (aucun asset), `retourReponse(bonne)` sur CHAQUE réponse (leçons, défi, carnet, 5 jeux), `fanfare()` sur les fins victorieuses ; coupable dans Réglages (`rihla.sons`). Toujours déclenché par un geste (règles d'autoplay).
