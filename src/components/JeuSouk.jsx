@@ -4,8 +4,9 @@ import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
-import { Croix, Etoile8, HautParleur } from './Icones.jsx'
+import { Croix, Etoile8 } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { Ecoute } from './Ecoute.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
@@ -169,9 +170,9 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
       >
         {direction === 'versSens' ? (
           <>
-            <button type="button" className="bouton bouton--rond" aria-label={t.ecouter} onClick={() => parler(cible.t, langue.tts)}>
-              <HautParleur taille={24} trait={1.8} />
-            </button>
+            {/* Le chrono tourne pendant l'écoute lente : la tortue se paie en
+                secondes, sinon elle deviendrait un bouton pause. */}
+            <Ecoute t={t} texte={cible.t} langue={langue} taille={52} />
             <MotCible balise="div" className="mot-cible" style={{ fontSize: 26 }} texte={cible.t} langue={langue} />
             {cible.r ? <Romanisation balise="div" texte={cible.r} /> : null}
           </>

@@ -15,6 +15,7 @@ import { enregistrerEtape, figerAvancement, progresInitial } from '../lib/progre
 import { mulberry32 } from '../lib/quiz.js'
 import { DEBIT_LENT, DEBIT_NORMAL } from '../lib/tts.js'
 import { Accueil } from './Accueil.jsx'
+import { JeuSouk } from './JeuSouk.jsx'
 import { Lecon } from './Lecon.jsx'
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
@@ -264,6 +265,24 @@ describe('réécouter, et lentement', () => {
     }
     expect(produites).toBeGreaterThan(0)
     expect(ecoutes).toBeGreaterThan(0)
+  })
+
+  it('au Souk, la tortue est sur les manches « sens », jamais là où elle soufflerait le mot', () => {
+    const vus = { sens: 0, mot: 0 }
+    // Chaque montage tire une nouvelle manche (Math.random figé mais qui avance).
+    for (let i = 0; i < 12 && (!vus.sens || !vus.mot); i++) {
+      const vue = monter(<JeuSouk t={t} locale="fr" source="fr" langue={es} surXp={() => {}} surQuitter={() => {}} />)
+      // Manche « sens » : le mot cible est dans la carte ; « mot » : c'est le sens.
+      const versSens = vue.querySelector('.carte [lang]') !== null
+      vus[versSens ? 'sens' : 'mot']++
+      expect(parLabel(vue, t.ecouterLent) !== null).toBe(versSens)
+      if (versSens) {
+        clic(parLabel(vue, t.ecouterLent))
+        expect(dites.at(-1).rate).toBe(DEBIT_LENT)
+      }
+    }
+    expect(vus.sens).toBeGreaterThan(0)
+    expect(vus.mot).toBeGreaterThan(0)
   })
 
   it('sans voix pour la langue, aucun haut-parleur ne fait semblant', () => {
