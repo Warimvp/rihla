@@ -35,7 +35,7 @@ export function choisirDistracteurs(mots, mot, n, alea = Math.random) {
 // - 'ecouter'    : on ENTEND seulement le mot, on choisit son sens ;
 // - 'produire'   : on montre le sens, on choisit le mot dans la langue cible ;
 // - 'epeler'     : on montre le sens, on épelle le mot avec des tuiles-lettres ;
-// et, un tour sur deux, deux substitutions :
+// et, un tour sur deux, trois substitutions :
 // - 'lire'       : à la place de 'comprendre' — on montre le mot dans son
 //                  ÉCRITURE seule, on choisit sa romanisation (si le mot en a
 //                  une : sept langues sur quatorze) ;
@@ -44,13 +44,17 @@ export function choisirDistracteurs(mots, mot, n, alea = Math.random) {
 //                  l'arabe. L'image est une capacité INJECTÉE
 //                  (`capacites.aVisuel(mot)`), jamais importée ici : un test
 //                  peut la donner ou la retirer, donc peut échouer.
-// Replis : sans audio, 'ecouter' redevient 'comprendre' ; un mot trop long
-// pour l'épellation redevient 'produire' ; sans romanisation, 'lire' reste
-// 'comprendre' ; sans image, 'voir' reste 'produire'. Le cycle reste à quatre
+// - 'dictee'     : à la place de 'epeler' — on ENTEND seulement le mot (ni
+//                  sens ni écriture) et on l'épelle avec les mêmes tuiles :
+//                  la première question où l'oreille doit produire, pas choisir.
+// Replis : sans audio, 'ecouter' redevient 'comprendre' et 'dictee' reste
+// 'epeler' ; un mot trop long pour l'épellation redevient 'produire' ; sans
+// romanisation, 'lire' reste 'comprendre' ; sans image, 'voir' reste
+// 'produire'. Le cycle reste à quatre
 // et les substitutions ne touchent que le second tour : une leçon de huit
 // garde ainsi un exercice de chaque sorte.
 export const CYCLE_EXERCICES = ['comprendre', 'ecouter', 'produire', 'epeler']
-export const TYPES_EXERCICES = [...CYCLE_EXERCICES, 'lire', 'voir']
+export const TYPES_EXERCICES = [...CYCLE_EXERCICES, 'lire', 'voir', 'dictee']
 
 const jamais = () => false
 
@@ -64,7 +68,8 @@ export function construireQuiz(mots, alea = Math.random, capacites = { audio: tr
     if (base === 'ecouter' && !capacites.audio) type = 'comprendre'
     if (base === 'comprendre' && secondTour && mot.r && romanises.length >= 4) type = 'lire'
     if (base === 'produire' && secondTour && aVisuel(mot)) type = 'voir'
-    if (type === 'epeler') {
+    if (base === 'epeler' && secondTour && capacites.audio) type = 'dictee'
+    if (type === 'epeler' || type === 'dictee') {
       const cible = cibleEpellation(mot)
       if (cible) return { mot, type, cible, fentes: cible.split(''), lettres: construireLettres(cible, alea) }
       type = 'produire'

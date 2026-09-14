@@ -176,8 +176,10 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   // de `lang` dans ce cas.
   // Les types dont les options sont des mots cibles (et non des sens).
   const optionsEnCible = question?.type === 'produire' || question?.type === 'voir'
+  // Épellation et dictée partagent les tuiles-lettres (et la même correction).
+  const aTuiles = question?.type === 'epeler' || question?.type === 'dictee'
   const corrigeTexte = question
-    ? question.type === 'epeler'
+    ? aTuiles
       ? <MotCible texte={question.cible} langue={question.mot.r ? null : langue} />
       : question.type === 'lire'
         ? <Romanisation texte={bonne?.r} />
@@ -198,7 +200,9 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
             ? t.jeux.ecouteSens
             : question.type === 'epeler'
               ? t.jeux.epelle
-              : t.promptProduire(nomLangue(langue, locale))
+              : question.type === 'dictee'
+                ? t.promptDictee
+                : t.promptProduire(nomLangue(langue, locale))
     : ''
   const utilisees = new Set(placees.map((p) => p.cle))
   let curseurFentes = 0
@@ -324,14 +328,27 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
             ) : question.type === 'ecouter' ? (
               // Se prononce seule à l'arrivée ; la clé la fait rejouer à chaque question.
               <Ecoute key={iQuestion} t={t} texte={question.mot.t} langue={langue} grand auto />
-            ) : question.type === 'epeler' ? (
+            ) : aTuiles ? (
               <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)', fontSize: 24 }}>
-                    {sensPour(question.mot, source, langue.id)}
+                {question.type === 'dictee' ? (
+                  // L'oreille seule : ni sens ni écriture avant la réponse, puis
+                  // le sens, pour que le mot entendu et épelé veuille dire quelque chose.
+                  <>
+                    <Ecoute key={iQuestion} t={t} texte={question.mot.t} langue={langue} grand auto />
+                    {reponse ? (
+                      <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)', fontSize: 22 }}>
+                        {sensPour(question.mot, source, langue.id)}
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)', fontSize: 24 }}>
+                      {sensPour(question.mot, source, langue.id)}
+                    </div>
+                    <Ecoute t={t} texte={question.mot.t} langue={langue} />
                   </div>
-                  <Ecoute t={t} texte={question.mot.t} langue={langue} />
-                </div>
+                )}
                 <div dir="ltr" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 6 }}>
                   {question.fentes.map((c, i) => {
                     if (c === ' ') return <span key={i} className="fente fente--espace"></span>
@@ -365,7 +382,7 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
           <p ref={invite} tabIndex={-1} style={{ fontSize: 15, fontWeight: 500, outline: 'none' }}>
             {promptTexte}
           </p>
-          {question.type === 'epeler' ? (
+          {aTuiles ? (
             <>
               <div dir="ltr" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
                 {question.lettres.map((tuile) => (

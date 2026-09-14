@@ -35,11 +35,13 @@ describe('construireQuiz', () => {
     expect(new Set(quiz.map((q) => q.mot.id)).size).toBe(MOTS.length)
   })
 
-  it('suit le cycle des exercices, avec repli épellation → production si le mot est trop long', () => {
+  it('suit le cycle des exercices, dictée au second tour, repli épellation → production si le mot est trop long', () => {
     quiz.forEach((question, i) => {
       const base = CYCLE_EXERCICES[i % CYCLE_EXERCICES.length]
+      const secondTour = Math.floor(i / CYCLE_EXERCICES.length) % 2 === 1
       if (base === 'epeler') {
-        expect(question.type).toBe(cibleEpellation(question.mot) ? 'epeler' : 'produire')
+        const attendu = cibleEpellation(question.mot) ? (secondTour ? 'dictee' : 'epeler') : 'produire'
+        expect(question.type).toBe(attendu)
       } else {
         expect(question.type).toBe(base)
       }
@@ -58,7 +60,7 @@ describe('construireQuiz', () => {
   })
 
   it('les questions à choix proposent 4 options uniques dont exactement une bonne', () => {
-    const aChoix = quiz.filter((q) => q.type !== 'epeler')
+    const aChoix = quiz.filter((q) => q.type !== 'epeler' && q.type !== 'dictee')
     expect(aChoix.length).toBeGreaterThan(0)
     for (const question of aChoix) {
       expect(question.options).toHaveLength(4)
@@ -69,8 +71,8 @@ describe('construireQuiz', () => {
     }
   })
 
-  it('les questions d’épellation portent la cible, ses fentes et toutes ses lettres', () => {
-    const epellations = quiz.filter((q) => q.type === 'epeler')
+  it('les questions à tuiles (épellation, dictée) portent la cible, ses fentes et toutes ses lettres', () => {
+    const epellations = quiz.filter((q) => q.type === 'epeler' || q.type === 'dictee')
     expect(epellations.length).toBeGreaterThan(0)
     for (const question of epellations) {
       expect(question.cible).toBe(cibleEpellation(question.mot))
@@ -112,6 +114,21 @@ describe('construireQuiz', () => {
     expect(seulement[6].type).toBe('produire')
     // Et sans capacité du tout (l'appel historique) : jamais.
     expect(quiz.some((q) => q.type === 'voir')).toBe(false)
+  })
+
+  it('« dictée » remplace l’épellation du second tour, et seulement avec une voix', () => {
+    // Des cibles toutes épelables (≤ 10 caractères) : aucun repli vers « produire ».
+    const COURTS = MOTS.map((m, i) => ({ ...m, t: `mot${i}` }))
+    const avec = construireQuiz(COURTS, mulberry32(1))
+    expect(avec[3].type).toBe('epeler')
+    expect(avec[7].type).toBe('dictee')
+    expect(avec[7].cible).toBe(cibleEpellation(avec[7].mot))
+    expect(avec[7].fentes.join('')).toBe(avec[7].cible)
+    expect(avec[7].options).toBeUndefined()
+    // Sans voix pour la langue, on épelle d'après le sens, comme au premier tour.
+    const sans = construireQuiz(COURTS, mulberry32(1), { audio: false })
+    expect(sans[7].type).toBe('epeler')
+    expect(sans.some((q) => q.type === 'dictee')).toBe(false)
   })
 
   it('ne met pas systématiquement la bonne réponse à la même place', () => {

@@ -10,7 +10,7 @@ import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App.jsx'
 import { LANGUES, nomLangue } from '../data/langues.js'
-import { getDictionary } from '../i18n.js'
+import { getDictionary, sensPour } from '../i18n.js'
 import { enregistrerEtape, figerAvancement, progresInitial } from '../lib/progression.js'
 import { mulberry32 } from '../lib/quiz.js'
 import { DEBIT_LENT, DEBIT_NORMAL } from '../lib/tts.js'
@@ -229,12 +229,14 @@ describe('réécouter, et lentement', () => {
     expect(lent.voice.name).toBe('Mónica')
   })
 
-  it('au quiz : le son d’un « produire » n’arrive qu’avec la réponse, l’écoute pure se prononce seule', () => {
+  it('au quiz : le son d’un « produire » n’arrive qu’avec la réponse ; écoute pure et dictée se prononcent seules', () => {
     const vue = monterLecon(es)
     for (let i = 0; i < 16; i++) clic(primaire(vue))
     const invite = () => vue.querySelector('p[tabindex="-1"]').textContent
+    const sensDeLaLecon = es.lecons[0].mots.map((m) => sensPour(m, 'fr', 'es'))
     let produites = 0
     let ecoutes = 0
+    let dictees = 0
     for (let q = 0; q < 8; q++) {
       if (invite() === t.promptProduire(nomLangue(es, 'fr'))) {
         produites++
@@ -246,6 +248,17 @@ describe('réécouter, et lentement', () => {
         clic(parLabel(vue, t.ecouterLent))
         expect(dites.at(-1).rate).toBe(DEBIT_LENT)
         expect(dites.at(-1).text).toBe(sansPonctuation(bonne))
+      } else if (invite() === t.promptDictee) {
+        dictees++
+        const carte = vue.querySelector('.carte')
+        // L'oreille seule : ni mot écrit ni sens avant la réponse — mais la tortue.
+        expect(carte.querySelector('[lang]')).toBeNull()
+        expect(sensDeLaLecon.some((s) => carte.textContent.includes(s))).toBe(false)
+        expect(parLabel(vue, t.ecouterLent)).not.toBeNull()
+        const fentes = vue.querySelectorAll('.fente:not(.fente--espace)').length
+        for (let i = 0; i < fentes; i++) clic(vue.querySelector('.lettre:not([disabled])'))
+        // Une fois épelé, le mot retrouve son sens.
+        expect(sensDeLaLecon.some((s) => carte.textContent.includes(s))).toBe(true)
       } else if (vue.querySelector('.option')) {
         clic(vue.querySelector('.option'))
       } else {
@@ -254,7 +267,8 @@ describe('réécouter, et lentement', () => {
       }
       const avant = dites.length
       clic(bouton(vue, t.continuer))
-      if (q < 7 && invite() === t.jeux.ecouteSens) {
+      // L'écoute pure et la dictée se prononcent seules à l'arrivée ; rien d'autre.
+      if (q < 7 && [t.jeux.ecouteSens, t.promptDictee].includes(invite())) {
         ecoutes++
         expect(dites.length - avant).toBe(1)
         expect(dites.at(-1).rate).toBe(DEBIT_NORMAL)
@@ -265,6 +279,7 @@ describe('réécouter, et lentement', () => {
     }
     expect(produites).toBeGreaterThan(0)
     expect(ecoutes).toBeGreaterThan(0)
+    expect(dictees).toBeGreaterThan(0)
   })
 
   it('au Souk, la tortue est sur les manches « sens », jamais là où elle soufflerait le mot', () => {
