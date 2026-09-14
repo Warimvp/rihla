@@ -90,7 +90,12 @@ export function peutParler(codeLangue) {
   return voixPour(voix, codeLangue) !== null
 }
 
-export function parler(texte, codeLangue) {
+// Débit de la voix : 0.85 d'ordinaire (déjà un peu posé), 0.5 pour la tortue —
+// réécouter lentement laisse le temps de découper une phrase en mots.
+export const DEBIT_NORMAL = 0.85
+export const DEBIT_LENT = 0.5
+
+export function parler(texte, codeLangue, { lent = false } = {}) {
   if (!apiDisponible()) return false
   const voix = listeVoix()
   const choisie = voixPour(voix, codeLangue)
@@ -99,7 +104,7 @@ export function parler(texte, codeLangue) {
   const phrase = new SpeechSynthesisUtterance(texte.replace(/[…?¿？]/g, ' '))
   phrase.lang = choisie?.lang || codeLangue
   if (choisie) phrase.voice = choisie
-  phrase.rate = 0.85
+  phrase.rate = lent ? DEBIT_LENT : DEBIT_NORMAL
   window.speechSynthesis.cancel()
   window.speechSynthesis.speak(phrase)
   return true

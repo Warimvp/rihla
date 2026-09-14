@@ -5,7 +5,8 @@ import { assembler } from '../lib/epellation.js'
 import { construireQuiz, estBonne } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler, peutParler } from '../lib/tts.js'
-import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
+import { Coche, Croix, Etoile8 } from './Icones.jsx'
+import { Ecoute } from './Ecoute.jsx'
 import { TamponVisa } from './TamponVisa.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
@@ -42,22 +43,10 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   // Le focus suit la question : le bouton « Continuer » disparaît à chaque
   // avancée, sans ça le focus retombe sur <body> huit fois par leçon.
   const invite = useRef(null)
-  // Vrai quand parler() a renoncé (liste des voix arrivée sans voix pour la
-  // langue) : la question d'écoute le dit au lieu de rester muette.
-  const [muet, setMuet] = useState(false)
 
   const mots = lecon.mots
   const total = questions.length
   const question = questions[iQuestion]
-
-  // Les questions d'écoute se prononcent toutes seules à leur arrivée.
-  useEffect(() => {
-    if (phase === 'quiz' && questions[iQuestion]?.type === 'ecouter') {
-      setMuet(!parler(questions[iQuestion].mot.t, langue.tts))
-    } else {
-      setMuet(false)
-    }
-  }, [phase, iQuestion, questions, langue])
 
   useEffect(() => {
     if (phase === 'quiz') invite.current?.focus()
@@ -251,9 +240,9 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
 
       {phase === 'cartes' ? (
         <>
-          {/* Un vrai <button> est impossible ici (le haut-parleur en est déjà
-              un, et un bouton dans un bouton n'existe pas) : la carte reste un
-              conteneur, mais un conteneur qu'on atteint et retourne au clavier. */}
+          {/* Un vrai <button> ne contient que du texte en ligne, pas ces blocs :
+              la carte reste un conteneur, mais un conteneur qu'on atteint et
+              retourne au clavier. */}
           <div
             className={`carte-mot ${retournee ? 'carte-mot--retournee' : ''}`}
             role="button"
@@ -271,17 +260,6 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
           >
             <div className="carte-mot__interieur">
               <div className="carte-mot__face carte-mot__face--recto">
-                <button
-                  type="button"
-                  className="bouton bouton--rond"
-                  aria-label={t.ecouter}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    parler(mots[iCarte].t, langue.tts)
-                  }}
-                >
-                  <HautParleur taille={24} trait={1.8} />
-                </button>
                 <MotCible balise="div" className="mot-cible" texte={mots[iCarte].t} langue={langue} />
                 {mots[iCarte].r ? <Romanisation balise="div" texte={mots[iCarte].r} /> : null}
               </div>
@@ -295,6 +273,8 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
               </div>
             </div>
           </div>
+          {/* Hors de la carte : on réécoute au recto comme au verso, sans la retourner. */}
+          <Ecoute t={t} texte={mots[iCarte].t} langue={langue} taille={52} />
           <div style={{ flex: '1 1 auto' }}></div>
           {/* Un seul bouton qui change d'étiquette, pas deux qui se remplacent :
               le même nœud garde le focus d'une carte à l'autre. */}
@@ -321,66 +301,36 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
           >
             {question.type === 'comprendre' ? (
               <>
-                <button
-                  type="button"
-                  className="bouton bouton--rond"
-                  aria-label={t.ecouter}
-                  onClick={() => parler(question.mot.t, langue.tts)}
-                >
-                  <HautParleur taille={24} trait={1.8} />
-                </button>
+                <Ecoute t={t} texte={question.mot.t} langue={langue} taille={52} />
                 <MotCible balise="div" className="mot-cible" texte={question.mot.t} langue={langue} />
                 {question.mot.r ? <Romanisation balise="div" texte={question.mot.r} /> : null}
               </>
             ) : question.type === 'lire' ? (
               // L'écriture seule : ni romanisation ni haut-parleur, c'est
-              // justement ce qu'on demande de lire.
-              <MotCible balise="div" className="mot-cible" texte={question.mot.t} langue={langue} />
+              // justement ce qu'on demande de lire — le son vient avec la réponse.
+              <>
+                <MotCible balise="div" className="mot-cible" texte={question.mot.t} langue={langue} />
+                {reponse ? <Ecoute t={t} texte={question.mot.t} langue={langue} /> : null}
+              </>
             ) : question.type === 'voir' ? (
               // Pour un lecteur d'écran, l'image porte le sens : la question
               // redevient une production, jamais une énigme.
-              <div className="visuel-quiz">
-                <VisuelConcept id={question.mot.id} taille={128} etiquette={sensPour(question.mot, source, langue.id)} />
-              </div>
-            ) : question.type === 'ecouter' ? (
               <>
-                <button
-                  type="button"
-                  onClick={() => setMuet(!parler(question.mot.t, langue.tts))}
-                  aria-label={t.jeux.reecouter}
-                  style={{
-                    width: 76,
-                    height: 76,
-                    borderRadius: 999,
-                    border: 'none',
-                    background: 'var(--majorelle)',
-                    color: 'var(--sur-majorelle)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    boxShadow: 'var(--ombre-cta)',
-                  }}
-                >
-                  <HautParleur taille={32} trait={1.8} />
-                </button>
-                <span className="texte-2" style={{ fontSize: 13 }}>{muet ? t.sonIndispo : t.jeux.reecouter}</span>
+                <div className="visuel-quiz">
+                  <VisuelConcept id={question.mot.id} taille={128} etiquette={sensPour(question.mot, source, langue.id)} />
+                </div>
+                {reponse ? <Ecoute t={t} texte={question.mot.t} langue={langue} /> : null}
               </>
+            ) : question.type === 'ecouter' ? (
+              // Se prononce seule à l'arrivée ; la clé la fait rejouer à chaque question.
+              <Ecoute key={iQuestion} t={t} texte={question.mot.t} langue={langue} grand auto />
             ) : question.type === 'epeler' ? (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)', fontSize: 24 }}>
                     {sensPour(question.mot, source, langue.id)}
                   </div>
-                  <button
-                    type="button"
-                    className="bouton bouton--rond"
-                    style={{ width: 44, height: 44 }}
-                    aria-label={t.ecouter}
-                    onClick={() => parler(question.mot.t, langue.tts)}
-                  >
-                    <HautParleur taille={20} trait={1.8} />
-                  </button>
+                  <Ecoute t={t} texte={question.mot.t} langue={langue} />
                 </div>
                 <div dir="ltr" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 6 }}>
                   {question.fentes.map((c, i) => {
@@ -405,7 +355,11 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                 </div>
               </>
             ) : (
-              <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)' }}>{sensPour(question.mot, source, langue.id)}</div>
+              // Produire : l'entendre avant de choisir soufflerait la réponse.
+              <>
+                <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)' }}>{sensPour(question.mot, source, langue.id)}</div>
+                {reponse ? <Ecoute t={t} texte={question.mot.t} langue={langue} /> : null}
+              </>
             )}
           </div>
           <p ref={invite} tabIndex={-1} style={{ fontSize: 15, fontWeight: 500, outline: 'none' }}>

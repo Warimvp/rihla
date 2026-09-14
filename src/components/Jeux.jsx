@@ -1,15 +1,6 @@
-import { useEffect, useState } from 'react'
-import { peutParler, surVoixPretes } from '../lib/tts.js'
+import { peutParler } from '../lib/tts.js'
+import { useVoixPretes } from './Ecoute.jsx'
 import { Auvent, CaravaneIcone, ChevronAvant, DuelIcone, Onde, TuileZellige } from './Icones.jsx'
-
-// La liste des voix du système arrive APRÈS le premier rendu (`voiceschanged`).
-// Ce hook force un re-rendu quand elle est là, pour que `peutParler(langue.tts)`
-// soit réévalué. À n'utiliser que là où changer d'avis est sans danger — jamais
-// pour reconstruire le quiz d'une leçon en cours.
-export function useVoixPretes() {
-  const [, setTick] = useState(0)
-  useEffect(() => surVoixPretes(() => setTick((n) => n + 1)), [])
-}
 
 const JEUX = [
   { id: 'zellige', Icone: TuileZellige },

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { parler, peutParler, voixPour } from './tts.js'
+import { DEBIT_LENT, DEBIT_NORMAL, parler, peutParler, voixPour } from './tts.js'
 
 const voix = (lang, nom = lang, extra = {}) => ({ lang, name: nom, ...extra })
 
@@ -98,6 +98,24 @@ describe('parler', () => {
   it('se tait plutôt que de prononcer le swahili avec une voix française', () => {
     const dites = poserAppareil([voix('fr-FR'), voix('en-US')])
     expect(parler('jambo', 'sw-KE')).toBe(false)
+    expect(dites).toHaveLength(0)
+  })
+
+  it('parle posément par défaut, lentement quand on le demande (la tortue)', () => {
+    const dites = poserAppareil([voix('es-ES', 'Mónica')])
+    expect(parler('¿Cómo estás?', 'es-ES')).toBe(true)
+    expect(parler('¿Cómo estás?', 'es-ES', { lent: true })).toBe(true)
+    expect(dites[0].rate).toBe(DEBIT_NORMAL)
+    expect(dites[1].rate).toBe(DEBIT_LENT)
+    expect(DEBIT_LENT).toBeLessThan(DEBIT_NORMAL)
+    // Même voix, même texte : seule la vitesse change.
+    expect(dites[1].voice.name).toBe('Mónica')
+    expect(dites[1].text).toBe(dites[0].text)
+  })
+
+  it('lentement ne force pas la parole sans voix pour la langue', () => {
+    const dites = poserAppareil([voix('fr-FR')])
+    expect(parler('jambo', 'sw-KE', { lent: true })).toBe(false)
     expect(dites).toHaveLength(0)
   })
 

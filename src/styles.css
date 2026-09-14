@@ -316,6 +316,29 @@ p {
   background-image: linear-gradient(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.08));
 }
 
+/* Écouter + la tortue (lentement), toujours côte à côte. */
+.ecoute {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Le grand haut-parleur des questions d'écoute pure : le son EST l'énoncé. */
+.bouton-ecoute-grand {
+  width: 76px;
+  height: 76px;
+  border-radius: 999px;
+  border: none;
+  background: var(--majorelle);
+  color: var(--sur-majorelle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--ombre-cta);
+}
+
 /* ————— Cartes & chips ————— */
 
 .carte {

@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
-import { parler, peutParler } from '../lib/tts.js'
-import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
+import { peutParler } from '../lib/tts.js'
+import { Coche, Croix, Etoile8 } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
-import { useVoixPretes } from './Jeux.jsx'
+import { Ecoute, useVoixPretes } from './Ecoute.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
@@ -39,10 +39,6 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
   useVoixPretes()
 
   const manche = manches[iManche]
-
-  useEffect(() => {
-    if (!fin && manche) parler(manche.mot.t, langue.tts)
-  }, [manche, fin, langue])
 
   const rejouer = () => {
     setPartie(partie + 1)
@@ -147,27 +143,8 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
       </span>
 
       <div className="carte" style={{ padding: '26px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
-        <button
-          type="button"
-          onClick={() => parler(manche.mot.t, langue.tts)}
-          aria-label={t.jeux.reecouter}
-          style={{
-            width: 76,
-            height: 76,
-            borderRadius: 999,
-            border: 'none',
-            background: 'var(--majorelle)',
-            color: 'var(--sur-majorelle)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            boxShadow: 'var(--ombre-cta)',
-          }}
-        >
-          <HautParleur taille={32} trait={1.8} />
-        </button>
-        <span className="texte-2" style={{ fontSize: 13 }}>{t.jeux.reecouter}</span>
+        {/* Se prononce seule à chaque manche (la clé remonte le composant). */}
+        <Ecoute key={`${partie}:${iManche}`} t={t} texte={manche.mot.t} langue={langue} grand auto />
       </div>
 
       <p style={{ fontSize: 15, fontWeight: 500 }}>

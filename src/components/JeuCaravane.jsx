@@ -5,8 +5,9 @@ import { assembler, cibleEpellation, construireLettres } from '../lib/epellation
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
-import { Croix, Etoile8, HautParleur } from './Icones.jsx'
+import { Croix, Etoile8 } from './Icones.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { Ecoute } from './Ecoute.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_MOTS = 8
@@ -170,9 +171,7 @@ export function JeuCaravane({ t, locale, source, langue, surXp, surQuitter }) {
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div className="mot-cible" style={{ fontSize: 24 }}>{sensPour(mot, source, langue.id)}</div>
-          <button type="button" className="bouton bouton--rond" style={{ width: 44, height: 44 }} aria-label={t.ecouter} onClick={() => parler(mot.t, langue.tts)}>
-            <HautParleur taille={20} trait={1.8} />
-          </button>
+          <Ecoute t={t} texte={mot.t} langue={langue} />
         </div>
         <div dir="ltr" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 6 }}>
           {fentes.map((c, i) => {

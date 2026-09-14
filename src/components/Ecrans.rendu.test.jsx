@@ -9,10 +9,11 @@ import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App.jsx'
-import { LANGUES } from '../data/langues.js'
+import { LANGUES, nomLangue } from '../data/langues.js'
 import { getDictionary } from '../i18n.js'
 import { enregistrerEtape, figerAvancement, progresInitial } from '../lib/progression.js'
 import { mulberry32 } from '../lib/quiz.js'
+import { DEBIT_LENT, DEBIT_NORMAL } from '../lib/tts.js'
 import { Accueil } from './Accueil.jsx'
 import { Lecon } from './Lecon.jsx'
 
@@ -161,6 +162,115 @@ describe('une leçon jouée jusqu’au bilan', () => {
     }
     expect(bouton(vue, t.etapeSuivante)).toBeUndefined()
     expect(bouton(vue, t.rejouer).classList.contains('bouton--primaire')).toBe(true)
+  })
+})
+
+describe('réécouter, et lentement', () => {
+  // jsdom n'a pas de synthèse vocale : un appareil avec une voix espagnole.
+  let dites
+  beforeEach(() => {
+    dites = []
+    class Utterance {
+      constructor(texte) {
+        this.text = texte
+      }
+    }
+    globalThis.SpeechSynthesisUtterance = Utterance
+    window.SpeechSynthesisUtterance = Utterance
+    window.speechSynthesis = {
+      getVoices: () => [
+        { lang: 'es-ES', name: 'Mónica' },
+        { lang: 'fr-FR', name: 'Thomas' },
+      ],
+      cancel: () => {},
+      speak: (phrase) => dites.push(phrase),
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }
+  })
+  afterEach(() => {
+    delete window.speechSynthesis
+    delete window.SpeechSynthesisUtterance
+    delete globalThis.SpeechSynthesisUtterance
+  })
+
+  const parLabel = (vue, label) => vue.querySelector(`button[aria-label="${label}"]`)
+  const sansPonctuation = (texte) => texte.replace(/[…?¿？]/g, ' ')
+  const monterLecon = (langue) =>
+    monter(
+      <Lecon
+        t={t}
+        locale="fr"
+        source="fr"
+        langue={langue}
+        lecon={langue.lecons[0]}
+        indexLangue={0}
+        surTerminer={() => ({ xpGagne: 0, valide: false, gelConsomme: false, nouveauVisa: false, suivante: null })}
+        surSuivante={() => {}}
+        surQuitter={() => {}}
+      />
+    )
+
+  it('une carte se réécoute au verso comme au recto, et lentement', () => {
+    const vue = monterLecon(es)
+    const carte = vue.querySelector('.carte-mot')
+    // Hors de la carte : pas de bouton dans le role="button", visible des deux côtés.
+    expect(carte.querySelector('button')).toBeNull()
+    clic(primaire(vue))
+    expect(carte.classList.contains('carte-mot--retournee')).toBe(true)
+    clic(parLabel(vue, t.ecouter))
+    clic(parLabel(vue, t.ecouterLent))
+    const [retourne, normal, lent] = dites
+    expect(sansPonctuation(es.lecons[0].mots[0].t)).toBe(retourne.text)
+    expect(normal.rate).toBe(DEBIT_NORMAL)
+    expect(lent.rate).toBe(DEBIT_LENT)
+    expect(lent.text).toBe(retourne.text)
+    expect(lent.voice.name).toBe('Mónica')
+  })
+
+  it('au quiz : le son d’un « produire » n’arrive qu’avec la réponse, l’écoute pure se prononce seule', () => {
+    const vue = monterLecon(es)
+    for (let i = 0; i < 16; i++) clic(primaire(vue))
+    const invite = () => vue.querySelector('p[tabindex="-1"]').textContent
+    let produites = 0
+    let ecoutes = 0
+    for (let q = 0; q < 8; q++) {
+      if (invite() === t.promptProduire(nomLangue(es, 'fr'))) {
+        produites++
+        // Avant de choisir, l'entendre soufflerait la réponse.
+        expect(parLabel(vue, t.ecouter)).toBeNull()
+        expect(parLabel(vue, t.ecouterLent)).toBeNull()
+        clic(vue.querySelector('.option'))
+        const bonne = vue.querySelector('.option--correcte [dir="auto"]').textContent
+        clic(parLabel(vue, t.ecouterLent))
+        expect(dites.at(-1).rate).toBe(DEBIT_LENT)
+        expect(dites.at(-1).text).toBe(sansPonctuation(bonne))
+      } else if (vue.querySelector('.option')) {
+        clic(vue.querySelector('.option'))
+      } else {
+        const fentes = vue.querySelectorAll('.fente:not(.fente--espace)').length
+        for (let i = 0; i < fentes; i++) clic(vue.querySelector('.lettre:not([disabled])'))
+      }
+      const avant = dites.length
+      clic(bouton(vue, t.continuer))
+      if (q < 7 && invite() === t.jeux.ecouteSens) {
+        ecoutes++
+        expect(dites.length - avant).toBe(1)
+        expect(dites.at(-1).rate).toBe(DEBIT_NORMAL)
+        expect(parLabel(vue, t.ecouterLent)).not.toBeNull()
+      } else {
+        expect(dites.length - avant).toBe(0)
+      }
+    }
+    expect(produites).toBeGreaterThan(0)
+    expect(ecoutes).toBeGreaterThan(0)
+  })
+
+  it('sans voix pour la langue, aucun haut-parleur ne fait semblant', () => {
+    window.speechSynthesis.getVoices = () => [{ lang: 'fr-FR', name: 'Thomas' }]
+    const vue = monterLecon(tr)
+    expect(parLabel(vue, t.ecouter)).toBeNull()
+    expect(parLabel(vue, t.ecouterLent)).toBeNull()
   })
 })
 

@@ -5,7 +5,8 @@ import { construireDefi, estBonneOption } from '../lib/defi.js'
 import { jourLocal } from '../lib/progression.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
-import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
+import { Coche, Croix, Etoile8 } from './Icones.jsx'
+import { Ecoute } from './Ecoute.jsx'
 import { Pastille } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
@@ -104,9 +105,7 @@ export function Defi({ t, locale, source, surTerminer, surQuitter }) {
         </div>
         <MotCible balise="div" className="mot-cible" style={{ fontSize: 27 }} texte={question.mot.t} langue={question.langue} />
         {question.mot.r ? <Romanisation balise="div" texte={question.mot.r} /> : null}
-        <button type="button" className="bouton bouton--rond" style={{ width: 44, height: 44 }} aria-label={t.ecouter} onClick={() => parler(question.mot.t, question.langue.tts)}>
-          <HautParleur taille={20} trait={1.8} />
-        </button>
+        <Ecoute t={t} texte={question.mot.t} langue={question.langue} />
       </div>
 
       <p style={{ fontSize: 15, fontWeight: 500 }}>{t.promptComprendre}</p>

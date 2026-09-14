@@ -62,6 +62,18 @@ export const HautParleur = (props) => (
   </Svg>
 )
 
+// La tortue mauresque : « réécouter lentement ».
+export const Tortue = (props) => (
+  <Svg {...props}>
+    <path d="M3.5 16.5a7.5 7 0 0 1 15 0z" />
+    <path d="M7.2 16.5l1.6-3.6h4.4l1.6 3.6" />
+    <path d="M18 14.6l1.2-1" />
+    <circle cx="20.3" cy="12.4" r="1.7" />
+    <path d="M6.5 16.5v2.5" />
+    <path d="M15.5 16.5v2.5" />
+  </Svg>
+)
+
 export const FlecheAvant = (props) => (
   <Svg {...props} className={`icone-directionnelle ${props.className ?? ''}`}>
     <path d="M5 12h14" />

@@ -5,7 +5,8 @@ import { INTERVALLES, XP_PAR_MOT, construireRevision, motsDus, prochaineBoite } 
 import { jourLocal } from '../lib/progression.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
-import { Coche, Croix, Etoile8, HautParleur } from './Icones.jsx'
+import { Coche, Croix, Etoile8 } from './Icones.jsx'
+import { Ecoute } from './Ecoute.jsx'
 import { Pastille } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
@@ -122,12 +123,14 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
           <>
             <MotCible balise="div" className="mot-cible" style={{ fontSize: 26 }} texte={question.mot.t} langue={question.langue} />
             {question.mot.r ? <Romanisation balise="div" texte={question.mot.r} /> : null}
-            <button type="button" className="bouton bouton--rond" style={{ width: 44, height: 44 }} aria-label={t.ecouter} onClick={() => parler(question.mot.t, question.langue.tts)}>
-              <HautParleur taille={20} trait={1.8} />
-            </button>
+            <Ecoute t={t} texte={question.mot.t} langue={question.langue} />
           </>
         ) : (
-          <div className="mot-cible" style={{ fontSize: 25 }}>{sensPour(question.mot, source, question.langue.id)}</div>
+          // Produire : le son n'arrive qu'avec la réponse, sinon il la soufflerait.
+          <>
+            <div className="mot-cible" style={{ fontSize: 25 }}>{sensPour(question.mot, source, question.langue.id)}</div>
+            {aRepondu ? <Ecoute t={t} texte={question.mot.t} langue={question.langue} /> : null}
+          </>
         )}
       </div>
 
