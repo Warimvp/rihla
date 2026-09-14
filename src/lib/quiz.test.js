@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CYCLE_EXERCICES, construireQuiz, estBonne, melanger, mulberry32 } from './quiz.js'
 import { assembler, cibleEpellation } from './epellation.js'
+import { ciblePhrase, estPhraseJuste } from './phrase.js'
 
 const MOTS = [
   { id: 'bonjour', t: 'Merhaba', fr: 'Bonjour', ar: 'مرحبا' },
@@ -60,7 +61,7 @@ describe('construireQuiz', () => {
   })
 
   it('les questions à choix proposent 4 options uniques dont exactement une bonne', () => {
-    const aChoix = quiz.filter((q) => q.type !== 'epeler' && q.type !== 'dictee')
+    const aChoix = quiz.filter((q) => !['epeler', 'dictee', 'ordonner'].includes(q.type))
     expect(aChoix.length).toBeGreaterThan(0)
     for (const question of aChoix) {
       expect(question.options).toHaveLength(4)
@@ -129,6 +130,24 @@ describe('construireQuiz', () => {
     const sans = construireQuiz(COURTS, mulberry32(1), { audio: false })
     expect(sans[7].type).toBe('epeler')
     expect(sans.some((q) => q.type === 'dictee')).toBe(false)
+  })
+
+  it('« ordonner » remplace la production (et le repli de l’épellation) quand le mot est une phrase', () => {
+    // Quatre mots, trop longs pour les tuiles-lettres : épeler et dictée se replient aussi.
+    const PHRASES = MOTS.map((m, i) => ({ ...m, t: `Frase numero ${i} larga` }))
+    const quiz = construireQuiz(PHRASES, mulberry32(1))
+    quiz.forEach((question, i) => {
+      const base = CYCLE_EXERCICES[i % CYCLE_EXERCICES.length]
+      if (base === 'produire' || base === 'epeler') expect(question.type).toBe('ordonner')
+      else expect(question.type).not.toBe('ordonner')
+    })
+    const q = quiz[2]
+    expect(q.jetons).toEqual(ciblePhrase(q.mot))
+    expect(q.tuiles).toHaveLength(q.jetons.length + 2)
+    expect(q.options).toBeUndefined()
+    expect(estPhraseJuste(q.jetons, q.jetons.map((m) => ({ m })))).toBe(true)
+    // Des mots seuls (deux mots au plus) restent des productions à choix.
+    expect(construireQuiz(MOTS, mulberry32(1)).some((question) => question.type === 'ordonner')).toBe(false)
   })
 
   it('ne met pas systématiquement la bonne réponse à la même place', () => {

@@ -12,6 +12,7 @@ import App from '../App.jsx'
 import { LANGUES, nomLangue } from '../data/langues.js'
 import { getDictionary, sensPour } from '../i18n.js'
 import { enregistrerEtape, figerAvancement, progresInitial } from '../lib/progression.js'
+import { ciblePhrase } from '../lib/phrase.js'
 import { mulberry32 } from '../lib/quiz.js'
 import { DEBIT_LENT, DEBIT_NORMAL } from '../lib/tts.js'
 import { Accueil } from './Accueil.jsx'
@@ -305,6 +306,76 @@ describe('réécouter, et lentement', () => {
     const vue = monterLecon(tr)
     expect(parLabel(vue, t.ecouter)).toBeNull()
     expect(parLabel(vue, t.ecouterLent)).toBeNull()
+  })
+})
+
+describe('la phrase dans l’ordre', () => {
+  // La leçon d'espagnol la plus riche en phrases de trois mots ou plus.
+  const lecon = [...es.lecons].sort(
+    (a, b) => b.mots.filter((m) => ciblePhrase(m)).length - a.mots.filter((m) => ciblePhrase(m)).length
+  )[0]
+  const monterPhrase = () =>
+    monter(
+      <Lecon
+        t={t}
+        locale="fr"
+        source="fr"
+        langue={es}
+        lecon={lecon}
+        indexLangue={0}
+        surTerminer={() => ({ xpGagne: 0, valide: false, gelConsomme: false, nouveauVisa: false, suivante: null })}
+        surSuivante={() => {}}
+        surQuitter={() => {}}
+      />
+    )
+  // Cartes passées, on répond au hasard jusqu'à la première phrase à ordonner.
+  const jusquALaPhrase = (vue) => {
+    for (let i = 0; i < 2 * lecon.mots.length; i++) clic(primaire(vue))
+    for (let q = 0; q < lecon.mots.length; q++) {
+      if (vue.querySelector('.lettre--mot')) return true
+      const options = vue.querySelectorAll('.option')
+      if (options.length) clic(options[0])
+      else {
+        const fentes = vue.querySelectorAll('.fente:not(.fente--espace)').length
+        for (let i = 0; i < fentes; i++) clic(vue.querySelector('.lettre:not([disabled])'))
+      }
+      clic(bouton(vue, t.continuer))
+    }
+    return false
+  }
+  // Le mot se retrouve par son sens, seul affiché avant la réponse.
+  const motAffiche = (vue) => {
+    const sens = vue.querySelector('.carte .mot-cible').textContent
+    return lecon.mots.find((m) => sensPour(m, 'fr', 'es') === sens)
+  }
+  const poser = (vue, jetons) => {
+    for (const j of jetons) clic([...vue.querySelectorAll('.lettre--mot:not([disabled])')].find((b) => b.textContent === j))
+  }
+
+  it('on la reconstruit d’après son sens, parmi deux intrus ; juste, elle s’écrit enfin', () => {
+    const vue = monterPhrase()
+    expect(jusquALaPhrase(vue)).toBe(true)
+    expect(vue.querySelector('p[tabindex="-1"]').textContent).toBe(t.promptOrdonner)
+    const mot = motAffiche(vue)
+    const jetons = ciblePhrase(mot)
+    expect(vue.querySelectorAll('.lettre--mot')).toHaveLength(jetons.length + 2)
+    // Avant la réponse : ni la phrase écrite, ni le moindre mot cible dans la carte.
+    expect(vue.querySelector('.phrase-revelee')).toBeNull()
+    expect(vue.querySelector('.carte [lang]')).toBeNull()
+    poser(vue, jetons)
+    expect(vue.querySelector('[role="status"]').textContent).toContain(t.bonneReponse)
+    expect(vue.querySelector('.phrase-revelee').textContent).toBe(mot.t)
+    expect([...vue.querySelectorAll('.mot-place')].map((s) => s.textContent)).toEqual(jetons)
+  })
+
+  it('dans le désordre, c’est faux, et la correction cite la phrase', () => {
+    const vue = monterPhrase()
+    expect(jusquALaPhrase(vue)).toBe(true)
+    const mot = motAffiche(vue)
+    poser(vue, [...ciblePhrase(mot)].reverse())
+    const statut = vue.querySelector('[role="status"]').textContent
+    expect(statut).toContain(t.mauvaiseReponse)
+    expect(statut).toContain(mot.t)
   })
 })
 

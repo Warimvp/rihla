@@ -1,6 +1,7 @@
 // Moteur de quiz : pur et déterministe quand on lui injecte un générateur,
 // pour être testable (et cassable — un test qui ne peut pas échouer ne prouve rien).
 import { cibleEpellation, construireLettres } from './epellation.js'
+import { ciblePhrase, construireTuilesMots } from './phrase.js'
 
 // Petit générateur pseudo-aléatoire seedable (mulberry32).
 export function mulberry32(graine) {
@@ -47,6 +48,12 @@ export function choisirDistracteurs(mots, mot, n, alea = Math.random) {
 // - 'dictee'     : à la place de 'epeler' — on ENTEND seulement le mot (ni
 //                  sens ni écriture) et on l'épelle avec les mêmes tuiles :
 //                  la première question où l'oreille doit produire, pas choisir.
+// Et, à tout tour, quand le mot est une PHRASE (trois mots ou plus) :
+// - 'ordonner'   : à la place de 'produire' — et du repli de l'épellation
+//                  quand la phrase est trop longue pour les tuiles-lettres —
+//                  on montre le sens, on reconstruit la phrase avec des
+//                  tuiles-mots, deux intrus en plus (src/lib/phrase.js). Une
+//                  phrase se construit mieux qu'elle ne se désigne.
 // Replis : sans audio, 'ecouter' redevient 'comprendre' et 'dictee' reste
 // 'epeler' ; un mot trop long pour l'épellation redevient 'produire' ; sans
 // romanisation, 'lire' reste 'comprendre' ; sans image, 'voir' reste
@@ -54,7 +61,7 @@ export function choisirDistracteurs(mots, mot, n, alea = Math.random) {
 // et les substitutions ne touchent que le second tour : une leçon de huit
 // garde ainsi un exercice de chaque sorte.
 export const CYCLE_EXERCICES = ['comprendre', 'ecouter', 'produire', 'epeler']
-export const TYPES_EXERCICES = [...CYCLE_EXERCICES, 'lire', 'voir', 'dictee']
+export const TYPES_EXERCICES = [...CYCLE_EXERCICES, 'lire', 'voir', 'dictee', 'ordonner']
 
 const jamais = () => false
 
@@ -73,6 +80,11 @@ export function construireQuiz(mots, alea = Math.random, capacites = { audio: tr
       const cible = cibleEpellation(mot)
       if (cible) return { mot, type, cible, fentes: cible.split(''), lettres: construireLettres(cible, alea) }
       type = 'produire'
+    }
+    const jetons = type === 'produire' ? ciblePhrase(mot) : null
+    if (jetons) {
+      const autres = mots.filter((m) => m.id !== mot.id)
+      return { mot, type: 'ordonner', jetons, tuiles: construireTuilesMots(jetons, autres, alea) }
     }
     // Les options de « lire » sont des romanisations : les distracteurs doivent en avoir une.
     const vivier = type === 'lire' ? romanises : mots

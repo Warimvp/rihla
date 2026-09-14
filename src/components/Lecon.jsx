@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { sensPour } from '../i18n.js'
 import { nomLangue, nomVille, titreLecon } from '../data/langues.js'
 import { assembler } from '../lib/epellation.js'
+import { estPhraseJuste } from '../lib/phrase.js'
 import { construireQuiz, estBonne } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler, peutParler } from '../lib/tts.js'
@@ -92,12 +93,13 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   const placer = (tuile) => {
     if (reponse) return
     if (placees.some((p) => p.cle === tuile.cle)) return
-    const nbAPlacer = question.fentes.filter((c) => c !== ' ').length
+    const phrase = question.type === 'ordonner'
+    const nbAPlacer = phrase ? question.jetons.length : question.fentes.filter((c) => c !== ' ').length
     if (placees.length >= nbAPlacer) return
     const suivantes = [...placees, tuile]
     setPlacees(suivantes)
     if (suivantes.length === nbAPlacer) {
-      repondre(assembler(question.fentes, suivantes) === question.cible)
+      repondre(phrase ? estPhraseJuste(question.jetons, suivantes) : assembler(question.fentes, suivantes) === question.cible)
     }
   }
 
@@ -178,16 +180,22 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   const optionsEnCible = question?.type === 'produire' || question?.type === 'voir'
   // Épellation et dictée partagent les tuiles-lettres (et la même correction).
   const aTuiles = question?.type === 'epeler' || question?.type === 'dictee'
+  // La phrase dans l'ordre a sa banque de tuiles-mots, sur le même principe.
+  const aBanque = aTuiles || question?.type === 'ordonner'
   const corrigeTexte = question
     ? aTuiles
       ? <MotCible texte={question.cible} langue={question.mot.r ? null : langue} />
-      : question.type === 'lire'
-        ? <Romanisation texte={bonne?.r} />
-        : optionsEnCible
-          ? <MotCible texte={bonne?.t} langue={langue} />
-          : bonne
-            ? sensPour(bonne, source, langue.id)
-            : ''
+      : question.type === 'ordonner'
+        ? question.mot.r
+          ? <Romanisation texte={question.mot.r} />
+          : <MotCible texte={question.mot.t} langue={langue} />
+        : question.type === 'lire'
+          ? <Romanisation texte={bonne?.r} />
+          : optionsEnCible
+            ? <MotCible texte={bonne?.t} langue={langue} />
+            : bonne
+              ? sensPour(bonne, source, langue.id)
+              : ''
     : ''
   const promptTexte = question
     ? question.type === 'comprendre'
@@ -202,7 +210,9 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
               ? t.jeux.epelle
               : question.type === 'dictee'
                 ? t.promptDictee
-                : t.promptProduire(nomLangue(langue, locale))
+                : question.type === 'ordonner'
+                  ? t.promptOrdonner
+                  : t.promptProduire(nomLangue(langue, locale))
     : ''
   const utilisees = new Set(placees.map((p) => p.cle))
   let curseurFentes = 0
@@ -371,6 +381,28 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
                   })}
                 </div>
               </>
+            ) : question.type === 'ordonner' ? (
+              // Le sens seul, puis la phrase qu'on construit ; l'écrit et le son
+              // n'arrivent qu'avec la réponse (avant, ils la souffleraient).
+              <>
+                <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)' }}>{sensPour(question.mot, source, langue.id)}</div>
+                <div
+                  dir="ltr"
+                  className="ligne-phrase"
+                  style={reponse ? { borderColor: reponse.bonne ? 'var(--menthe)' : 'var(--terracotta)' } : undefined}
+                >
+                  {placees.map((p) => (
+                    <MotCible key={p.cle} className="mot-place" texte={p.m} langue={question.mot.r ? null : langue} />
+                  ))}
+                </div>
+                {reponse ? (
+                  <>
+                    <MotCible balise="div" className="phrase-revelee" texte={question.mot.t} langue={langue} />
+                    {question.mot.r ? <Romanisation balise="div" texte={question.mot.r} /> : null}
+                    <Ecoute t={t} texte={question.mot.t} langue={langue} />
+                  </>
+                ) : null}
+              </>
             ) : (
               // Produire : l'entendre avant de choisir soufflerait la réponse.
               <>
@@ -382,19 +414,19 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
           <p ref={invite} tabIndex={-1} style={{ fontSize: 15, fontWeight: 500, outline: 'none' }}>
             {promptTexte}
           </p>
-          {aTuiles ? (
+          {aBanque ? (
             <>
               <div dir="ltr" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
-                {question.lettres.map((tuile) => (
+                {(aTuiles ? question.lettres : question.tuiles).map((tuile) => (
                   <button
                     key={tuile.cle}
                     type="button"
-                    className="lettre"
+                    className={aTuiles ? 'lettre' : 'lettre lettre--mot'}
                     disabled={utilisees.has(tuile.cle)}
                     aria-disabled={reponse !== null || undefined}
                     onClick={() => placer(tuile)}
                   >
-                    {tuile.c}
+                    {aTuiles ? tuile.c : <MotCible texte={tuile.m} langue={question.mot.r ? null : langue} />}
                   </button>
                 ))}
               </div>

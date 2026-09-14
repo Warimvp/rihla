@@ -1019,6 +1019,39 @@ p {
   outline-offset: 2px;
 }
 
+/* La phrase dans l'ordre : tuiles-mots, et la ligne où elles se posent. */
+.lettre--mot {
+  padding: 0 14px;
+  font-size: 17px;
+}
+
+.ligne-phrase {
+  width: 100%;
+  min-height: 54px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid var(--ligne-2);
+}
+
+.mot-place {
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: var(--majorelle-pale);
+  color: var(--majorelle-fonce);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.phrase-revelee {
+  font-family: var(--police-titre);
+  font-size: 21px;
+  text-align: center;
+}
+
 /* Éclat d'étoiles (validation, visas) */
 
 .eclat {
