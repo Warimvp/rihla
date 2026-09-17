@@ -5,8 +5,9 @@ import { Pastille } from './Communs.jsx'
 import { ChevronAvant, Coche } from './Icones.jsx'
 import { SectionJeux } from './Jeux.jsx'
 import { VignetteVille } from './Vignettes.jsx'
+import { SectionVoyageurs } from './Voyageurs.jsx'
 
-export function Apprendre({ t, locale, progres, langue, surLecon, surJeu }) {
+export function Apprendre({ t, locale, source, progres, langue, surLecon, surJeu }) {
   return (
     <div className="vue">
       <header style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -89,6 +90,8 @@ export function Apprendre({ t, locale, progres, langue, surLecon, surJeu }) {
           )
         })}
       </div>
+
+      <SectionVoyageurs t={t} source={source} langue={langue} />
 
       <SectionJeux t={t} langue={langue} surJeu={surJeu} />
     </div>

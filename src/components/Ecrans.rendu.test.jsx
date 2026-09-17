@@ -16,6 +16,8 @@ import { ciblePhrase } from '../lib/phrase.js'
 import { mulberry32 } from '../lib/quiz.js'
 import { DEBIT_LENT, DEBIT_NORMAL } from '../lib/tts.js'
 import { Accueil } from './Accueil.jsx'
+import { Apprendre } from './Apprendre.jsx'
+import { motsVoyageurs, totalVoyageurs } from '../data/voyageurs.js'
 import { JeuSouk } from './JeuSouk.jsx'
 import { Lecon } from './Lecon.jsx'
 
@@ -376,6 +378,51 @@ describe('la phrase dans l’ordre', () => {
     const statut = vue.querySelector('[role="status"]').textContent
     expect(statut).toContain(t.mauvaiseReponse)
     expect(statut).toContain(mot.t)
+  })
+})
+
+describe('les mots voyageurs', () => {
+  const arabe = LANGUES.find((l) => l.id === 'ar')
+  const monterApprendre = (langue, locale = 'fr') =>
+    monter(
+      <Apprendre
+        t={getDictionary(locale)}
+        locale={locale}
+        source={locale}
+        progres={progresInitial()}
+        langue={langue}
+        surLecon={() => {}}
+        surJeu={() => {}}
+      />
+    )
+
+  it('Grenade montre ses mots partis de l’arabe : l’origine en arabe, le mot en espagnol, le sens', () => {
+    const vue = monterApprendre(es)
+    const mots = motsVoyageurs('es')
+    const cartes = vue.querySelectorAll('.voyageur')
+    expect(mots.length).toBeGreaterThan(0)
+    expect(cartes).toHaveLength(mots.length)
+    const origine = cartes[0].querySelector('.voyageur__origine')
+    expect(origine.textContent).toBe(mots[0].arabe)
+    expect(origine.getAttribute('lang')).toBe(arabe.tts)
+    const cible = cartes[0].querySelector('.voyageur__cible')
+    expect(cible.textContent).toBe(mots[0].t)
+    expect(cible.getAttribute('lang')).toBe(es.tts)
+    expect(cartes[0].textContent).toContain(mots[0].fr)
+  })
+
+  it('au Caire, point de départ : le compte des mots partis, pas de liste', () => {
+    const vue = monterApprendre(arabe)
+    expect(vue.querySelectorAll('.voyageur')).toHaveLength(0)
+    expect(vue.querySelector('.voyageurs-depart').textContent).toBe(t.voyageurs.depart(totalVoyageurs()))
+  })
+
+  it('en arabe, le sens n’est pas répété quand il est le mot d’origine lui-même', () => {
+    const mots = motsVoyageurs('es')
+    const i = mots.findIndex((m) => m.ar === m.arabe)
+    expect(i).toBeGreaterThanOrEqual(0)
+    const carte = monterApprendre(es, 'ar').querySelectorAll('.voyageur')[i]
+    expect(carte.textContent.split(mots[i].arabe)).toHaveLength(2)
   })
 })
 

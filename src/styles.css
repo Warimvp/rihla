@@ -1019,6 +1019,47 @@ p {
   outline-offset: 2px;
 }
 
+/* Les mots voyageurs : l'arabe d'origine → le mot arrivé dans la destination. */
+.voyageur {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.voyageur__route {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.voyageur__mot {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* Amiri même sous interface française : Young Serif n'a pas de glyphes arabes. */
+.voyageur__origine {
+  font-family: 'Amiri', 'Geeza Pro', Georgia, serif;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.voyageur__cible {
+  font-family: var(--police-titre);
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.voyageur__pied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 /* La phrase dans l'ordre : tuiles-mots, et la ligne où elles se posent. */
 .lettre--mot {
   padding: 0 14px;

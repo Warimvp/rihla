@@ -50,6 +50,12 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Toujours du **SVG inline en composant** : un fichier `.svg`, un sprite `<use>` ou une police d'icônes ne reçoivent ni les variables CSS ni `currentColor` (le thème y meurt), et `sw.js` ne les pré-cache pas.
 - Ajouter un visuel = une entrée dans `VISUELS` (`{ quiz, dessin }`), rien d'autre. Pas de drapeaux, pas d'emblème national.
 
+## Les mots voyageurs (`src/data/voyageurs.js`, `src/components/Voyageurs.jsx`)
+- Dans la vue Apprendre, entre les étapes et les jeux : des mots partis de l'arabe et arrivés dans la destination — 59 sur 13 destinations, de 6 (portugais, turc, persan, swahili) à 1 (chinois). Le Caire (`DEPART`) n'a pas de liste : il affiche le compte des mots partis.
+- **Aucun mot sans preuve** : chaque entrée porte `preuve` (page Wiktionary — le test l'exige), vérifiée mot par mot. Écartés : les pseudo-arabismes (शुक्रिया, forgé en hindi sur شكر), les chaînes où Wiktionary hésite (lemon ; les « canapés » 沙发/소파/ソファー), les étymons seulement reconstruits (arroz). `chemin` = langues traversées, nommées seulement si chaque maillon est attesté, sinon `['europe']` (« par l'Europe »).
+- Champs : `t`, `r` (même style de romanisation que langues.js — 커피 kŏpi, コーヒー kôhî, кофе kofié), `arabe` (sans voyelles brèves) + `arabeR`, `fr`/`ar` (le sens arabe n'est affiché que s'il diffère du mot d'origine), `chemin`, `preuve`. Ajouter un mot = le vérifier d'abord, puis une entrée ; toute langue de `chemin` doit exister dans `t.voyageurs.langues` FR **et** AR.
+- Pas un exercice : ni XP ni score — un pont (« ce mot, tu le connais déjà »). Mot cible via `<MotCible>` + `<Ecoute>` ; l'origine via `MotCible` avec la langue arabe (`lang="ar-SA"`), en Amiri même sous interface FR.
+
 ## Le Carnet — révision espacée (`src/lib/carnet.js`, `src/components/Carnet.jsx`)
 - Leitner à 6 rangs, intervalles `[1, 3, 7, 16, 35, 90]` jours (16 jours plafonnait : une destination terminée renvoyait 12 mots/jour, toute la session). Une étape **validée** verse ses 8 mots (`ajouterAuCarnet`, appelé dans App) : rang 2 pour un mot **réussi pendant la leçon** (`reussis` remonté par `Lecon.surTerminer`), rang 1 sinon. Bonne réponse : +1 rang (plafond 6) ; erreur : retour au rang 1 — la date repart du jour.
 - Session : `composerSession` réserve la moitié des places aux mots fragiles (rang ≤ 2, les plus RÉCENTS d'abord — un mot raté hier ne passe pas derrière l'arriéré), le reste aux dus les plus anciens ; toutes langues mêlées, plafonnée à 12 ; distracteurs pris dans la langue du mot ; 3 XP par bonne réponse (les révisions ne doivent pas rapporter plus que les leçons).
@@ -60,7 +66,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - `rihla.cap` (localStorage) : `'route'` (suivre la route d'Ibn Battuta, comportement historique) ou un id de langue. `null` = jamais choisi → l'écran `Cap.jsx` s'affiche une fois (non annulable) ; ensuite modifiable via Réglages → « Changer » (annulable). `prochaineEtape(progres, langues, cap)` fait passer la langue choisie devant tant qu'elle n'a pas son visa, puis retombe sur la logique route. Choisir une langue aligne aussi `rihla.destination` (onglet Apprendre).
 
 ## Aide à l'utilisation (2026-09-06)
-- **Guide du voyageur** (`Guide.jsx`, ouvert des Réglages) : 9 sections FR/AR qui expliquent visas, exercices, XP/objectif, série+caravansérail, Carnet, étape du jour, jeux, cap, hors-ligne. À MAJ quand une mécanique change.
+- **Guide du voyageur** (`Guide.jsx`, ouvert des Réglages) : 10 sections FR/AR qui expliquent visas, exercices, XP/objectif, série+caravansérail, Carnet, étape du jour, jeux, mots voyageurs, cap, hors-ligne. À MAJ quand une mécanique change.
 - **Sauvegarde** (`src/lib/sauvegarde.js`) : export/import du progrès en texte via le presse-papiers (l'app est 100 % locale — vider le navigateur efface tout). `importerProgres` est tolérant aux champs absents, strict sur la marque/version/cohérence ; il ne remplace jamais un voyage par du bruit. Toujours passer par `surRestaurer` (App) qui écrit ET sauve.
 - **Semaine d'activité** au Passeport : 7 barres depuis `progres.xpJours` (menthe = objectif atteint, safran sinon).
 - **Partager** (Web Share API, repli presse-papiers) et **Proposer une amélioration** (issues GitHub) dans les Réglages.

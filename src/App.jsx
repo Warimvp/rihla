@@ -308,6 +308,7 @@ export default function App() {
         <Apprendre
           t={t}
           locale={locale}
+          source={source}
           progres={progres}
           langue={destination}
           surLecon={ouvrirLecon}
