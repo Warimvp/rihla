@@ -19,7 +19,14 @@ import {
   visaObtenu,
 } from './lib/progression.js'
 import { ajouterAuCarnet, reviserMot } from './lib/carnet.js'
+import { CLE_LIEN, accuserReponse, decoderLettre, terminerBarid } from './lib/barid.js'
+import { CLE_LIEN_SALLE, enLigneActif, envoyerScore } from './lib/enligne.js'
+import { normaliserCode } from './lib/salle.js'
+import { identite } from './lib/voyageur.js'
 import { Accueil } from './components/Accueil.jsx'
+import { Barid } from './components/Barid.jsx'
+import { Classement } from './components/Classement.jsx'
+import { Course } from './components/Course.jsx'
 import { Cap } from './components/Cap.jsx'
 import { Apprendre } from './components/Apprendre.jsx'
 import { Lecon } from './components/Lecon.jsx'
@@ -130,10 +137,42 @@ export default function App() {
   const [jeuActif, setJeuActif] = useState(null)
   const [defiActif, setDefiActif] = useState(false)
   const [carnetActif, setCarnetActif] = useState(null)
+  // Le Barid : { lettre, erreur, langueId } — ouvert depuis l'Accueil, les
+  // jeux d'une destination, ou un lien `#barid=…` reçu d'un ami.
+  const [baridActif, setBaridActif] = useState(null)
+  // La Course (duel en direct) : { langueId, code?, cle } ; le Classement.
+  const [courseActive, setCourseActive] = useState(null)
+  const [classementActif, setClassementActif] = useState(false)
 
   useEffect(() => {
     ecrireLocal('rihla.destination', destinationId)
   }, [destinationId])
+
+  // Un lien de défi (`#barid=`) ouvre la lettre, un lien de salle (`#salle=`)
+  // ouvre la Course ; puis le fragment s'efface de la barre d'adresse :
+  // recharger la page ne doit pas le rejouer, ni le garder dans l'historique.
+  useEffect(() => {
+    const lireLien = () => {
+      const hash = window.location.hash
+      const effacer = () => window.history.replaceState(null, '', window.location.pathname + window.location.search)
+      // `cle` remonte l'écran (key) : une lettre qui arrive pendant que le
+      // Barid est déjà ouvert doit s'afficher, pas rester derrière le comptoir.
+      const cle = Date.now()
+      if (hash.includes(`${CLE_LIEN_SALLE}=`)) {
+        const code = normaliserCode(hash)
+        effacer()
+        if (code) setCourseActive({ code, cle })
+        return
+      }
+      if (!hash.includes(`${CLE_LIEN}=`)) return
+      const resultat = decoderLettre(hash, LANGUES.map((l) => l.id))
+      effacer()
+      setBaridActif(resultat.ok ? { lettre: resultat.lettre, cle } : { lettre: null, erreur: resultat.erreur, cle })
+    }
+    lireLien()
+    window.addEventListener('hashchange', lireLien)
+    return () => window.removeEventListener('hashchange', lireLien)
+  }, [])
 
   // Point de passage unique : tout gain d'XP est attribué au jour où il tombe
   // (c'est ce qui alimente l'objectif quotidien).
@@ -190,6 +229,59 @@ export default function App() {
     )
   }
 
+  // Une partie de duel jouée ici (Barid ou Course) : même registre, mêmes XP.
+  const terminerDuel = (resultat) => {
+    const bilan = terminerBarid(progres, resultat, jourLocal())
+    majProgres(bilan.progres)
+    return bilan
+  }
+
+  if (classementActif) {
+    return (
+      <div className="app">
+        <Classement t={t} progres={progres} surQuitter={() => setClassementActif(false)} />
+      </div>
+    )
+  }
+
+  if (courseActive) {
+    return (
+      <div className="app">
+        <Course
+          key={courseActive.cle ?? 'course'}
+          t={t}
+          locale={locale}
+          source={source}
+          langueId={courseActive.langueId ?? (cap && cap !== 'route' ? cap : destinationId)}
+          codeInitial={courseActive.code ?? null}
+          surTerminer={terminerDuel}
+          surClassement={() => setClassementActif(true)}
+          surQuitter={() => setCourseActive(null)}
+        />
+      </div>
+    )
+  }
+
+  if (baridActif) {
+    return (
+      <div className="app">
+        <Barid
+          key={baridActif.cle ?? 'comptoir'}
+          t={t}
+          locale={locale}
+          source={source}
+          progres={progres}
+          lettre={baridActif.lettre}
+          erreurInitiale={baridActif.erreur ?? null}
+          langueId={baridActif.langueId ?? destinationId}
+          surTerminer={terminerDuel}
+          surReponseRecue={(re, nom) => majProgres(accuserReponse(progres, re, nom, jourLocal()))}
+          surQuitter={() => setBaridActif(null)}
+        />
+      </div>
+    )
+  }
+
   if (carnetActif) {
     return (
       <div className="app">
@@ -209,9 +301,14 @@ export default function App() {
   }
 
   if (defiActif) {
-    const terminerDefi = (score, total) => {
-      const resultat = enregistrerDefi(progres, score, total)
+    const terminerDefi = (score, total, temps) => {
+      const jour = jourLocal()
+      const resultat = enregistrerDefi(progres, score, total, jour, temps)
       majProgres(resultat.progres)
+      // Le classement du jour, si le voyageur a activé le jeu en ligne : le
+      // serveur garde le meilleur score ; un échec réseau ne gêne personne
+      // (le bouton du Classement permet de renvoyer).
+      if (enLigneActif()) envoyerScore(identite(), { type: 'jour', cle: jour, score, temps }).catch(() => {})
       return resultat
     }
     return (
@@ -301,6 +398,9 @@ export default function App() {
           surLecon={ouvrirLecon}
           surDefi={() => setDefiActif(true)}
           surCarnet={() => setCarnetActif({ progresDepart: progres })}
+          surBarid={() => setBaridActif({ lettre: null, langueId: cap && cap !== 'route' ? cap : destinationId })}
+          surCourse={() => setCourseActive({ langueId: cap && cap !== 'route' ? cap : destinationId })}
+          surClassement={() => setClassementActif(true)}
           cap={cap ?? 'route'}
         />
       ) : null}
@@ -312,7 +412,13 @@ export default function App() {
           progres={progres}
           langue={destination}
           surLecon={ouvrirLecon}
-          surJeu={(type) => setJeuActif({ type, langueId: destination.id })}
+          surJeu={(type) =>
+            type === 'barid'
+              ? setBaridActif({ lettre: null, langueId: destination.id })
+              : type === 'course'
+                ? setCourseActive({ langueId: destination.id })
+                : setJeuActif({ type, langueId: destination.id })
+          }
         />
       ) : null}
       {onglet === 'passeport' ? (

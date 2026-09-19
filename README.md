@@ -9,6 +9,8 @@ En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla*
 - Leçons en deux temps : cartes-mots (avec prononciation) puis quiz — six exercices : comprendre, écouter, produire, épeler, lire l'écriture, et **voir** (retrouver le mot d'après une image, sans passer par la traduction)
 - **Des images pour apprendre sans traduire** : couleurs, nombres et jours engendrés par le code ; pictogrammes de la ville, du corps et de la maison sur les cartes-mots et dans le Zellige
 - Cinq jeux de révision par destination : **Zellige des paires** (memory), **Le Souk** (45 s chrono, combos), **La Caravane** (épellation, l'étoile avance sur la piste), **L'Oreille** (compréhension orale pure) et **Le Duel** (2 joueurs face à face sur un seul téléphone)
+- **Le Barid** : le duel à distance, sans serveur ni compte — 10 questions chrono, le défi part à un ami dans un message (lien), l'ami joue exactement les mêmes questions et riposte ; verdict au score puis au temps
+- **En ligne, si un serveur est branché** (dossier `serveur/`, Worker Cloudflare gratuit, opt-in avec identité anonyme — jamais de compte) : **La Course** (duel en direct, salle à code ou adversaire au hasard, le serveur note et chronomètre) et les **classements** (l'étape du jour, les duels de la semaine). Sans serveur, rien de tout cela n'apparaît : l'app reste 100 % hors-ligne
 - **L'étape du jour** : un défi quotidien qui mélange les 14 langues — même tirage pour tout le monde, et il fait avancer ta série de jours de voyage
 - **Le Carnet** : la révision espacée du voyageur (Leitner, 6 rangs — 1/3/7/16/35/90 jours, les mots fragiles d'abord) : chaque étape validée y verse ses mots, et ils reviennent juste avant que tu les oublies
 - **Guide du voyageur** intégré : toutes les mécaniques expliquées en 9 sections, dans l'app
@@ -65,8 +67,12 @@ src/
   lib/progression.js   # XP, série de jours, visas, km — pur + localStorage injectable
   lib/quiz.js          # quiz déterministe (rng injectable) : compréhension ↔ production
   lib/tts.js           # prononciation via la synthèse vocale du système (gratuite, hors-ligne)
+  lib/barid.js         # le défi par message : tirage par graine, lettre encodée, verdict
+  lib/salle.js         # la règle du duel en direct — pure, partagée avec le serveur
+  lib/enligne.js       # la seule porte vers le serveur (optionnelle, opt-in)
   i18n.js              # dictionnaires FR/AR, direction RTL dérivée
   components/          # Accueil (itinéraire), Apprendre (étapes), Leçon, Passeport, Réglages
+serveur/               # Worker Cloudflare + Durable Objects : La Course, le hall, les classements — voir serveur/README.md
 design/                # planches du thème (Claude Design) + canvas.json
 ios/                   # projet Capacitor (généré) — voir CLAUDE.md § iOS
 ```

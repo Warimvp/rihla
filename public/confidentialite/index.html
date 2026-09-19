@@ -14,39 +14,55 @@
     .muted { color: #7A6A55; font-size: 13.5px; }
     a { color: #4E46C8; }
     hr { border: none; border-top: 1px solid #E5DAC4; margin: 40px 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+    th, td { text-align: start; padding: 8px 10px; border-bottom: 1px solid #E5DAC4; vertical-align: top; }
     [dir='rtl'] { text-align: right; }
   </style>
 </head>
 <body>
 <main>
   <h1>Rihla — Politique de confidentialité</h1>
-  <p class="muted">Dernière mise à jour : 7 septembre 2026</p>
-  <p class="badge">Rihla ne collecte aucune donnée. Point final.</p>
+  <p class="muted">Dernière mise à jour : 19 septembre 2026</p>
+  <p class="badge">Aucun compte, aucune publicité, aucun traceur. Le jeu en ligne est facultatif et n'envoie qu'un pseudonyme et des scores.</p>
 
   <h2>Ce que l'app fait de tes données</h2>
-  <p>Rien — parce qu'elle n'en reçoit aucune. Rihla fonctionne entièrement sur ton appareil :</p>
+  <p>Rihla fonctionne entièrement sur ton appareil :</p>
   <ul>
-    <li><strong>Aucun compte</strong> : pas d'inscription, pas d'e-mail, pas de mot de passe.</li>
-    <li><strong>Aucune collecte</strong> : ta progression (XP, visas, série de jours, carnet de révision) est stockée uniquement en local sur ton appareil, et n'est jamais transmise.</li>
+    <li><strong>Aucun compte</strong> : pas d'inscription, pas d'e-mail, pas de mot de passe, pas de numéro de téléphone.</li>
+    <li><strong>Ta progression reste chez toi</strong> : XP, visas, série de jours, carnet de révision sont stockés uniquement en local sur ton appareil, et ne sont jamais transmis.</li>
     <li><strong>Aucun traceur, aucune publicité, aucune statistique d'usage</strong> : l'app n'embarque aucun SDK tiers d'analyse ou de publicité.</li>
-    <li><strong>Aucun serveur Rihla</strong> : il n'existe pas de base de données à laquelle l'app se connecterait.</li>
+    <li><strong>Hors-ligne</strong> : les polices de caractères sont embarquées, la prononciation utilise la synthèse vocale de ton appareil. Tant que tu n'actives pas le jeu en ligne, l'app ne contacte aucun serveur, pas même au premier lancement.</li>
   </ul>
 
-  <h2>Connexions réseau</h2>
-  <p>L'app fonctionne hors-ligne, entièrement. Les polices de caractères sont embarquées dans l'application : elle ne contacte aucun serveur, pas même au premier lancement. La prononciation audio utilise la synthèse vocale de ton appareil, sans réseau.</p>
+  <h2>Le jeu en ligne (facultatif)</h2>
+  <p>La Course (duel en direct), l'adversaire au hasard et les classements passent par un serveur, parce qu'ils relient deux appareils. Ils sont <strong>désactivés par défaut</strong> : rien ne part avant que tu aies lu et accepté l'écran « Jouer en ligne ? », et tu peux couper le jeu en ligne à tout moment dans « Réglages → Jeu en ligne ». Le reste de l'app continue de fonctionner sans lui.</p>
+  <p>Quand il est activé, voici <strong>tout</strong> ce qui est envoyé :</p>
+  <table>
+    <tr><th>Donnée</th><th>Pourquoi</th><th>Conservation</th></tr>
+    <tr><td>Un pseudonyme, que tu choisis librement (24 caractères au plus)</td><td>Pour t'afficher à ton adversaire et dans les classements</td><td>Avec le score qu'il accompagne</td></tr>
+    <tr><td>Tes scores et tes temps de jeu (étape du jour, duels)</td><td>Pour les classements et le verdict des duels</td><td>60 jours au plus, puis effacés automatiquement</td></tr>
+    <tr><td>Un identifiant tiré au hasard sur ton appareil, avec l'empreinte d'un secret que seul ton appareil connaît</td><td>Pour te reconnaître d'une fois sur l'autre sans compte — personne d'autre ne peut écraser ton score</td><td>Avec les scores ; il ne dit rien sur toi</td></tr>
+    <tr><td>Tes réponses pendant un duel en direct (le choix, pas plus)</td><td>C'est le serveur qui note, pour que personne ne triche</td><td>Une heure au plus : la salle s'efface ensuite</td></tr>
+  </table>
+  <p>Ce serveur est hébergé chez Cloudflare (Workers et Durable Objects). Comme tout hébergeur, Cloudflare voit passer les adresses IP des connexions ; le code de Rihla n'en conserve aucune et n'en fait rien. Le code du serveur est ouvert et vérifiable, dans le même dépôt que l'app (dossier <code>serveur/</code>).</p>
+  <p>Ni l'identifiant ni le pseudonyme ne sont reliés à une personne : pas d'e-mail, pas de nom, pas de numéro. Rien n'est vendu, partagé ni utilisé pour du suivi publicitaire.</p>
 
   <h2>Supprimer tes données</h2>
-  <p>Tout est chez toi : « Réglages → Effacer mon progrès » dans l'app, ou la désinstallation, suppriment l'intégralité des données.</p>
+  <p>Sur ton appareil : « Réglages → Effacer mon progrès », ou la désinstallation, suppriment tout — progression, pseudonyme et identifiant compris. Côté serveur, les scores s'effacent d'eux-mêmes après 60 jours ; pour une suppression immédiate, écris-nous avec le pseudonyme utilisé et la date.</p>
 
   <h2>Contact</h2>
-  <p>Une question ? <a href="mailto:ylegmara@gmail.com">ylegmara@gmail.com</a> — le code de l'app est ouvert et vérifiable : <a href="https://github.com/Warimvp/rihla">github.com/Warimvp/rihla</a>.</p>
+  <p>Une question ? <a href="mailto:ylegmara@gmail.com">ylegmara@gmail.com</a> — le code de l'app et du serveur est ouvert et vérifiable : <a href="https://github.com/Warimvp/rihla">github.com/Warimvp/rihla</a>.</p>
 
   <hr />
 
   <div dir="rtl" lang="ar">
     <h1>رحلة — سياسة الخصوصية</h1>
-    <p class="badge">«رحلة» لا تجمع أي بيانات. نقطة، انتهى.</p>
-    <p>يعمل التطبيق كلياً على جهازك: لا حساب، لا جمع للبيانات، لا متتبّعات، لا إعلانات، ولا خوادم. تقدّمك (النقاط، التأشيرات، سلسلة الأيام، دفتر المراجعة) يُخزَّن محلياً فقط ولا يُرسَل أبداً. الخطوط مضمّنة داخل التطبيق، فهو لا يتصل بأي خادم، ولا حتى عند أول تشغيل. لمسح بياناتك: «الإعدادات ← مسح تقدمي» أو احذف التطبيق.</p>
+    <p class="muted">آخر تحديث: 19 سبتمبر 2026</p>
+    <p class="badge">لا حساب، لا إعلانات، لا متتبّعات. اللعب عبر الإنترنت اختياري ولا يرسل سوى اسم مستعار ونتائج.</p>
+    <p>يعمل التطبيق كلياً على جهازك: لا حساب ولا تسجيل ولا بريد إلكتروني ولا رقم هاتف. تقدّمك (النقاط، التأشيرات، سلسلة الأيام، دفتر المراجعة) يُخزَّن محلياً فقط ولا يُرسَل أبداً. لا متتبّعات ولا إعلانات ولا إحصاءات استخدام. الخطوط مضمّنة داخل التطبيق، والنطق يعتمد على صوت جهازك: ما لم تفعّل اللعب عبر الإنترنت، لا يتصل التطبيق بأي خادم، ولا حتى عند أول تشغيل.</p>
+    <p><strong>اللعب عبر الإنترنت (اختياري).</strong> السباق (المبارزة المباشرة) والخصم العشوائي والتصنيفات تمرّ عبر خادم، لأنها تربط جهازين. وهي <strong>موقوفة افتراضياً</strong>: لا يُرسَل شيء قبل أن تقرأ وتقبل شاشة «اللعب عبر الإنترنت؟»، ويمكنك إيقافها في أي وقت من «الإعدادات ← اللعب عبر الإنترنت». وعند تفعيلها، هذا <strong>كل</strong> ما يُرسَل: اسم مستعار تختاره بحرية، نتائجك وأوقات لعبك (تُحذف تلقائياً بعد 60 يوماً على الأكثر)، معرّف عشوائي يُنشأ على جهازك مع بصمة سرٍّ لا يعرفه سوى جهازك (ليتعرّف عليك الخادم من مرة إلى أخرى دون حساب، فلا يستطيع أحد غيرك تعديل نتيجتك)، وإجاباتك أثناء المبارزة المباشرة (الاختيار فقط، وتُمحى الغرفة بعد ساعة على الأكثر).</p>
+    <p>الخادم مستضاف لدى Cloudflare؛ وكأي مستضيف يرى عناوين IP للاتصالات، لكن شفرة «رحلة» لا تحتفظ بأي منها. لا يُربط المعرّف ولا الاسم المستعار بأي شخص، ولا يُباع شيء أو يُشارك أو يُستعمل للتتبع الإعلاني. شفرة الخادم مفتوحة وقابلة للتحقق في المستودع نفسه.</p>
+    <p><strong>حذف بياناتك.</strong> على جهازك: «الإعدادات ← مسح تقدمي» أو حذف التطبيق يمحو كل شيء، بما فيه الاسم المستعار والمعرّف. على الخادم تُحذف النتائج من تلقاء نفسها بعد 60 يوماً؛ وللحذف الفوري راسلنا مع الاسم المستعار والتاريخ.</p>
     <p>للتواصل: <a href="mailto:ylegmara@gmail.com">ylegmara@gmail.com</a></p>
   </div>
 </main>

@@ -3,7 +3,8 @@ import { MAX_GELS, PRIX_GEL, etapesValidees, kmParcourus, nbVisas, visaObtenu } 
 import { jourLocal } from '../lib/progression.js'
 import { semaineActivite } from '../lib/sauvegarde.js'
 import { pubsDisponibles, regarderPourUneNuit } from '../lib/pub.js'
-import { TenteIcone } from './Icones.jsx'
+import { bilanBarid } from '../lib/barid.js'
+import { LettreIcone, TenteIcone } from './Icones.jsx'
 import { MarqueRihla } from './Logo.jsx'
 import { TamponVisa } from './TamponVisa.jsx'
 
@@ -18,6 +19,7 @@ export function Passeport({ t, locale, progres, surAcheterGel, surNuitOfferte })
   // La pub récompensée : opt-in, jamais dans l'apprentissage. Invisible tant
   // qu'aucun fournisseur n'est branché (voir src/lib/pub.js).
   const pubPossible = gels < MAX_GELS && pubsDisponibles()
+  const duels = bilanBarid(progres)
 
   return (
     <div className="vue" style={{ padding: 0, gap: 0 }}>
@@ -147,6 +149,30 @@ export function Passeport({ t, locale, progres, surAcheterGel, surNuitOfferte })
           </button>
         ) : null}
       </div>
+
+      {duels.joues > 0 ? (
+        <div className="carte" style={{ margin: '14px 16px 0', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 13 }}>
+          <span
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 14,
+              background: 'var(--majorelle-pale)',
+              color: 'var(--majorelle-fonce)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: '0 0 auto',
+            }}
+          >
+            <LettreIcone taille={24} trait={1.7} />
+          </span>
+          <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 15, fontWeight: 600 }}>{t.barid.titre}</span>
+            <span className="texte-2" style={{ fontSize: 12.5 }}>{t.barid.bilan(duels.gagnes, duels.perdus, duels.egalites)}</span>
+          </span>
+        </div>
+      ) : null}
 
       <div style={{ padding: '20px 20px 0', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
         <h2>{t.tesVisas}</h2>

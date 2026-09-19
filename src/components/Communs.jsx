@@ -1,4 +1,44 @@
+import { LANGUES, langueParId, nomVille } from '../data/langues.js'
+import { TOUTE_LA_ROUTE } from '../lib/barid.js'
 import { Boussole, Etoile8, Livre, PasseportIcone, Rouages } from './Icones.jsx'
+
+// La destination d'un duel (Barid, Course) : « toute la route » ou une ville,
+// en chips défilantes. `t.barid.destination` / `t.barid.touteLaRoute` servent
+// aux deux — c'est la même question.
+export function ChoixDestination({ t, locale, valeur, surChoisir }) {
+  return (
+    <div role="group" aria-label={t.barid.destination} style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '2px 0 6px', scrollbarWidth: 'none' }}>
+      {[TOUTE_LA_ROUTE, ...LANGUES.map((l) => l.id)].map((id) => {
+        const actif = valeur === id
+        const langue = id === TOUTE_LA_ROUTE ? null : langueParId(id)
+        return (
+          <button
+            key={id}
+            type="button"
+            className="chip"
+            aria-pressed={actif}
+            onClick={() => surChoisir(id)}
+            style={{
+              flex: '0 0 auto',
+              minHeight: 36,
+              paddingInline: '6px 12px',
+              border: '1.5px solid',
+              borderColor: actif ? 'var(--majorelle)' : 'var(--ligne)',
+              background: actif ? 'var(--majorelle-pale)' : 'var(--papier)',
+              color: actif ? 'var(--majorelle-fonce)' : 'var(--encre)',
+              cursor: 'pointer',
+              fontFamily: 'var(--police-ui)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {langue ? <Pastille langue={langue} taille={22} /> : <Boussole taille={18} trait={2} />}
+            {langue ? nomVille(langue, locale) : t.barid.touteLaRoute}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 export function Pastille({ langue, taille = 42, estompee = false }) {
   return (

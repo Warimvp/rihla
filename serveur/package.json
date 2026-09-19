@@ -1,0 +1,16 @@
+{
+  "name": "rihla-serveur",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Le serveur de Rihla : duels en direct (La Course), adversaire au hasard et classements — un Worker Cloudflare avec Durable Objects, gratuit.",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "deploy": "wrangler deploy",
+    "verifier": "wrangler deploy --dry-run --outdir dist",
+    "journal": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^4.135.0"
+  }
+}

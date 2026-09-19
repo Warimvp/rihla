@@ -1,0 +1,25 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "rihla-dev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--dir",
+        "/Users/user/Projects/rihla",
+        "dev"
+      ],
+      "port": 5183
+    },
+    {
+      "name": "rihla-serveur",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--dir",
+        "/Users/user/Projects/rihla/serveur",
+        "dev"
+      ],
+      "port": 8787
+    }
+  ]
+}

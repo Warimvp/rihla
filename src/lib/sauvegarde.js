@@ -49,6 +49,7 @@ export function importerProgres(texte) {
       gels: typeof p.gels === 'number' && p.gels >= 0 ? p.gels : 0,
       visas: estObjet(p.visas) ? p.visas : {},
       parcours: estObjet(p.parcours) ? p.parcours : {},
+      barid: estObjet(p.barid) ? p.barid : {},
     },
   }
 }

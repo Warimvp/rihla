@@ -17,6 +17,8 @@ export const progresInitial = () => ({
   // décroché et des kilomètres parcourus ne se reprennent pas.
   visas: {},
   parcours: {},
+  // Le Barid (défis à distance) : mes parties par graine, verdicts compris.
+  barid: {},
 })
 
 const stockageParDefaut = () => (typeof localStorage === 'undefined' ? null : localStorage)
@@ -153,8 +155,12 @@ export function ajouterXp(progres, montant) {
 // L'étape du jour : première réussite du jour → XP + la série avance
 // (quel que soit le score : c'est un rituel quotidien, pas un examen).
 // La refaire le même jour ne rapporte plus rien mais garde le meilleur score.
-export function enregistrerDefi(progres, score, total, jour = jourLocal()) {
+// `temps` (secondes) accompagne le meilleur score : il ne sert qu'à
+// départager au classement en ligne, jamais à noter.
+export function enregistrerDefi(progres, score, total, jour = jourLocal(), temps = null) {
   const deja = progres.defis?.[jour]
+  const meilleur = !deja || score > deja.score || (score === deja.score && temps != null && (deja.temps == null || temps < deja.temps))
+  const tempsRetenu = meilleur ? temps : (deja?.temps ?? null)
   const xpGagne = deja ? 0 : score * 4 + (score === total ? 10 : 0)
   const serieAvant = progres.serie.compte
   const bilanSerie = deja
@@ -165,7 +171,7 @@ export function enregistrerDefi(progres, score, total, jour = jourLocal()) {
     xp: progres.xp + xpGagne,
     serie: bilanSerie.serie,
     gels: bilanSerie.gels,
-    defis: { ...(progres.defis ?? {}), [jour]: { score: Math.max(score, deja?.score ?? 0), total } },
+    defis: { ...(progres.defis ?? {}), [jour]: { score: Math.max(score, deja?.score ?? 0), total, ...(tempsRetenu != null ? { temps: tempsRetenu } : {}) } },
   }
   return {
     progres: nouveau,

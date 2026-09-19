@@ -124,6 +124,12 @@ Réponds dans l'ordre. Pour Rihla, **tout est « Aucun » / « Non »** — le r
 C'est exact et vérifiable : pas de compte, pas de serveur, pas d'analytique, pas de SDK publicitaire,
 polices embarquées — le binaire ne fait aucune requête réseau.
 
+⚠️ **Valable seulement si le build iOS est fait SANS `VITE_RIHLA_SERVEUR` dans `.env`** (ou avec la
+ligne commentée). Depuis le 19 septembre 2026, un serveur de duels existe (dossier `serveur/`) ; s'il
+est dans le build, le jeu en ligne (opt-in) envoie un pseudonyme et des scores : voir § 12 pour le
+questionnaire à refaire. Pour la première soumission, le plus simple et le plus honnête : build sans
+la variable, fiche « Données non collectées » ; le jeu en ligne arrivera dans une mise à jour.
+
 ---
 
 ## 5 · Onglet « iOS App 1.0 » — Préparer la soumission
@@ -161,6 +167,14 @@ Les 7 fichiers de `captures/` sont déjà à la bonne taille et **sans canal alp
 | 7 | `captures/7-nuit.png` | Mode nuit |
 
 - Glisser-déposer dans la zone **iPhone 6,9″**. Les tailles plus petites sont mises à l'échelle automatiquement : rien d'autre à fournir.
+- **Zone 6,5″** (elle réclame 1242 × 2688 ou 1284 × 2778) : facultative dès que la 6,9″ est remplie — Apple exige l'une **ou** l'autre. Pour la remplir quand même, les mêmes sept écrans sont prêts en **1284 × 2778** dans `captures/6.5/`, engendrés depuis les 6,9″ :
+
+  ```bash
+  mkdir -p captures/6.5
+  for f in captures/*.png; do sips -z 2778 1284 "$f" --out "captures/6.5/$(basename $f)"; done
+  ```
+
+  Le ratio des deux formats diffère de 0,4 % : la hauteur est donc très légèrement étirée plutôt que recadrée — rien de visible, et aucun contenu perdu. La barre d'état gardée est celle d'un 6,9″ (Dynamic Island) ; Apple ne l'exige pas identique au châssis.
 - Si App Store Connect réclame des captures pour la **localisation arabe**, recopie les mêmes fichiers (ou refais-les avec l'interface en arabe — plus vendeur au Maroc).
 
 ### 5.2 → 5.13 Les champs, dans l'ordre de la page
@@ -343,3 +357,25 @@ refaire le questionnaire de confidentialité (identifiants + données d'usage), 
 **trader** avec adresse publique (§ 2.9), retirer « pas de publicité » des descriptions FR et AR et du
 texte promotionnel, ajouter le consentement UMP + ATT, et mettre à jour la page de confidentialité.
 Stratégie complète : note « Monétiser Rihla ».
+
+---
+
+## 12 · ⚠️ Le jour où le jeu en ligne entre dans le build iOS
+
+Le serveur (`serveur/`, Worker Cloudflare, `https://rihla-serveur.rihla-serveur.workers.dev`) est
+déployé et l'app web (GitHub Pages) le connaît par la variable de dépôt `VITE_RIHLA_SERVEUR`. Le
+build iOS ne l'embarque que si la variable est dans `.env` au moment de `pnpm ios:sync`. Le jour où
+c'est le cas, la fiche « Données non collectées » devient fausse. À refaire dans § 4 :
+
+| # | Question | Réponse |
+|---|---|---|
+| 4.2 | Collectez-vous des données ? | **Oui** |
+| Type | **Identifiants → ID utilisateur** (l'identifiant tiré au hasard sur l'appareil, `rihla.voyageur`) | Utilisation : *Fonctionnalité de l'app*. Lié à l'identité de l'utilisateur : **Non** (aucun compte). Utilisé pour le suivi : **Non** |
+| Type | **Contenu utilisateur → Contenu de jeu** (pseudonyme, scores, temps) | Utilisation : *Fonctionnalité de l'app*. Lié à l'identité : **Non**. Suivi : **Non** |
+| 4.3 | URL des choix de confidentialité | Laisser vide — le choix se fait dans l'app (« Réglages → Jeu en ligne ») |
+
+Déjà à jour : la page de confidentialité (`public/confidentialite/index.html`, FR + AR, section
+« Le jeu en ligne (facultatif) »), le Guide du voyageur et l'écran de consentement dans l'app.
+Rien à changer aux descriptions : « sans compte » reste vrai — une collecte opt-in sous identifiant
+aléatoire n'est pas un compte. Les notes pour l'examinateur (§ 8) devront mentionner que le jeu en
+ligne est facultatif et testable sans second appareil grâce au Barid (lien collé).

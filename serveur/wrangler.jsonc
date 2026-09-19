@@ -1,0 +1,31 @@
+{
+  // Le serveur de Rihla : un Worker + trois Durable Objects, tous SQLite
+  // (les seuls admis sur le plan gratuit). Déploiement : `pnpm deploy`
+  // depuis serveur/ après `pnpm wrangler login` (une seule fois).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "rihla-serveur",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "durable_objects": {
+    "bindings": [
+      // Une salle par duel en direct (code à 5 caractères).
+      { "name": "SALLE", "class_name": "Salle" },
+      // Le hall : la file d'attente « adversaire au hasard ».
+      { "name": "HALL", "class_name": "Hall" },
+      // Un registre par classement (« jour:2026-09-19 », « semaine:2026-W38 »).
+      { "name": "REGISTRE", "class_name": "Registre" }
+    ]
+  },
+  "exports": {
+    "Salle": { "type": "durable-object", "storage": "sqlite" },
+    "Hall": { "type": "durable-object", "storage": "sqlite" },
+    "Registre": { "type": "durable-object", "storage": "sqlite" }
+  },
+  "vars": {
+    // Origines autorisées (CORS), séparées par des virgules ; « * » = toutes.
+    // Aucun cookie ni secret d'origine n'est en jeu : « * » est sans risque.
+    "ORIGINES": "*"
+  }
+}

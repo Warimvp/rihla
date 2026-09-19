@@ -31,7 +31,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
+      # Adresse du serveur de duels (serveur/) — variable de dépôt, facultative :
+      # absente, l'app est bâtie 100 % hors-ligne, sans aucune carte « en ligne ».
       - run: pnpm build
+        env:
+          VITE_RIHLA_SERVEUR: ${{ vars.VITE_RIHLA_SERVEUR }}
       # Depuis v4, les fichiers cachés (.*) ne sont plus embarqués : dist n'en a pas.
       - uses: actions/upload-pages-artifact@v5
         with:

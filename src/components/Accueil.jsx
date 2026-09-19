@@ -1,10 +1,14 @@
 import { LANGUES, nomLangue, nomVille, titreLecon } from '../data/langues.js'
 import { joursAvantProchaine, motsDus, tailleCarnet } from '../lib/carnet.js'
 import { defiDuJour, etapesValidees, jourLocal, prochaineEtape, visaObtenu, xpDuJour } from '../lib/progression.js'
+import { bilanBarid } from '../lib/barid.js'
+import { enLigneDisponible } from '../lib/enligne.js'
 import { AnneauProgres, ChipSerie, Pastille } from './Communs.jsx'
-import { Boussole, CarnetIcone, ChevronAvant, Coche, Etoile8, FlecheAvant } from './Icones.jsx'
+import { Boussole, CarnetIcone, ChevronAvant, Coche, CoupeIcone, CourseIcone, Etoile8, FlecheAvant, LettreIcone } from './Icones.jsx'
 
-export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi, surCarnet, cap = 'route' }) {
+export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi, surCarnet, surBarid, surCourse, surClassement, cap = 'route' }) {
+  const duels = bilanBarid(progres)
+  const enLigne = enLigneDisponible()
   const suite = prochaineEtape(progres, LANGUES, cap)
   const aCommence = Object.keys(progres.etapes).length > 0
   const defiFait = defiDuJour(progres)
@@ -212,6 +216,93 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
         </span>
         {nbDus > 0 ? <ChevronAvant taille={18} couleur="var(--menthe-fonce)" trait={2} /> : null}
       </button>
+
+      <button
+        type="button"
+        className="carte apparition"
+        onClick={surBarid}
+        style={{
+          animationDelay: '120ms',
+          padding: '13px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 13,
+          cursor: 'pointer',
+          fontFamily: 'var(--police-ui)',
+          textAlign: 'start',
+          color: 'var(--encre)',
+        }}
+      >
+        <span
+          style={{
+            width: 42,
+            height: 42,
+            borderRadius: 14,
+            background: 'var(--majorelle-pale)',
+            color: 'var(--majorelle-fonce)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: '0 0 auto',
+          }}
+        >
+          <LettreIcone taille={22} trait={1.8} />
+        </span>
+        <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 15, fontWeight: 600 }}>{t.barid.titre} · {t.barid.carte}</span>
+          <span style={{ fontSize: 12.5, color: duels.joues > 0 ? 'var(--majorelle-fonce)' : 'var(--encre-2)', fontWeight: duels.joues > 0 ? 500 : 400 }}>
+            {duels.joues > 0 ? t.barid.bilan(duels.gagnes, duels.perdus, duels.egalites) : t.barid.accueilSub}
+          </span>
+        </span>
+        <ChevronAvant taille={18} couleur="var(--majorelle-fonce)" trait={2} />
+      </button>
+
+      {enLigne ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
+          {[
+            { id: 'course', Icone: CourseIcone, titre: t.course.titre, sub: t.course.accueilSub, sur: surCourse },
+            { id: 'classement', Icone: CoupeIcone, titre: t.classement.titre, sub: t.classement.accueilSub, sur: surClassement },
+          ].map(({ id, Icone, titre, sub, sur }, i) => (
+            <button
+              key={id}
+              type="button"
+              className="carte apparition"
+              onClick={sur}
+              style={{
+                animationDelay: `${150 + i * 30}ms`,
+                padding: '13px 14px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: 8,
+                cursor: 'pointer',
+                fontFamily: 'var(--police-ui)',
+                textAlign: 'start',
+                color: 'var(--encre)',
+                minWidth: 0,
+              }}
+            >
+              <span
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: 12,
+                  background: 'var(--terracotta-pale)',
+                  color: 'var(--terracotta-fonce)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: '0 0 auto',
+                }}
+              >
+                <Icone taille={20} trait={1.8} />
+              </span>
+              <span style={{ fontSize: 14.5, fontWeight: 600 }}>{titre}</span>
+              <span className="texte-2" style={{ fontSize: 12 }}>{sub}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
         <h2>{t.tonItineraire}</h2>

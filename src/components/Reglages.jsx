@@ -3,6 +3,7 @@ import { OBJECTIFS_JOUR, jourLocal } from '../lib/progression.js'
 import { exporterProgres, importerProgres } from '../lib/sauvegarde.js'
 import { BoiteIcone, CarnetIcone, PartagerIcone } from './Icones.jsx'
 import { reglerSons, sonsActifs } from '../lib/sons.js'
+import { enLigneActif, enLigneDisponible, reglerEnLigne } from '../lib/enligne.js'
 import { HEURE_DEFAUT, activerRappel, desactiverRappel, heureRappel, rappelActif, rappelDisponible } from '../lib/rappel.js'
 import { MarqueRihla } from './Logo.jsx'
 
@@ -24,6 +25,7 @@ export function Reglages({
   surEffacer,
 }) {
   const [sons, setSons] = useState(() => sonsActifs())
+  const [enLigne, setEnLigne] = useState(() => enLigneActif())
   const [rappel, setRappel] = useState(() => rappelActif())
   const [heure, setHeure] = useState(() => heureRappel())
   const natifDispo = rappelDisponible()
@@ -191,6 +193,30 @@ export function Reglages({
           ))}
         </div>
       </div>
+
+      {enLigneDisponible() ? (
+        <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.enligne.reglageTitre}</span>
+            <span className="texte-2" style={{ fontSize: 12.5 }}>{t.enligne.reglageSousTitre}</span>
+          </div>
+          <div className="segmente">
+            {[true, false].map((valeur) => (
+              <button
+                key={String(valeur)}
+                type="button"
+                className={`segmente__choix ${enLigne === valeur ? 'segmente__choix--actif' : ''}`}
+                onClick={() => {
+                  reglerEnLigne(valeur)
+                  setEnLigne(valeur)
+                }}
+              >
+                {valeur ? t.enligne.actif : t.enligne.inactif}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

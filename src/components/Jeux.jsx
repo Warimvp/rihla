@@ -1,6 +1,7 @@
 import { peutParler } from '../lib/tts.js'
 import { useVoixPretes } from './Ecoute.jsx'
-import { Auvent, CaravaneIcone, ChevronAvant, DuelIcone, Onde, TuileZellige } from './Icones.jsx'
+import { enLigneDisponible } from '../lib/enligne.js'
+import { Auvent, CaravaneIcone, ChevronAvant, CourseIcone, DuelIcone, LettreIcone, Onde, TuileZellige } from './Icones.jsx'
 
 const JEUX = [
   { id: 'zellige', Icone: TuileZellige },
@@ -8,6 +9,11 @@ const JEUX = [
   { id: 'caravane', Icone: CaravaneIcone },
   { id: 'oreille', Icone: Onde },
   { id: 'duel', Icone: DuelIcone },
+  // Le Barid et la Course ne sont pas des jeux comme les autres (ils sortent
+  // de l'app : un lien, un serveur) : App les ouvre sur leur propre écran,
+  // préréglés sur cette destination. La Course n'existe qu'avec un serveur.
+  { id: 'barid', Icone: LettreIcone },
+  { id: 'course', Icone: CourseIcone, enLigne: true },
 ]
 
 // La section « Jeux du voyage » d'une destination : cinq façons de réviser
@@ -24,7 +30,7 @@ export function SectionJeux({ t, langue, surJeu }) {
         <span className="texte-2 texte-petit">{t.jeux.sousTitre}</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {JEUX.map(({ id, Icone }, i) => {
+        {JEUX.filter((jeu) => !jeu.enLigne || enLigneDisponible()).map(({ id, Icone }, i) => {
           const desactive = id === 'oreille' && !audioOk
           return (
             <button

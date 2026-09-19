@@ -14,3 +14,6 @@ ios/build-sim/
 
 # Captures pour App Store Connect — régénérables au simulateur
 captures/
+
+# Serveur Cloudflare (serveur/) : état local de wrangler dev et bundle de vérification
+serveur/.wrangler/

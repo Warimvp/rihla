@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { sensPour } from '../i18n.js'
 import { LANGUES, nomLangue } from '../data/langues.js'
 import { construireDefi, estBonneOption } from '../lib/defi.js'
@@ -18,6 +18,8 @@ export function Defi({ t, locale, source, surTerminer, surQuitter }) {
   const [choix, setChoix] = useState(null)
   const [score, setScore] = useState(0)
   const [bilan, setBilan] = useState(null)
+  // Chronométrée en silence : le temps ne départage qu'au classement en ligne.
+  const debut = useRef(Date.now())
 
   const total = questions.length
   const question = questions[iQuestion]
@@ -36,7 +38,7 @@ export function Defi({ t, locale, source, surTerminer, surQuitter }) {
       setChoix(null)
     } else {
       fanfare()
-      setBilan(surTerminer(score, total))
+      setBilan(surTerminer(score, total, Math.max(0, Math.round((Date.now() - debut.current) / 1000))))
     }
   }
 

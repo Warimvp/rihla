@@ -183,6 +183,47 @@ export const Onde = (props) => (
   </Svg>
 )
 
+// La Course : un chronomètre — deux joueurs, les mêmes questions, en même temps.
+export const CourseIcone = (props) => (
+  <Svg {...props}>
+    <circle cx="12" cy="13.5" r="7.5" />
+    <path d="M12 13.5V9.5" />
+    <path d="M9.5 3h5" />
+    <path d="M12 3v3" />
+    <path d="M18 7l1.5-1.5" />
+  </Svg>
+)
+
+// Le classement : une coupe (aucun emblème, aucune couleur nationale).
+export const CoupeIcone = (props) => (
+  <Svg {...props}>
+    <path d="M7 4h10v4.5a5 5 0 0 1-10 0z" />
+    <path d="M7 6H4.5a2.5 2.5 0 0 0 2.5 3" />
+    <path d="M17 6h2.5A2.5 2.5 0 0 1 17 9" />
+    <path d="M12 13.5V17" />
+    <path d="M8.5 20h7" />
+    <path d="M10 17h4v3" />
+  </Svg>
+)
+
+// Le jeu en ligne : des ondes qui partent de l'appareil.
+export const OndeIcone = (props) => (
+  <Svg {...props}>
+    <circle cx="12" cy="17" r="1.6" fill="currentColor" stroke="none" />
+    <path d="M8.5 13.5a5 5 0 0 1 7 0" />
+    <path d="M5.5 10.5a9.5 9.5 0 0 1 13 0" />
+    <path d="M2.5 7.5a14 14 0 0 1 19 0" />
+  </Svg>
+)
+
+// Le Barid : une lettre qui part — le défi voyage dans un message.
+export const LettreIcone = (props) => (
+  <Svg {...props}>
+    <rect x="3" y="5.5" width="18" height="13" rx="2.5" />
+    <path d="M3.5 7.5l8.5 5.5 8.5-5.5" />
+  </Svg>
+)
+
 export const DuelIcone = (props) => (
   <Svg {...props}>
     <g fill="currentColor" stroke="none">

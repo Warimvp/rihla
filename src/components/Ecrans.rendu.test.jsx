@@ -11,7 +11,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App.jsx'
 import { LANGUES, nomLangue } from '../data/langues.js'
 import { getDictionary, sensPour } from '../i18n.js'
-import { enregistrerEtape, figerAvancement, progresInitial } from '../lib/progression.js'
+import { chargerProgres, enregistrerEtape, figerAvancement, progresInitial, sauverProgres } from '../lib/progression.js'
+import { construireBarid, encoderLettre, terminerBarid } from '../lib/barid.js'
 import { ciblePhrase } from '../lib/phrase.js'
 import { mulberry32 } from '../lib/quiz.js'
 import { DEBIT_LENT, DEBIT_NORMAL } from '../lib/tts.js'
@@ -20,6 +21,9 @@ import { Apprendre } from './Apprendre.jsx'
 import { motsVoyageurs, totalVoyageurs } from '../data/voyageurs.js'
 import { JeuSouk } from './JeuSouk.jsx'
 import { Lecon } from './Lecon.jsx'
+import { Course } from './Course.jsx'
+import { Classement } from './Classement.jsx'
+import { jourLocal } from '../lib/progression.js'
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
@@ -483,5 +487,295 @@ describe('l’app en arabe', () => {
     expect(sens.textContent).toBe('مرحبا')
     expect(sens.hasAttribute('lang')).toBe(false)
     expect(sens.hasAttribute('dir')).toBe(false)
+  })
+})
+
+describe('le Barid — le duel à distance', () => {
+  const graine = 4242
+  const defiDeFatima = { n: 'فاطمة', l: 'tr', g: graine, s: 8, t: 42 }
+  const preparer = () => {
+    localStorage.setItem('rihla.langue', 'fr')
+    localStorage.setItem('rihla.cap', 'route')
+    localStorage.setItem('rihla.theme', 'clair')
+  }
+
+  afterEach(() => {
+    window.location.hash = ''
+  })
+
+  it('un lien reçu ouvre la lettre, fait jouer les MÊMES dix questions, tranche, paie, et s’efface de l’adresse', () => {
+    preparer()
+    window.location.hash = `#barid=${encoderLettre(defiDeFatima)}`
+    const vue = monter(<App />)
+
+    expect(window.location.hash).toBe('')
+    expect(vue.textContent).toContain(t.barid.defiDe('فاطمة'))
+    expect(vue.textContent).toContain(t.barid.resultat(8, 10, 42))
+
+    clic(bouton(vue, t.barid.releve))
+    for (const question of construireBarid(LANGUES, 'tr', graine)) {
+      const attendu = question.type === 'comprendre' ? question.mot.fr : question.mot.t
+      const options = [...vue.querySelectorAll('button.option')]
+      expect(options).toHaveLength(4)
+      // Le tirage à l'écran est bien celui de la graine : la bonne réponse y est.
+      clic(options.find((b) => b.textContent.trim() === attendu))
+      clic(primaire(vue))
+    }
+
+    expect(vue.textContent).toContain(t.barid.gagne)
+    expect(vue.textContent).toContain(t.plusXp(30))
+    expect(bouton(vue, t.barid.riposter)).toBeTruthy()
+    expect(bouton(vue, t.barid.envoyerResultat)).toBeTruthy()
+    const progres = chargerProgres()
+    expect(progres.barid[graine]).toMatchObject({ l: 'tr', s: 10, adv: { n: 'فاطمة', s: 8, t: 42 }, verdict: 'gagne' })
+    expect(progres.xp).toBe(30)
+  })
+
+  it('une réponse à mon défi affiche le verdict, l’inscrit sans XP, et propose de relancer', () => {
+    preparer()
+    // J'avais lancé ce défi : 7/10 en 51 s (14 XP).
+    sauverProgres(terminerBarid(progresInitial(), { graine, langueId: 'tr', score: 7, temps: 51 }, '2026-09-19').progres)
+    window.location.hash = `#barid=${encoderLettre({ n: 'Amine', re: { l: 'tr', g: graine, s: 9, t: 38, s0: 7, t0: 51 } })}`
+    const vue = monter(<App />)
+
+    expect(vue.textContent).toContain(t.barid.reponseDe('Amine'))
+    expect(vue.textContent).toContain(t.barid.perdu)
+    const progres = chargerProgres()
+    expect(progres.barid[graine]).toMatchObject({ s: 7, adv: { n: 'Amine', s: 9, t: 38 }, verdict: 'perdu' })
+    expect(progres.xp).toBe(14)
+
+    clic(bouton(vue, t.barid.relancer))
+    expect(bouton(vue, t.barid.lancer)).toBeTruthy()
+  })
+
+  it('un lien abîmé ouvre le comptoir avec l’explication, jamais une lettre', () => {
+    preparer()
+    window.location.hash = `#barid=${encoderLettre({ n: 'x', l: 'tr', g: 5, s: 11, t: 4 })}`
+    const vue = monter(<App />)
+    expect(vue.textContent).toContain(t.barid.erreurs.abime)
+    expect(vue.textContent).not.toContain(t.barid.releve)
+  })
+
+  it('depuis l’Accueil : on joue ses dix questions et la lettre est prête à partir', () => {
+    preparer()
+    const vue = monter(<App />)
+    clic(bouton(vue, t.barid.titre))
+    expect(vue.textContent).toContain(t.barid.intro)
+    clic(bouton(vue, t.barid.lancer))
+    for (let i = 0; i < 10; i++) {
+      clic(vue.querySelector('button.option'))
+      clic(primaire(vue))
+    }
+    expect(vue.textContent).toContain(t.barid.finDefi)
+    expect(bouton(vue, t.barid.envoyer)).toBeTruthy()
+    expect(bouton(vue, t.barid.copierLien)).toBeTruthy()
+    expect(Object.keys(chargerProgres().barid)).toHaveLength(1)
+  })
+})
+
+// ————— En ligne : un faux serveur, piloté à la main —————
+const MOI = { id: 'amine000amine000', secret: 'secret-amine-secret-amine', nom: 'Amine' }
+const SARA = { id: 'sara0000sara0000', nom: 'Sara' }
+
+const brancherEnLigne = ({ actif = true } = {}) => {
+  localStorage.setItem('rihla.serveur', 'http://localhost:8787')
+  localStorage.setItem('rihla.voyageur', JSON.stringify(MOI))
+  if (actif) localStorage.setItem('rihla.enligne', 'oui')
+}
+
+// Les trois portes vers le serveur, remplacées : on garde chaque « connexion »
+// pour lui faire dire ce que le serveur dirait.
+const fauxTransport = () => {
+  const salles = []
+  const halls = []
+  const connexion = (liste) => (code, voyageur, gestionnaires) => {
+    const c = { code, voyageur, gestionnaires, envoyes: [], fermee: false, envoyer: (m) => c.envoyes.push(m), fermer: () => (c.fermee = true) }
+    liste.push(c)
+    return c
+  }
+  return {
+    salles,
+    halls,
+    transport: {
+      creerSalle: vi.fn(async () => ({ code: 'ABC23' })),
+      ouvrirSalle: vi.fn(connexion(salles)),
+      chercherAdversaire: vi.fn((langue, voyageur, gestionnaires) => connexion(halls)(langue, voyageur, gestionnaires)),
+    },
+  }
+}
+
+const attendreMicro = () => act(async () => {})
+
+describe('la Course — le duel en direct', () => {
+  afterEach(() => vi.useRealTimers())
+
+  it('crée une salle, attend, égrène le compte à rebours, joue au rythme du serveur et affiche SON verdict', async () => {
+    brancherEnLigne()
+    vi.useFakeTimers()
+    const { transport, salles } = fauxTransport()
+    const surTerminer = vi.fn(() => ({ xpGagne: 26, verdict: 'gagne' }))
+    const vue = monter(
+      <Course t={t} locale="fr" source="fr" langueId="tr" surTerminer={surTerminer} surClassement={() => {}} surQuitter={() => {}} transport={transport} />
+    )
+    expect(vue.textContent).toContain(t.course.intro)
+
+    clic(bouton(vue, t.course.creer))
+    await attendreMicro()
+    expect(transport.creerSalle).toHaveBeenCalledWith('tr')
+    expect(salles[0].code).toBe('ABC23')
+    expect(salles[0].voyageur).toEqual({ id: MOI.id, nom: 'Amine' })
+    expect(vue.textContent).toContain('ABC23')
+
+    const serveur = (m) => act(() => salles[0].gestionnaires.surMessage(m))
+    const moi = (extra) => ({ id: MOI.id, nom: 'Amine', score: 0, i: 0, fini: false, revanche: false, present: true, ...extra })
+    const sara = (extra) => ({ ...SARA, score: 0, i: 0, fini: false, revanche: false, present: true, ...extra })
+
+    serveur({ type: 'salle', phase: 'attente', langue: 'tr', joueurs: [moi()] })
+    expect(vue.textContent).toContain(t.course.attenteAdversaire)
+
+    const graine = 4242
+    const questions = construireBarid(LANGUES, 'tr', graine)
+    serveur({ type: 'depart', graine, langue: 'tr', debut: 0, dans: 3000, joueurs: [moi(), sara()] })
+    expect(vue.textContent).toContain(t.course.pret)
+    expect(vue.textContent).toContain('3')
+    // Une seconde par act : le tick suivant n'est programmé qu'une fois le
+    // rendu passé, il ne se laisse pas avancer en bloc.
+    act(() => vi.advanceTimersByTime(1000))
+    expect(vue.textContent).toContain('2')
+    act(() => vi.advanceTimersByTime(1000))
+    act(() => vi.advanceTimersByTime(1000))
+    expect(vue.querySelectorAll('button.option')).toHaveLength(4)
+
+    // La bonne réponse à la première question part telle quelle au serveur.
+    const attendu = questions[0].type === 'comprendre' ? questions[0].mot.fr : questions[0].mot.t
+    clic([...vue.querySelectorAll('button.option')].find((b) => b.textContent.trim() === attendu))
+    expect(salles[0].envoyes).toEqual([{ type: 'repondre', i: 0, optionId: questions[0].mot.id }])
+    expect(vue.querySelector('[role="status"]').textContent).toContain(t.bonneReponse)
+
+    // L'adversaire avance : sa barre suit.
+    serveur({ type: 'etat', joueurs: [moi({ score: 1, i: 1 }), sara({ score: 2, i: 3 })] })
+    expect(vue.textContent).toContain('Sara')
+    expect([...vue.querySelectorAll('.piste-progres__barre')].some((b) => b.style.width === '30%')).toBe(true)
+
+    for (let i = 1; i < 10; i++) {
+      clic(primaire(vue))
+      clic(vue.querySelector('button.option'))
+    }
+    expect(salles[0].envoyes).toHaveLength(10)
+    clic(primaire(vue))
+    expect(vue.textContent).toContain(t.course.attenteFin)
+
+    serveur({
+      type: 'fin',
+      graine,
+      joueurs: [
+        { id: MOI.id, nom: 'Amine', score: 8, temps: 20, verdict: 'gagne', points: 3, present: true },
+        { id: SARA.id, nom: 'Sara', score: 7, temps: 18, verdict: 'perdu', points: 1, present: true },
+      ],
+    })
+    expect(surTerminer).toHaveBeenCalledTimes(1)
+    expect(surTerminer).toHaveBeenCalledWith({ graine, langueId: 'tr', score: 8, temps: 20, adversaire: { n: 'Sara', s: 7, t: 18 }, verdictImpose: 'gagne' })
+    expect(vue.textContent).toContain(t.barid.gagne)
+    expect(vue.textContent).toContain(t.plusXp(26))
+    expect(vue.textContent).toContain(t.course.points(3))
+
+    clic(bouton(vue, t.course.revanche))
+    expect(salles[0].envoyes.at(-1)).toEqual({ type: 'revanche' })
+    expect(vue.textContent).toContain(t.course.revancheAttente)
+    // La revanche repart : nouvelle graine, compte à rebours, rien d'inscrit deux fois.
+    serveur({ type: 'depart', graine: 777, langue: 'tr', debut: 0, dans: 3000, joueurs: [moi(), sara()] })
+    expect(vue.textContent).toContain(t.course.pret)
+    expect(surTerminer).toHaveBeenCalledTimes(1)
+  })
+
+  it('demande le consentement avant le premier appel ; un lien #salle= rejoint ensuite directement', async () => {
+    brancherEnLigne({ actif: false })
+    const { transport, salles } = fauxTransport()
+    const vue = monter(
+      <Course t={t} locale="fr" source="fr" codeInitial="xyz78" surTerminer={() => ({})} surClassement={() => {}} surQuitter={() => {}} transport={transport} />
+    )
+    expect(vue.textContent).toContain(t.enligne.consentTitre)
+    expect(transport.ouvrirSalle).not.toHaveBeenCalled()
+    clic(bouton(vue, t.enligne.activer))
+    expect(localStorage.getItem('rihla.enligne')).toBe('oui')
+    expect(salles[0].code).toBe('XYZ78')
+    expect(vue.textContent).toContain(t.course.connexion)
+  })
+
+  it('un adversaire au hasard passe par le hall, puis par la salle qu’il désigne', () => {
+    brancherEnLigne()
+    const { transport, salles, halls } = fauxTransport()
+    const vue = monter(
+      <Course t={t} locale="fr" source="fr" langueId="es" surTerminer={() => ({})} surClassement={() => {}} surQuitter={() => {}} transport={transport} />
+    )
+    clic(bouton(vue, t.course.hasard))
+    expect(halls[0].code).toBe('es')
+    expect(vue.textContent).toContain(t.course.recherche)
+    act(() => halls[0].gestionnaires.surMessage({ type: 'salle', code: 'QR7ZK' }))
+    expect(halls[0].fermee).toBe(true)
+    expect(salles[0].code).toBe('QR7ZK')
+  })
+
+  it('une salle pleine, une salle introuvable ou une connexion perdue le disent, avec la sortie qui convient', () => {
+    brancherEnLigne()
+    const { transport, salles } = fauxTransport()
+    const vue = monter(
+      <Course t={t} locale="fr" source="fr" codeInitial="ABC23" surTerminer={() => ({})} surClassement={() => {}} surQuitter={() => {}} transport={transport} />
+    )
+    act(() => salles[0].gestionnaires.surMessage({ type: 'erreur', code: 'pleine' }))
+    expect(vue.textContent).toContain(t.course.erreurs.pleine)
+    expect(salles[0].fermee).toBe(true)
+    clic(bouton(vue, t.course.retour))
+    clic(bouton(vue, t.course.entrer))
+    expect(vue.textContent).toContain(t.course.erreurs.code)
+
+    // Le serveur ferme sans avoir jamais répondu : la salle n'existe pas.
+    const vue2 = monter(
+      <Course t={t} locale="fr" source="fr" codeInitial="ZZZ22" surTerminer={() => ({})} surClassement={() => {}} surQuitter={() => {}} transport={transport} />
+    )
+    act(() => salles[1].gestionnaires.surFermeture({ code: 1006, voulu: false }))
+    expect(vue2.textContent).toContain(t.course.erreurs.introuvable)
+    expect(bouton(vue2, t.course.reessayer)).toBeUndefined()
+  })
+})
+
+describe('les classements', () => {
+  it('montre le jour et la semaine, ma ligne hors du top, et renvoie mon score du jour', async () => {
+    brancherEnLigne()
+    const jour = jourLocal()
+    const transport = {
+      lireClassement: vi.fn(async (type) =>
+        type === 'jour'
+          ? { lignes: [{ rang: 1, id: 'x', nom: 'فاطمة', score: 9, temps: 40 }], total: 60, moi: { rang: 57, score: 5, temps: 80 } }
+          : { lignes: [], total: 0, moi: null }
+      ),
+      envoyerScore: vi.fn(async () => ({ ok: true })),
+    }
+    const progres = { ...progresInitial(), defis: { [jour]: { score: 5, total: 10, temps: 80 } } }
+    const vue = monter(<Classement t={t} progres={progres} surQuitter={() => {}} transport={transport} />)
+    await attendreMicro()
+    expect(transport.lireClassement).toHaveBeenCalledWith('jour', jour, MOI.id)
+    expect(vue.textContent).toContain('فاطمة')
+    expect(vue.textContent).toContain(t.classement.scoreJour(9, 10, 40))
+    expect(vue.textContent).toContain(t.classement.monRang(57, 60))
+    expect(vue.textContent).toContain(t.classement.toi)
+
+    clic(bouton(vue, t.classement.envoyer))
+    await attendreMicro()
+    expect(transport.envoyerScore).toHaveBeenCalledWith(expect.objectContaining({ id: MOI.id }), { type: 'jour', cle: jour, score: 5, temps: 80 })
+    expect(vue.textContent).toContain(t.classement.envoye)
+
+    clic(bouton(vue, t.classement.semaine))
+    await attendreMicro()
+    expect(transport.lireClassement).toHaveBeenLastCalledWith('semaine', expect.stringMatching(/^\d{4}-W\d{2}$/), MOI.id)
+    expect(vue.textContent).toContain(t.classement.vide)
+  })
+
+  it('sans consentement, rien n’est lu', () => {
+    brancherEnLigne({ actif: false })
+    const transport = { lireClassement: vi.fn(), envoyerScore: vi.fn() }
+    const vue = monter(<Classement t={t} progres={progresInitial()} surQuitter={() => {}} transport={transport} />)
+    expect(vue.textContent).toContain(t.enligne.consentTitre)
+    expect(transport.lireClassement).not.toHaveBeenCalled()
   })
 })
