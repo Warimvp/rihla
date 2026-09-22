@@ -100,6 +100,12 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Quota des interstitielles (pur, testé) : ≥ 3 étapes ET ≥ 5 minutes (`peutMontrerInterstitiel`).
 - ⚠️ Le jour de l'activation : réécrire les 3 textes qui promettent « sans pub » (README, `t.gratuit`, guide FR+AR), ajouter consentement UMP + ATT, mettre à jour la page de confidentialité et les étiquettes App Store. Stratégie complète : artifact « Monétiser Rihla ».
 
+## Pourboire — web seulement (`src/lib/pourboire.js`)
+- Un lien de don (Ko-fi, PayPal, Stripe…) dans les Réglages, **juste sous « Partager Rihla »** : les deux gestes de gratitude ensemble. Rendu seulement si `lienPourboire()` renvoie une adresse. **Rien n'est acheté** — aucun contenu déverrouillé, ni XP, ni visa, ni série : « 100 % gratuit » reste vrai, et les textes qui le promettent n'ont pas à changer.
+- **Deux verrous, et il faut les deux** : l'adresse au build (`VITE_RIHLA_POURBOIRE`, variable de dépôt GitHub — **jamais** dans le `.env` que lit `pnpm ios:sync`) et la plateforme (`estNatif()` : aucun lien sur appareil natif). Le second rattrape l'oubli du premier, parce qu'un lien de paiement dans une app de l'App Store est un rejet (ligne directrice 3.1.1 : tout paiement numérique y passe par l'achat intégré). Le test `pourboire.test.js` casse si le garde natif saute.
+- `https` exigé. Essayer en dev sans `.env` : `localStorage.setItem('rihla.pourboire', 'https://…')` puis recharger — même patron que `rihla.serveur`.
+- Encaisser **dans** l'app iOS, un jour : c'est un achat intégré consommable (Apple prend 15 % avec le Small Business Program), donc contrat « Paid Applications » + coordonnées bancaires + formulaire fiscal, produit soumis AVEC un build, et probablement statut trader au titre du DSA (adresse postale publique dans l'UE). À trancher après la publication, pas avant.
+
 ## Rappel quotidien (`src/lib/rappel.js`)
 - Notification locale via `@capacitor/local-notifications`, id fixe `1325`, planification `{ on: { hour, minute } }` (quotidienne). **Natif seulement** : sur le web les boutons sont désactivés avec un message honnête (une notification programmée ne survit pas à la fermeture de l'onglet). Réglages : Activé/Coupé + heure. Clés `rihla.rappel` / `rihla.rappel.heure`.
 

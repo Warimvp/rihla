@@ -36,6 +36,8 @@ jobs:
       - run: pnpm build
         env:
           VITE_RIHLA_SERVEUR: ${{ vars.VITE_RIHLA_SERVEUR }}
+          # Lien de pourboire — web seulement, jamais dans le build iOS (src/lib/pourboire.js).
+          VITE_RIHLA_POURBOIRE: ${{ vars.VITE_RIHLA_POURBOIRE }}
       # Depuis v4, les fichiers cachés (.*) ne sont plus embarqués : dist n'en a pas.
       - uses: actions/upload-pages-artifact@v5
         with:

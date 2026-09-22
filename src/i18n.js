@@ -213,6 +213,11 @@ const fr = {
     copie: '✓ Lien copié',
     texte: 'Rihla — apprends les langues du monde, gratuitement, sur les pas d’Ibn Battuta.',
   },
+  pourboire: {
+    titre: 'Offrir un thé à l’auteur',
+    sousTitre: 'Rihla est gratuite et le restera — ceci n’achète rien',
+    bouton: 'Offrir un thé',
+  },
   barid: {
     titre: 'Le Barid',
     sousTitre: 'Défie un ami, par message',
@@ -596,6 +601,11 @@ const ar = {
     bouton: 'شارك الرابط',
     copie: '✓ تم نسخ الرابط',
     texte: 'رحلة — تعلّم لغات العالم مجاناً، على خطى ابن بطوطة.',
+  },
+  pourboire: {
+    titre: 'قدّم كأس شاي للمؤلف',
+    sousTitre: 'رحلة مجانية وستبقى كذلك — هذا لا يشتري شيئاً',
+    bouton: 'قدّم كأس شاي',
   },
   barid: {
     titre: 'البريد',

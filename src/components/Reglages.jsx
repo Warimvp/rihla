@@ -4,6 +4,7 @@ import { exporterProgres, importerProgres } from '../lib/sauvegarde.js'
 import { BoiteIcone, CarnetIcone, PartagerIcone } from './Icones.jsx'
 import { reglerSons, sonsActifs } from '../lib/sons.js'
 import { enLigneActif, enLigneDisponible, reglerEnLigne } from '../lib/enligne.js'
+import { lienPourboire } from '../lib/pourboire.js'
 import { HEURE_DEFAUT, activerRappel, desactiverRappel, heureRappel, rappelActif, rappelDisponible } from '../lib/rappel.js'
 import { MarqueRihla } from './Logo.jsx'
 
@@ -29,6 +30,7 @@ export function Reglages({
   const [rappel, setRappel] = useState(() => rappelActif())
   const [heure, setHeure] = useState(() => heureRappel())
   const natifDispo = rappelDisponible()
+  const pourboire = lienPourboire()
   const [message, setMessage] = useState(null)
   const [zoneRestaure, setZoneRestaure] = useState(null)
 
@@ -358,6 +360,25 @@ export function Reglages({
           {t.partager.bouton}
         </button>
       </div>
+
+      {/* Le pourboire : web seulement, et invisible sans adresse (src/lib/pourboire.js). */}
+      {pourboire ? (
+        <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.pourboire.titre}</span>
+            <span className="texte-2" style={{ fontSize: 12.5 }}>{t.pourboire.sousTitre}</span>
+          </div>
+          <a
+            className="bouton bouton--secondaire bouton--pleine"
+            style={{ minHeight: 44, fontSize: 14, textDecoration: 'none' }}
+            href={pourboire}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t.pourboire.bouton}
+          </a>
+        </div>
+      ) : null}
 
       <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
