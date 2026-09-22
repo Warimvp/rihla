@@ -295,26 +295,43 @@ Fait au Maroc, avec l'amour du voyage. Le code est ouvert : github.com/Warimvp/r
 4. Conformité à l'exportation : **rien à répondre**, `ITSAppUsesNonExemptEncryption = false` est déjà dans `ios/App/App/Info.plist`
 5. Facultatif mais recommandé : installer ce build par **TestFlight** sur ton iPhone et jouer une leçon entière avant de soumettre
 
+> **19/09/2026 — le build 5 a été rejeté sous « Guideline 2.1 — Information Needed ».** Ce n'est pas
+> un défaut de l'app : Apple réclame des informations parce que le compte est neuf. Aucun nouveau
+> build à déposer — tout est au **§ 13**.
+
 ---
 
-## 8 · Notes pour l'examinateur (à coller en 5.11.f, en anglais)
+## 8 · Le texte anglais pour Apple — un seul, pour les deux champs
+
+**Les deux champs sont plafonnés à 4 000 caractères** : le champ « Notes » des Informations pour
+l'examen, et — découvert à l'usage le 20/09 — **la zone de réponse du Centre de résolution aussi**.
+D'où un texte unique, à coller aux deux endroits : **3867 caractères, 3872 octets**, soit 128 de marge
+quel que soit le mode de comptage. Il répond aux six demandes du rejet 2.1 dans l'ordre d'Apple, et
+reste vrai tant que le binaire est celui de la 1.0 (hors-ligne) — le jour où le jeu en ligne entre
+dans le build, le réécrire (§ 12).
 
 ```
-Rihla is a 100% offline language-learning app. No account, no sign-in, no server, no ads, no analytics, no in-app purchases, no tracking — nothing is ever sent anywhere. All 14 languages and 2,688 words ship inside the binary; progress is stored locally on the device.
+Thank you for the review. Build 1.0 (5) is unchanged; here are the six points.
 
-How to try it in two minutes:
-1. On first launch, pick a destination on the "Where is your rihla going?" screen.
-2. On the Home tab, tap "Resume" to start a lesson: word cards first (tap a card to flip it), then a quiz.
-3. The Learn tab holds the 24 steps of that destination and five review games (Zellige, Souk, Caravane, Oreille, Duel).
-4. Settings (top right) holds the interface language (French/Arabic), dark mode, the daily goal, and a built-in "Traveller's guide" that explains every mechanic.
+Rihla ("the journey" in Arabic) is a 100% offline vocabulary-learning app: no server, no ads, no analytics, no tracking. All content ships inside the binary; progress stays on the device. The source of this build is public: commit 0bd486d of https://github.com/Warimvp/rihla
 
-Pronunciation uses the system speech synthesizer only (AVSpeechSynthesis) — no network call, no paid API. Speaker buttons are hidden for any language the device has no installed voice for, so please make sure voices are installed for the language you test (Settings > Accessibility > Spoken Content > Voices).
+1. RECORDING: attached, captured on a physical iPhone running the latest iOS, starting with launching the app, in Airplane Mode throughout to show it is fully offline. It follows the whole typical flow described in point 3, including a complete lesson up to the validated step. There is NO account registration, login or deletion (no account exists), NO user-generated content (nothing can be created, posted, shared or received, so nothing to report or block), and NO paid content or feature. Those flows do not exist, so they are not in the recording. Settings does offer "Effacer mon progrès" (erase my progress), which deletes everything stored on the device.
 
-The app makes no network request of its own: all fonts, audio and content are bundled. The only outbound link is "Suggest an improvement" in Settings, which opens a GitHub page in Safari.
+2. PURPOSE: beginner vocabulary in 14 languages for French- and Arabic-speaking learners, mainly in Morocco, where many have little mobile data and cannot pay a subscription. Free forever, works in airplane mode, and the language of the definitions is chosen independently of the interface language (e.g. English learned with Arabic definitions). 14 destinations along Ibn Battuta's 1325 route, 24 lessons each: 336 lessons, 2,688 words. Teenagers and adults, no mature content (4+).
 
-The optional daily reminder uses local notifications only — no push server, no APNs entitlement.
+3. ACCESS: no credentials, no demo account, no sample file, nothing to configure. Interface is French and Arabic only, by design for that audience.
+- First launch: "Où va ta rihla ?" - tap a destination.
+- Tab "Carte": itinerary; "Commencer" starts a lesson (cards flip on tap, speaker icon speaks the word, turtle icon speaks it slowly, then a quiz; 75% correct validates the step). Also the daily challenge and the spaced-repetition notebook (Le Carnet).
+- Tab "Apprendre": the 24 steps in 5 levels, and five review games (the last, Le Duel, is two players on one device).
+- Tab "Passeport": visa stamps, kilometres, weekly activity.
+- Tab "Réglages": interface language, dark mode, language of definitions, daily goal, sounds, optional local reminder, save/restore, erase progress, and the built-in "Guide du voyageur".
+Pronunciation uses the system speech synthesizer only; speaker icons are hidden for languages with no voice installed on the device - deliberate, not a bug. Spanish has one on every device; others install from iOS Settings > Accessibility > Spoken Content > Voices.
 
-The interface is French and Arabic with full RTL support. The source code is public: https://github.com/Warimvp/rihla
+4. EXTERNAL SERVICES: none. No backend of mine, no data provider, authentication, payment processor, AI service, analytics, crash reporting, ad SDK or CDN. The app requests no remote URL. Apple system frameworks only, through Capacitor 8 (open-source shell compiled in): AVSpeechSynthesis for speech, UserNotifications for the optional reminder (local only, no push server), WKWebView local storage. The app leaves itself only from Settings: "Proposer une amélioration" opens my GitHub issue page in Safari, "Partager le lien" opens the system share sheet. No in-app browser.
+
+5. REGIONS: one binary, identical everywhere - no geolocation, no region gating, no regional content or pricing (free), no server, so nothing can differ by country. All 14 languages are available from first launch; the only device-dependent difference is the installed system voices.
+
+6. NO REGULATED INDUSTRY, NO PROTECTED MATERIAL: no health, financial, gambling, dating or government service (the "chez le médecin" lesson is vocabulary only, no medical advice). Every lesson, word, translation and drawing is my own work; no dictionary or third-party text is reproduced, no trademarks, no licensed IP, no API key. The bundled fonts (SIL Open Font License) are the only third-party component.
 ```
 
 ---
@@ -379,3 +396,111 @@ Déjà à jour : la page de confidentialité (`public/confidentialite/index.html
 Rien à changer aux descriptions : « sans compte » reste vrai — une collecte opt-in sous identifiant
 aléatoire n'est pas un compte. Les notes pour l'examinateur (§ 8) devront mentionner que le jeu en
 ligne est facultatif et testable sans second appareil grâce au Barid (lien collé).
+
+---
+
+## 13 · Rejet « Guideline 2.1 — Information Needed » du 19/09/2026
+
+Soumission `5b6c8f16-e0aa-4e16-9c16-1643b4434942`, build **1.0 (5)**. Ce n'est **pas** un rejet de
+fonctionnalité ni de qualité : Apple pose ces six questions à tout compte développeur au passé
+d'examen limité. Rien à corriger dans l'app, **rien à redéposer** — une réponse au Centre de
+résolution, plus une vidéo, suffisent.
+
+### 13.1 Ce que contient exactement le binaire examiné (vérifié, pas supposé)
+
+Le point décisif : le build 5 a été fabriqué **avant** le travail « en ligne » du 19 septembre.
+
+| Vérification | Résultat |
+|---|---|
+| **Origine du binaire** (reproduction, 20/09) | `vite build` sur un worktree à `0bd486d` redonne les huit fichiers **octet pour octet** (`index.html`, `sw.js`, `manifest.webmanifest`, les cinq `assets/`), mêmes noms hachés, même inventaire. Le binaire examiné **est** ce commit — Apple peut le refaire |
+| Tests à cet état | 17 fichiers, **167 tests verts** (les 222 d'aujourd'hui incluent le Barid et le jeu en ligne) |
+| `Barid`, `Course`, `Classement`, `enligne`, `workers.dev` dans le bundle | **absents** — le seul « barid » trouvé est *baridi*, « froid » en swahili |
+| Requêtes réseau | deux `fetch(` dans tout le bundle : le préchargeur de modules de Vite (fichiers locaux) et une branche jamais appelée de `@capacitor/core`. **Aucune URL distante n'est demandée** |
+| Liens sortants | deux, tous deux dans Réglages : « Proposer une amélioration » (issues GitHub, dans Safari) et « Partager le lien » (feuille de partage système). Aucun navigateur interne |
+| URL Wiktionary présentes dans le bundle | ce sont les champs `preuve` des mots voyageurs — **des données, jamais affichées** : aucun composant ne lit `preuve` (seul le test le fait) |
+
+Donc « Données non collectées », « aucun compte », « aucun contenu généré par l'utilisateur » et
+« 100 % hors-ligne » sont **exacts pour ce build**. C'est ce qui rend la réponse simple : il n'y a
+rien à nuancer.
+
+### 13.2 La marche à suivre
+
+1. **App Store Connect → l'app → Centre de résolution → Répondre** : coller le texte du § 8 et
+   **joindre la vidéo** (§ 13.3) — la version recompressée, pas l'originale de 379 Mo.
+2. **La version → Informations pour l'examen → Notes** : coller le **même** texte. Les deux champs
+   annoncent que ce build vient du commit public `0bd486d` — c'est vérifié par reproduction
+   (§ 13.1), donc vérifiable par l'examinateur : autant le dire. Apple le demande
+   noir sur blanc, « for reference on future submissions » — et il resservira à chaque mise à jour.
+3. Vérifier au passage le **contact d'examen** (§ 5.11.b à d) : nom, téléphone au format `+212…`,
+   e-mail. Un contact vide est exactement le genre de détail qui fait durer un 2.1.
+4. Si la version affiche encore un bouton **« Soumettre pour examen »** après la réponse, le cliquer.
+   Le build reste le **5** : ne pas lancer `pnpm version:build`, ne rien re-téléverser.
+
+### 13.3 L'enregistrement d'écran — le seul morceau que je ne peux pas produire
+
+Apple exige : **appareil physique**, **dernier iOS**, et la vidéo **commence par le lancement de
+l'app**. Trois minutes suffisent.
+
+**Avant de filmer**
+
+1. iPhone à jour : Réglages → Général → Mise à jour logicielle.
+2. Installer **le build 5 lui-même** par TestFlight (il est déjà traité chez Apple, c'est le binaire
+   examiné — aucun dépôt à refaire). Supprimer d'abord une éventuelle copie installée par Xcode :
+   la vidéo doit partir d'une installation neuve, pour que « Où va ta rihla ? » apparaisse.
+3. Voix espagnole présente : Réglages → Accessibilité → Contenu énoncé → Voix → Espagnol. C'est la
+   première destination, et la voix la plus sûrement installée.
+4. Sonnerie **non** coupée, volume haut : l'enregistrement capte le son de l'app, et l'examinateur
+   doit entendre la prononciation.
+5. Micro de l'enregistrement **coupé** (appui long sur le bouton d'enregistrement du Centre de
+   contrôle) : pas de commentaire, pas de bruit de pièce.
+6. Filmer depuis l'**écran d'accueil iOS**, pas depuis le bouton « Ouvrir » de TestFlight.
+
+> ⚠️ **Ne pas filmer une app construite depuis `main` aujourd'hui.** La branche contient désormais le
+> Barid — qui s'affiche même sans serveur, en carte d'accueil et en 6e jeu. La vidéo montrerait des
+> fonctions **absentes du binaire examiné**, ce qui est exactement ce qu'un examinateur relève.
+> TestFlight donne le bon binaire ; à défaut, bâtir depuis l'état d'alors, sans toucher à `main` :
+>
+> ```bash
+> git worktree add /tmp/rihla-build5 0bd486d
+> ```
+
+**Le plan de tournage (~3 min)**
+
+| Temps | À l'écran | Pourquoi |
+|---|---|---|
+| 0:00 | Centre de contrôle ouvert, **Mode Avion activé** bien visible, puis refermé | une seule image prouve le point 4 : l'app ne parle à personne |
+| 0:05 | Écran d'accueil, appui sur l'icône Rihla, lancement à froid | Apple l'exige : « begin with launching the app » |
+| 0:12 | « Où va ta rihla ? » → choisir **Grenade (espagnol)** | premier lancement, et une voix qui existe partout |
+| 0:25 | Onglet **Carte** : l'itinéraire, les destinations, les km | ce que l'app est, en un coup d'œil |
+| 0:35 | « Commencer » → les **8 cartes-mots** (compteur « 1/8 ») : en retourner trois avec « Voir la réponse » / « Suivant », toucher le haut-parleur puis la tortue, enchaîner les cinq autres vite | le cœur de l'app, et le TTS système audible |
+| 1:05 | Le quiz : **8 questions**, une par mot, dans l'ordre comprendre → écouter → produire → épeler puis à nouveau (avec des substitutions : lire, voir, dictée). Laisser le bandeau de correction à l'écran | la variété des exercices — l'antidote au soupçon « site web encapsulé » (4.2) |
+| 1:35 | Fin d'étape : XP, série, bouton « Étape suivante » | la boucle de progression |
+| 1:45 | Onglet **Apprendre**, dans l'ordre réel de l'écran : le carnet de route, les 24 étapes sur 5 niveaux, les mots voyageurs — puis **défiler jusqu'en bas**, les jeux y sont | la profondeur du contenu embarqué |
+| 2:05 | Les cinq jeux : 15 s du **Souk**, puis ouvrir **Le Duel** pour montrer la moitié haute pivotée | prouve que le duel est à deux sur un seul téléphone, sans réseau |
+| 2:25 | Retour **Carte** : « L'étape du jour » (répondre à deux questions), la carte du Carnet, la barre d'objectif | le rituel quotidien |
+| 2:40 | Onglet **Passeport** : tampons de visa, km, semaine d'activité | |
+| 2:50 | **Réglages** : Langue de l'interface → العربية (bascule RTL immédiate), retour au français ; Apparence → Nuit ; ouvrir « Guide du voyageur », faire défiler deux sections | FR/AR, mode nuit, et surtout : aucun écran ne demande de compte |
+
+**Après** : Photos → Partager → Enregistrer dans Fichiers, puis joindre dans le Centre de résolution.
+Si le téléversement est refusé pour la taille, raccourcir la vidéo (Photos → Modifier → rogner la
+durée) plutôt que de la ré-encoder.
+
+### 13.4 La réponse
+
+C'est **le texte du § 8**, tel quel — le Centre de résolution plafonne lui aussi à 4 000 caractères,
+donc il n'y a plus qu'un seul texte à maintenir, collé aux deux endroits. La vidéo part en pièce
+jointe du même message.
+
+### 13.5 Décision : le jeu en ligne n'entre pas dans la 1.0
+
+Tentant de profiter de la réponse pour déposer un build 6 avec le Barid et La Course. À ne pas faire :
+
+- « Données non collectées » deviendrait **faux** : tout le § 4 serait à refaire (§ 12) ;
+- les pseudonymes visibles dans les classements sont du **contenu généré par l'utilisateur** : Apple
+  exige alors signalement et blocage (ligne directrice 1.2), et les réponses 3.4 et 3.6 du
+  questionnaire d'âge changent ;
+- répondre à une demande d'informations **en changeant le binaire au même moment**, avec un compte
+  à l'historique limité, c'est rouvrir l'examen à zéro.
+
+La 1.0 reste l'app hors-ligne, telle qu'elle a été examinée. Le Barid, La Course et les classements
+sortent en **1.1** — avec `pnpm version:build`, le § 12 appliqué et le § 8 réécrit.
