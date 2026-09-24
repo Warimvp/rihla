@@ -1,10 +1,7 @@
 # Dossier App Store — Rihla
 
 > **✅ Publiée le 21/09/2026** — https://apps.apple.com/app/id6809222617 (id `6809222617`, version 1.0, vendeur « Yassir legmara », compte individuel).
-> Relevé de la fiche publique le 24/09/2026 (API `itunes.apple.com/lookup?id=6809222617`) — **trois écarts avec ce dossier, à corriger à la prochaine version** :
-> - **Nom affiché : `ma.rihla.app`** au lieu de `Rihla — les langues du monde` (§ 1.2). Le nom se modifie avec une nouvelle version soumise à l'examen.
-> - **Âge 17+ (« Unrestricted Web Access »)** au lieu de 4+ : le questionnaire (§ 3.3) a reçu « Oui » à l'accès web illimité. Répondre **Non**.
-> - **Langues : EN seul** : `CFBundleDevelopmentRegion = en` et aucune `CFBundleLocalizations` dans `ios/App/App/Info.plist`. Déclarer `fr` et `ar` (et passer la région de développement à `fr`) pour que la fiche annonce Français / Arabe.
+> Relevé de la fiche publique le 24/09/2026 : nom `ma.rihla.app`, âge 17+, langue EN seule — **corrigé par la version 1.1, voir § 14**.
 >
 > Lien à utiliser partout : `https://apps.apple.com/app/id6809222617` (sans pays ni nom : il survit au renommage). La bannière Safari de la version web pointe sur le même id (`index.html`).
 
@@ -512,3 +509,49 @@ Tentant de profiter de la réponse pour déposer un build 6 avec le Barid et La 
 
 La 1.0 reste l'app hors-ligne, telle qu'elle a été examinée. Le Barid, La Course et les classements
 sortent en **1.1** — avec `pnpm version:build`, le § 12 appliqué et le § 8 réécrit.
+
+## 14 · Version 1.1 (build 6) — corriger la fiche de la 1.0
+
+Relevé de la fiche publique le 24/09/2026 (`itunes.apple.com/lookup?id=6809222617`) : trois écarts
+avec ce dossier. Le binaire en corrige un, les deux autres se règlent dans App Store Connect.
+
+| Écart | Cause | Correction |
+|---|---|---|
+| Nom public **`ma.rihla.app`** | Le champ Nom a reçu l'identifiant de bundle | App Store Connect, avec la 1.1 (le nom ne change qu'avec une version soumise) |
+| Âge **17+** (« Unrestricted Web Access ») | Questionnaire § 3.3 répondu **Oui** | Répondre **Non** : l'app n'a aucun navigateur intégré (les liens GitHub s'ouvrent dans Safari) → 4+ |
+| Langues : **anglais** seul | Aucun `.lproj` de langue, région de développement `en` | ✅ **Dans le build 6** : `fr.lproj` + `ar.lproj` (`InfoPlist.strings` : « Rihla » / « رحلة » sous l'icône), `CFBundleDevelopmentRegion = fr`, `CFBundleLocalizations = [fr, ar]` |
+
+### 14.1 Le nom
+
+- **`MyRihla` est pris** : app Hajj/Omra de Kadir Aydin (id 6777581933, catégorie Éducation, juillet 2026).
+  App Store Connect refuse un nom déjà utilisé, et la confusion serait réelle.
+- `Rihla` seul est pris plusieurs fois (Rubik Smart Solutions, Karwa…).
+- **Nom prévu (§ 1.2) : `Rihla — les langues du monde`** (28 c.) : aucune app trouvée sous ce nom le 24/09/2026.
+  Repli : `Rihla · langues du monde`, puis `Rihla : Ibn Battuta`. Seul App Store Connect tranche (les noms
+  réservés par des apps non publiées sont invisibles à la recherche).
+- Sous l'icône, l'iPhone affiche toujours « Rihla » (« رحلة » en arabe) : ce nom-là n'a pas à être unique.
+
+### 14.2 Déposer le build 6
+
+1. **Xcode → Réglages → Comptes** : se reconnecter avec le compte Apple de l'équipe `Q9L7244W3Z`.
+   Le 24/09 l'export échouait sur « No Account for Team » (session expirée) ; l'archive, elle, est faite.
+2. Exporter l'archive déjà construite (ou relancer `pnpm ios:release`) :
+   `xcodebuild -exportArchive -archivePath ios/build/App.xcarchive -exportOptionsPlist ios/ExportOptions.plist -exportPath ios/build/export -allowProvisioningUpdates`
+3. Téléverser `ios/build/export/App.ipa` avec Transporter.
+
+### 14.3 Dans App Store Connect
+
+1. **Distribution → + Version → iOS → `1.1`**.
+2. **Nom** (Informations sur l'app, localisation Français) : `Rihla — les langues du monde`. Sous-titre : § 2.2.
+3. **Classification par âge → Modifier** : Accès web illimité **Non** — revoir aussi 3.4/3.6 : aucun
+   contenu généré par l'utilisateur dans ce build (le jeu en ligne est éteint sans `.env`, voir § 13.5).
+4. Ajouter la localisation **Arabe** de la fiche si elle manque (description § 6).
+5. **Nouveautés de cette version** :
+   - FR : `Le Barid : défie un ami par message, sans compte ni serveur — il joue les mêmes 10 questions et riposte. Les mots voyageurs : les mots venus de l'arabe dans chaque langue. L'app est maintenant en français et en arabe sur l'App Store.`
+   - AR : `البريد: تحدَّ صديقاً برسالة، دون حساب ولا خادم — يلعب الأسئلة العشرة نفسها ويردّ. الكلمات المسافرة: كلمات عربية الأصل في كل لغة. التطبيق الآن بالفرنسية والعربية على App Store.`
+6. Build → **+** → build 6 → **Soumettre pour examen**.
+
+Contenu du build 6 par rapport au build 5 : les mots voyageurs, le Barid (liens, sans serveur), le pourboire
+(**absent sur iPhone**, garde `estNatif`), le code de La Course **inactif** (aucune adresse de serveur embarquée —
+vérifié : pas de `workers.dev` dans le JS du bundle), la bannière `apple-itunes-app` (ignorée par WKWebView).
+
