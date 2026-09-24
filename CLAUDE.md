@@ -33,6 +33,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Workflow : `pnpm ios:sync` (build web + copie), puis Xcode. ⚠️ Mac Intel : premier rendu WKWebView 2–4 min (écran blanc) — attendre.
 - Safe-areas : `viewport-fit=cover` + `env(safe-area-inset-*)` ; ne pas ajouter `contentInset` dans capacitor.config.
 - Déploiement sans organisation Apple : README § « Déploiement ».
+- **Sur l'App Store depuis le 21/09/2026** : id `6809222617`, lien canonique `https://apps.apple.com/app/id6809222617` (utilisé par legantis.net, le README et la balise `apple-itunes-app` de `index.html`). Écarts de la fiche 1.0 à corriger (nom, âge, langues) : tête de `docs/app-store.md`.
 
 ## Jeux du voyage (`src/components/Jeu*.jsx`, section dans la vue Apprendre)
 - Cinq jeux de révision par destination, XP via `ajouterXp` (jamais les visas — eux restent liés aux étapes) :

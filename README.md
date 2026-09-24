@@ -1,6 +1,6 @@
 # Rihla · رحلة — les langues du monde, gratuites pour toujours
 
-**➜ App en ligne : https://warimvp.github.io/rihla/** (PWA installable — déployée automatiquement à chaque push sur `main`). Code sous licence [MIT](LICENSE) : libre d'usage, de copie et de modification — comme l'app, pour toujours.
+**➜ Sur iPhone : [App Store](https://apps.apple.com/app/id6809222617)** (gratuite, publiée le 21/09/2026) · **➜ Sur le web : https://warimvp.github.io/rihla/** (PWA installable — déployée automatiquement à chaque push sur `main`). Code sous licence [MIT](LICENSE) : libre d'usage, de copie et de modification — comme l'app, pour toujours.
 
 En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla** (« le voyage ») reprend sa route : chaque langue est une **destination**, chaque leçon une **étape**, chaque réussite un **tampon** dans ton passeport.
 
@@ -41,7 +41,7 @@ pnpm build      # production dans dist/
 
 ### 1. Le web d'abord (zéro compte Apple, zéro dirham) — ✅ en place
 
-Déployé sur **GitHub Pages** : https://warimvp.github.io/rihla/ — le workflow `.github/workflows/pages.yml` teste, construit et publie à chaque push sur `main`. La base Vite est relative (`base: './'`), donc le même build se déploie tel quel ailleurs (Cloudflare Pages, Hostinger, racine ou sous-chemin). Sur iPhone : Safari → Partager → « Sur l'écran d'accueil ». Au Maroc, l'essentiel du parc est Android : le canal web/PWA couvre déjà presque tout le monde.
+Déployé sur **GitHub Pages** : https://warimvp.github.io/rihla/ — le workflow `.github/workflows/pages.yml` teste, construit et publie à chaque push sur `main`. La base Vite est relative (`base: './'`), donc le même build se déploie tel quel ailleurs (Cloudflare Pages, Hostinger, racine ou sous-chemin). Sur iPhone, Safari affiche une bannière vers l'App Store (`apple-itunes-app` dans `index.html`) ; la PWA reste possible (Partager → « Sur l'écran d'accueil »). Au Maroc, l'essentiel du parc est Android : le canal web/PWA couvre déjà presque tout le monde.
 
 ### 2. Sur ton iPhone — compte Apple **gratuit** (aucun abonnement)
 
@@ -51,7 +51,9 @@ Pas besoin du programme payant pour installer sur **ton** téléphone :
 2. Dans Xcode : cible **App** → *Signing & Capabilities* → *Team* = ton identifiant Apple personnel (« Personal Team »)
 3. Branche l'iPhone et **Run**. La signature gratuite expire au bout de 7 jours — un nouveau Run la renouvelle.
 
-### 3. App Store — compte Apple Developer **individuel** (99 $/an)
+### 3. App Store — compte Apple Developer **individuel** (99 $/an) — ✅ publiée le 21/09/2026
+
+En ligne : https://apps.apple.com/app/id6809222617 (id `6809222617`, version 1.0). Dossier de soumission et historique de l'examen : [`docs/app-store.md`](docs/app-store.md).
 
 Une organisation n'est **pas** requise pour publier : l'adhésion **« Individual »** au Apple Developer Program publie sur l'App Store mondial **sous ton nom personnel**, sans numéro D-U-N-S ni société. Le type « Organization » ne sert qu'à publier au nom d'une entreprise. L'adhésion individuelle inclut TestFlight (bêta jusqu'à 10 000 testeurs) et la distribution mondiale.
 

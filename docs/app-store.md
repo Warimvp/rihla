@@ -1,5 +1,13 @@
 # Dossier App Store — Rihla
 
+> **✅ Publiée le 21/09/2026** — https://apps.apple.com/app/id6809222617 (id `6809222617`, version 1.0, vendeur « Yassir legmara », compte individuel).
+> Relevé de la fiche publique le 24/09/2026 (API `itunes.apple.com/lookup?id=6809222617`) — **trois écarts avec ce dossier, à corriger à la prochaine version** :
+> - **Nom affiché : `ma.rihla.app`** au lieu de `Rihla — les langues du monde` (§ 1.2). Le nom se modifie avec une nouvelle version soumise à l'examen.
+> - **Âge 17+ (« Unrestricted Web Access »)** au lieu de 4+ : le questionnaire (§ 3.3) a reçu « Oui » à l'accès web illimité. Répondre **Non**.
+> - **Langues : EN seul** : `CFBundleDevelopmentRegion = en` et aucune `CFBundleLocalizations` dans `ios/App/App/Info.plist`. Déclarer `fr` et `ar` (et passer la région de développement à `fr`) pour que la fiche annonce Français / Arabe.
+>
+> Lien à utiliser partout : `https://apps.apple.com/app/id6809222617` (sans pays ni nom : il survit au renommage). La bannière Safari de la version web pointe sur le même id (`index.html`).
+
 Fiche de soumission **champ par champ**, dans l'ordre exact des écrans d'App Store Connect.
 Chaque ligne = un champ du formulaire. `⬜` = donnée que toi seul as (identité, téléphone, choix).
 Tout le reste est prêt à copier-coller.
