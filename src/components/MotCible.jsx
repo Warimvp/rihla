@@ -11,8 +11,10 @@
 //   glyphes).
 //
 // Purement présentationnel : aucun état, aucune logique métier. Le SENS d'un
-// mot (résultat de `sensPour`) ne passe JAMAIS ici — il suit la langue des
-// définitions, pas la langue cible.
+// mot ne passe pas par <MotCible> — il suit la langue des définitions, pas la
+// langue cible — mais par <Sens>, plus bas, qui l'isole de la même façon.
+
+import { langueDuSens, sensPour } from '../i18n.js'
 
 // Le code de langue à poser en `lang`. Accepte l'objet langue ou directement
 // un code ; `undefined` (donc pas d'attribut) si rien d'exploitable.
@@ -52,4 +54,27 @@ export function Romanisation({ texte, balise: Balise = 'bdi', className = 'roman
   if (!style) return noyau
   const Enrobage = Balise === 'div' ? 'div' : 'span'
   return <Enrobage style={style}>{noyau}</Enrobage>
+}
+
+// Le SENS d'un mot, écrit dans la langue des définitions — qui n'est pas
+// toujours celle de l'interface : à Paris les sens sont en arabe sous interface
+// française, au Caire en français sous interface arabe, et le réglage « Langue
+// des définitions » les découple partout ailleurs. Posé nu, « اسمي… » prenait
+// ses points de suspension à droite et « Où est… ? » son point d'interrogation
+// à gauche. Même remède que pour le mot cible : `dir="auto"` + `lang`.
+//
+// - `mot`, `source`, `langue` (la destination : l'objet ou son id) : le texte
+//   ET sa langue sortent de la même règle (`langueDuSens`), ils ne peuvent pas
+//   se contredire. Ne jamais poser `sensPour(...)` nu dans le JSX ; la chaîne
+//   reste pour ce qui n'est pas affiché (aria-label, `etiquette`, comparaison).
+// - Toujours en ligne (<bdi>), jamais un bloc : seul l'ordre des caractères
+//   change, le conteneur reste aligné comme l'interface — une option dont le
+//   sens est arabe commence toujours au début de la ligne française.
+export function Sens({ mot, source, langue, ...reste }) {
+  const destination = typeof langue === 'string' ? langue : langue?.id
+  return (
+    <bdi dir="auto" lang={langueDuSens(source, destination)} {...reste}>
+      {sensPour(mot, source, destination)}
+    </bdi>
+  )
 }

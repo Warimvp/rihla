@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { assembler, cibleEpellation, construireLettres } from '../lib/epellation.js'
 import { melanger } from '../lib/quiz.js'
@@ -9,6 +8,7 @@ import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute } from './Ecoute.jsx'
 import { FinDeJeu } from './FinDeJeu.jsx'
 import { PisteCaravane } from './ScenesJeux.jsx'
+import { Sens } from './MotCible.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_MOTS = 8
@@ -133,7 +133,7 @@ export function JeuCaravane({ t, locale, source, langue, surXp, surQuitter }) {
           {t.jeux.epelle} · {nomLangue(langue, locale)}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="mot-cible" style={{ fontSize: 24 }}>{sensPour(mot, source, langue.id)}</div>
+          <div className="mot-cible" style={{ fontSize: 24 }}><Sens mot={mot} source={source} langue={langue} /></div>
           <Ecoute t={t} texte={mot.t} langue={langue} />
         </div>
         <div dir="ltr" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 6 }}>

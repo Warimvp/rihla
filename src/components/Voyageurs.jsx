@@ -3,7 +3,7 @@ import { LANGUES } from '../data/langues.js'
 import { DEPART, motsVoyageurs, totalVoyageurs } from '../data/voyageurs.js'
 import { Ecoute } from './Ecoute.jsx'
 import { FlecheAvant } from './Icones.jsx'
-import { MotCible, Romanisation } from './MotCible.jsx'
+import { MotCible, Romanisation, Sens } from './MotCible.jsx'
 
 const ARABE = LANGUES.find((l) => l.id === DEPART)
 
@@ -38,10 +38,9 @@ export function SectionVoyageurs({ t, source, langue }) {
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {mots.map((mot) => {
-          const sens = sensPour(mot, source, langue.id)
           // En arabe, « الزيت — الزيت » ne dirait rien : le sens n'est écrit
           // que s'il n'est pas déjà le mot d'origine.
-          const sensUtile = sens !== mot.arabe ? sens : null
+          const sensUtile = sensPour(mot, source, langue.id) !== mot.arabe
           const chemin = mot.chemin?.length ? t.voyageurs.par(mot.chemin.map((id) => t.voyageurs.langues[id])) : null
           return (
             <div key={mot.t} className="carte voyageur">
@@ -60,7 +59,7 @@ export function SectionVoyageurs({ t, source, langue }) {
               </div>
               <div className="voyageur__pied">
                 <span className="texte-2" style={{ fontSize: 12.5 }}>
-                  {sensUtile}
+                  {sensUtile ? <Sens mot={mot} source={source} langue={langue} /> : null}
                   {sensUtile && chemin ? ' · ' : null}
                   {chemin}
                 </span>

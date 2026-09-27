@@ -1,5 +1,4 @@
 import { useMemo, useRef, useState } from 'react'
-import { sensPour } from '../i18n.js'
 import { LANGUES, nomLangue } from '../data/langues.js'
 import { construireDefi, estBonneOption } from '../lib/defi.js'
 import { jourLocal } from '../lib/progression.js'
@@ -10,7 +9,7 @@ import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute } from './Ecoute.jsx'
 import { Pastille } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
-import { MotCible, Romanisation } from './MotCible.jsx'
+import { MotCible, Romanisation, Sens } from './MotCible.jsx'
 
 // L'étape du jour : 10 questions, toutes les langues, même tirage pour tous.
 export function Defi({ t, locale, source, surTerminer, surQuitter }) {
@@ -106,7 +105,7 @@ export function Defi({ t, locale, source, surTerminer, surQuitter }) {
               : 'option'
           return (
             <button key={option.id} type="button" className={classe} disabled={revele} onClick={() => choisir(option)}>
-              <span>{sensPour(option, source, question.langue.id)}</span>
+              <span><Sens mot={option} source={source} langue={question.langue} /></span>
               {estCorrecte ? <Coche taille={20} trait={2.4} /> : null}
               {estFausse ? <Croix taille={20} trait={2.4} /> : null}
             </button>
@@ -138,9 +137,13 @@ export function Defi({ t, locale, source, surTerminer, surQuitter }) {
                 {estBonneOption(question, choix) ? t.bonneReponse : t.mauvaiseReponse}
               </span>
               <span style={{ fontSize: 12.5 }}>
-                {estBonneOption(question, choix)
-                  ? t.encoreQuestions(total - iQuestion - 1)
-                  : `${t.laBonneEtait} ${sensPour(bonne, source, question.langue.id)}`}
+                {estBonneOption(question, choix) ? (
+                  t.encoreQuestions(total - iQuestion - 1)
+                ) : (
+                  <>
+                    {t.laBonneEtait} <Sens mot={bonne} source={source} langue={question.langue} />
+                  </>
+                )}
               </span>
             </span>
           </div>

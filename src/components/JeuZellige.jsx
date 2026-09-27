@@ -7,7 +7,7 @@ import { parler } from '../lib/tts.js'
 import { BoutonQuitter } from './Quitter.jsx'
 import { FinDeJeu } from './FinDeJeu.jsx'
 import { ImageVille } from './ImageVille.jsx'
-import { MotCible } from './MotCible.jsx'
+import { MotCible, Sens } from './MotCible.jsx'
 import { DosZellige, teinteZellige } from './ScenesJeux.jsx'
 import { VisuelConcept, aUnVisuel } from '../lib/visuels.jsx'
 
@@ -35,6 +35,7 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
         ...paires.map((mot) => ({
           motId: mot.id,
           face: 'sens',
+          mot,
           texte: sensPour(mot, source, langue.id),
           visuel: aUnVisuel(mot.id) ? mot.id : null,
           tts: false,
@@ -150,7 +151,7 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
                   ) : tuile.visuel ? (
                     <VisuelConcept id={tuile.visuel} taille={44} style={{ color: 'var(--majorelle)' }} />
                   ) : (
-                    tuile.texte
+                    <Sens mot={tuile.mot} source={source} langue={langue} />
                   )}
                 </span>
               </span>
