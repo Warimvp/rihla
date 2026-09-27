@@ -15,6 +15,50 @@
     <!-- Polices embarquées dans l'app : aucune requête réseau, la typo est
          identique en avion, dans le Rif et au premier lancement. -->
     <link rel="stylesheet" href="./polices/polices.css" />
+    <!-- Avant la première image : le thème, la langue et la direction choisis.
+         React ne les posait qu'APRÈS son premier rendu — un voyageur en mode
+         nuit voyait un éclair de papier clair à chaque lancement, et
+         l'interface arabe se dessinait une fois à l'endroit avant de se
+         retourner. Mêmes clés et mêmes valeurs que App.jsx, qui reste le
+         maître (src/lib/demarrage.test.js garde les deux d'accord).
+         Puis les deux polices du premier écran sont demandées tout de suite :
+         sans cela le navigateur ne les découvre qu'une fois l'app téléchargée
+         et dessinée, et le texte change de police sous les yeux. -->
+    <script>
+      ;(function () {
+        var racine = document.documentElement
+        var langue = null
+        try {
+          var theme = localStorage.getItem('rihla.theme')
+          if (theme === 'clair' || theme === 'sombre') racine.dataset.theme = theme
+          langue = localStorage.getItem('rihla.langue')
+        } catch (e) {
+          // Stockage indisponible : thème du système, langue du téléphone.
+        }
+        // Jamais choisie : la langue du téléphone si c'est l'arabe, le français
+        // sinon — la même règle que localeDuSysteme (src/i18n.js).
+        if (langue !== 'fr' && langue !== 'ar') {
+          var preferee = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase()
+          langue = /^ar(-|$)/.test(preferee) ? 'ar' : 'fr'
+        }
+        if (langue === 'ar') {
+          racine.lang = 'ar'
+          racine.dir = 'rtl'
+        }
+        var polices = racine.lang === 'ar' ? ['amiri-4f1f7dad', 'readexpro-0136d09f'] : ['youngserif-1519d27a', 'readexpro-bf33cab6']
+        for (var i = 0; i < polices.length; i++) {
+          var lien = document.createElement('link')
+          lien.rel = 'preload'
+          lien.as = 'font'
+          lien.type = 'font/woff2'
+          // Exigé pour une police, même de la même origine : sans lui le
+          // navigateur la télécharge deux fois.
+          lien.crossOrigin = 'anonymous'
+          lien.href = './polices/' + polices[i] + '.woff2'
+          document.head.appendChild(lien)
+        }
+      })()
+    </script>
     <title>Rihla — les langues du monde</title>
   </head>
   <body>

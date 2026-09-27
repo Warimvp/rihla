@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, relative, resolve, sep } from 'node:path'
 import { defineConfig } from 'vite'
+import { configDefaults } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 const MARQUE_BUILD = /const BUILD = '[^']*'/
@@ -93,4 +94,27 @@ export default defineConfig({
   base: './',
   plugins: [react(), serviceWorkerRihla()],
   server: { port: 5183, strictPort: true },
+  preview: { port: 5184, strictPort: true },
+  // Les sessions parallèles travaillent dans .claude/worktrees/ : ce sont des
+  // copies entières du dépôt, tests compris — `pnpm test` ne juge que celui-ci.
+  test: { exclude: [...configDefaults.exclude, '.claude/**'] },
+  build: {
+    rollupOptions: {
+      output: {
+        // Trois fichiers au lieu d'un, rangés par RYTHME de changement : React
+        // ne bouge qu'avec sa version, le contenu qu'avec le vocabulaire, le
+        // code de l'app à chaque livraison. Leur nom porte leur empreinte —
+        // le service worker reprend donc du build précédent ceux qui n'ont
+        // pas changé : une livraison ordinaire ne retélécharge plus React ni
+        // les 2 880 mots. Les modules Capacitor restent hors du socle : ils
+        // sont importés à la demande, et seulement sur appareil natif.
+        manualChunks(id) {
+          if (/\/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'socle'
+          // Le vocabulaire seulement : les crédits des photos bougent avec
+          // les images, ils n'ont pas à faire retélécharger les mots.
+          if (/\/src\/data\/(langues|voyageurs)\.js$/.test(id)) return 'contenu'
+        },
+      },
+    },
+  },
 })

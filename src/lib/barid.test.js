@@ -1,19 +1,25 @@
 import { describe, expect, it } from 'vitest'
 import {
+  CATALOGUE_COURANT,
   NB_QUESTIONS_BARID,
+  ROUTE_ORIGINE,
   TOUTE_LA_ROUTE,
   XP_PAR_BONNE,
   XP_VICTOIRE,
   accuserReponse,
   bilanBarid,
+  catalogueDe,
+  catalogueDuJeton,
   construireBarid,
   decoderLettre,
   encoderLettre,
   estBonneOption,
+  estTouteLaRoute,
   extraireCodes,
   lienLettre,
   nettoyerNom,
   nouvelleGraine,
+  routeConnue,
   terminerBarid,
   verdict,
   xpBarid,
@@ -61,6 +67,53 @@ describe('construireBarid', () => {
       expect(question.options.every((o) => motsDeLaLangue.includes(o))).toBe(true)
       expect(question.options.filter((o) => estBonneOption(question, o))).toHaveLength(1)
     }
+  })
+
+  it('sur la route d’ORIGINE, tire toujours les mêmes questions — les lettres déjà parties restent jouables', () => {
+    // Relevé avant l'arrivée du français : la graine 99 sur '*' donnait ceci.
+    // Si ce test casse, un défi en circulation (et le serveur de la Course,
+    // qui juge sur ce tirage) ne pose plus les questions que l'envoyeur a vues.
+    expect(construireBarid(LANGUES, ROUTE_ORIGINE, 99).map((q) => `${q.langue.id}:${q.mot.id}`)).toEqual([
+      'ko:quandarrive',
+      'pt:toilettes',
+      'hi:magasin',
+      'zh:ouest',
+      'ar:porte',
+      'ja:amonavis',
+      'sw:hiervisite',
+      'ja:lit',
+      'it:samedi',
+      'de:comprendspas',
+    ])
+    for (let graine = 1; graine <= 200; graine++) {
+      for (const question of construireBarid(LANGUES, ROUTE_ORIGINE, graine)) expect(catalogueDe(question.langue)).toBe(1)
+    }
+  })
+
+  it('sur la route d’aujourd’hui, le français est du voyage', () => {
+    const langues = new Set()
+    for (let graine = 1; graine <= 200; graine++) {
+      for (const question of construireBarid(LANGUES, TOUTE_LA_ROUTE, graine)) langues.add(question.langue.id)
+    }
+    expect(langues.has('fr')).toBe(true)
+    expect(langues.size).toBe(LANGUES.length)
+  })
+
+  it('nomme le catalogue dans le jeton de route, et le catalogue courant est celui des données', () => {
+    expect(catalogueDuJeton('*')).toBe(1)
+    expect(catalogueDuJeton('*2')).toBe(2)
+    expect(catalogueDuJeton('*12')).toBe(12)
+    for (const faux of ['*1', '*0', '*02', '*x', '**', 'fr', '', null, undefined]) expect(catalogueDuJeton(faux), String(faux)).toBe(null)
+    expect(estTouteLaRoute('*')).toBe(true)
+    expect(estTouteLaRoute('es')).toBe(false)
+    expect(routeConnue(`*${CATALOGUE_COURANT + 1}`)).toBe(false)
+    // Le garde-fou : une destination ajoutée avec `catalogue: 3` sans toucher
+    // CATALOGUE_COURANT resterait hors de « toute la route ».
+    expect(CATALOGUE_COURANT).toBe(Math.max(...LANGUES.map(catalogueDe)))
+    expect(catalogueDuJeton(TOUTE_LA_ROUTE)).toBe(CATALOGUE_COURANT)
+    expect(LANGUES.filter((l) => catalogueDe(l) === 1).map((l) => l.id)).toEqual([
+      'es', 'pt', 'it', 'de', 'en', 'tr', 'ar', 'ru', 'fa', 'sw', 'hi', 'zh', 'ko', 'ja',
+    ])
   })
 
   it('ne connaît pas une langue absente du catalogue', () => {
@@ -159,6 +212,14 @@ describe('encoder / décoder une lettre', () => {
     expect(decoderLettre(encoderLettre({ n: 'x', l: 'klingon', g: 5, s: 3, t: 4 }), IDS).erreur).toBe('langue')
     expect(decoderLettre(encoderLettre({ n: 'x', l: 'klingon', g: 5, s: 3, t: 4 })).ok).toBe(true)
     expect(decoderLettre(encoderLettre({ n: 'x', l: TOUTE_LA_ROUTE, g: 5, s: 3, t: 4 }), IDS).ok).toBe(true)
+    // Une lettre d'avant le français (route d'origine) s'ouvre toujours ; une
+    // route d'un catalogue à venir est une destination inconnue, avec ou sans
+    // liste de langues — jamais un duel sur d'autres questions.
+    expect(decoderLettre(encoderLettre({ n: 'x', l: ROUTE_ORIGINE, g: 5, s: 3, t: 4 }), IDS).ok).toBe(true)
+    const demain = `*${CATALOGUE_COURANT + 1}`
+    expect(decoderLettre(encoderLettre({ n: 'x', l: demain, g: 5, s: 3, t: 4 }), IDS).erreur).toBe('langue')
+    expect(decoderLettre(encoderLettre({ n: 'x', l: demain, g: 5, s: 3, t: 4 })).erreur).toBe('langue')
+    expect(decoderLettre(encoderLettre({ n: 'x', re: { l: demain, g: 5, s: 3, t: 4, s0: 2, t0: 9 } }), IDS).erreur).toBe('langue')
   })
 
   it('nettoie le nom en route', () => {

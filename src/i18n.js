@@ -5,6 +5,15 @@ export const defaultLocale = 'fr'
 
 export const getDirection = (locale) => (locale === 'ar' ? 'rtl' : 'ltr')
 
+// La langue du premier lancement : celle du téléphone quand c'est l'arabe,
+// le français sinon. Un choix fait dans l'app passe toujours devant (App.jsx
+// le lit avant). Le script de démarrage d'index.html applique la MÊME règle
+// avant la première image — demarrage.test.js garde les deux d'accord.
+export const localeDuSysteme = (langues) => {
+  const preferee = String((Array.isArray(langues) ? langues[0] : langues) ?? '').toLowerCase()
+  return /^ar(-|$)/.test(preferee) ? 'ar' : defaultLocale
+}
+
 const fr = {
   salut: 'Salam, voyageur',
   pretEtape: "Prêt pour l'étape du jour ?",
@@ -15,10 +24,50 @@ const fr = {
   visaObtenu: 'Visa obtenu',
   aDecouvrir: 'À découvrir',
   etapeSur: (a, b) => `Étape ${a} sur ${b}`,
+  etapeNumero: (n) => `Étape ${n}`,
   etapesFaites: (a, b) => `${a} étape${a > 1 ? 's' : ''} sur ${b}`,
   km: (n) => `${n.toLocaleString('fr-MA')} km`,
   serieCourte: (n) => `${n} j`,
-  onglets: { carte: 'Carte', apprendre: 'Apprendre', passeport: 'Passeport', reglages: 'Réglages' },
+  // « Accueil », pas « Carte » : l'onglet ouvre le tableau de bord du voyage,
+  // et personne n'y trouvait la carte que le mot promettait.
+  onglets: { carte: 'Accueil', apprendre: 'Apprendre', passeport: 'Passeport', reglages: 'Réglages' },
+  passerAuQuiz: 'Passer au quiz',
+  aSuivre: 'À suivre',
+  changerDestination: 'Changer de destination',
+  sommaire: { titre: 'Aller à', etapes: 'Étapes', voyageurs: 'Mots voyageurs', jeux: 'Jeux' },
+  quitter: {
+    titreLecon: 'Quitter cette étape ?',
+    texteLecon: 'Tes réponses ne seront pas gardées : il faudra la reprendre du début.',
+    titreJeu: 'Quitter la partie ?',
+    texteJeu: 'Les XP de cette partie ne seront pas comptés.',
+    rester: 'Continuer',
+    partir: 'Quitter',
+  },
+  reglagesSections: { voyage: 'Ton voyage', affichage: 'Langue et affichage', aide: 'Aide et sauvegarde' },
+  effacement: {
+    titre: 'Effacer tout ton voyage ?',
+    texte: 'XP, visas, série et carnet repartent de zéro.',
+    garder: 'Garder mon voyage',
+    effacer: 'Tout effacer',
+    fait: 'Voyage effacé.',
+    reprendre: 'Annuler',
+  },
+  remplacement: {
+    titre: 'Remplacer ton voyage ?',
+    texte: 'Ta progression actuelle sera remplacée par celle de la sauvegarde.',
+    garder: 'Annuler',
+    remplacer: 'Remplacer',
+  },
+  bienvenue: {
+    titre: 'Comment ça marche',
+    points: [
+      'Choisis une étape : 8 mots, trois minutes.',
+      'Réponds aux questions : à 75 %, l’étape est validée.',
+      'Reviens chaque jour : ta série grandit, tes visas aussi.',
+    ],
+    guide: 'Tout le guide',
+    fermer: 'J’ai compris',
+  },
   etapesVoyage: 'Étapes du voyage',
   niveau1: 'Niveau 1 · Survie',
   niveau2: 'Niveau 2 · Conversation',
@@ -65,7 +114,7 @@ const fr = {
   apparence: { titre: 'Apparence', clair: 'Clair', auto: 'Auto', sombre: 'Nuit' },
   sourceReglage: {
     titre: 'Langue des définitions',
-    sousTitre: 'La langue qui traduit ce que tu apprends',
+    sousTitre: 'La langue qui traduit ce que tu apprends. Pour apprendre le français ou l’arabe eux-mêmes, c’est l’autre qui traduit.',
     auto: 'Auto',
     fr: 'Français',
     ar: 'العربية',
@@ -86,7 +135,7 @@ const fr = {
     souk: 'Le Souk',
     soukDesc: '45 secondes pour attraper le bon mot',
     caravane: 'La Caravane',
-    caravaneDesc: 'Épelle les mots, fais avancer l’étoile',
+    caravaneDesc: 'Épelle les mots, fais avancer la caravane',
     quelEtal: 'Sur quel étal ?',
     epelle: 'Épelle ce mot',
     motSur: (a, b) => `Mot ${a} sur ${b}`,
@@ -178,12 +227,13 @@ const fr = {
       { t: 'Les XP et l’objectif du jour', d: 'Tout rapporte des XP : leçons, jeux, étape du jour, révisions. Choisis ton objectif quotidien (10, 20 ou 30 XP) dans les Réglages ; la barre de l’accueil suit ta journée.' },
       { t: 'La série et le caravansérail', d: 'Valide une étape ou l’étape du jour pour faire avancer ta série. Un jour manqué la remet à zéro — sauf si tu as réservé une nuit au caravansérail (150 XP au passeport) : elle couvre un jour d’absence.' },
       { t: 'Le Carnet', d: 'Chaque étape validée verse ses mots au Carnet. Ils reviennent à intervalles croissants (1, 3, 7, 16, 35 puis 90 jours) : bonne réponse, le mot monte d’un rang ; erreur, il redescend au rang 1. Un mot que tu as su dès la leçon part directement du rang 2, et les mots fragiles passent toujours en premier. C’est ce qui ancre la mémoire.' },
-      { t: 'L’étape du jour', d: 'Un défi quotidien de 10 questions mélangeant les 14 langues — le même tirage pour tout le monde. La première réussite du jour fait avancer ta série.' },
-      { t: 'Les jeux du voyage', d: 'Cinq façons de réviser : Zellige des paires (memory), Le Souk (45 s chrono), La Caravane (épellation), L’Oreille (écoute pure) et Le Duel (à deux sur un seul téléphone).' },
+      { t: 'L’étape du jour', d: 'Un défi quotidien de 10 questions mélangeant toutes les langues de la route — le même tirage pour tout le monde. La première réussite du jour fait avancer ta série.' },
+      { t: 'Les jeux du voyage', d: 'Cinq façons de réviser : Zellige des paires (memory — chaque paire trouvée découvre un morceau de la ville), Le Souk (45 s chrono, le temps que le soleil se couche), La Caravane (épellation — un mot juste, une étape vers la ville), L’Oreille (écoute pure) et Le Duel (à deux sur un seul téléphone). Chaque partie se termine par une carte postale de la destination.' },
       { t: 'Le Barid — défier un ami', d: 'Le barid, c’était le courrier des caravanes. Ici, tu joues 10 questions chrono en main, puis ton défi part dans un message (WhatsApp, SMS…) sous forme de lien. Ton ami l’ouvre, joue exactement les mêmes questions, et te renvoie son résultat — ou te relance aussitôt avec 10 nouvelles questions. Score d’abord, temps en cas d’égalité, tout sur l’honneur. Sans compte ni serveur : le défi voyage entier dans le lien. Sur l’app installée depuis l’App Store, colle le message reçu dans « Relever un défi ». Chaque bonne réponse vaut 2 XP, une victoire 10 de plus ; ton bilan est au passeport.' },
       { t: 'Les mots voyageurs', d: 'Sous les étapes de chaque destination : des mots partis de l’arabe et arrivés jusque-là. L’huile se dit aceite en espagnol (de الزيت), le voyage safari en swahili (de سفر), le livre kitap en turc (de كتاب). Plus on s’éloigne de Grenade, plus ils se font rares — au bout de la route, ils ne sont arrivés qu’en traversant l’Europe, comme le café. Chaque étymologie a été vérifiée sur Wiktionary ; dans le doute, le mot n’y est pas.' },
       { t: 'Le cap', d: 'Suis la route d’Ibn Battuta ou épingle la langue de ton choix : le bouton « Reprendre » et l’onglet Apprendre suivront ton cap. Changeable à tout moment dans les Réglages.' },
       { t: 'La Course et les classements', d: 'Avec le jeu en ligne activé : la Course est un duel en direct — deux voyageurs, les mêmes 10 questions en même temps, dans une salle à code (invite un ami par lien) ou contre un adversaire tiré au hasard. Le serveur note et chronomètre : score d’abord, temps ensuite, et qui quitte la partie perd par forfait. Chaque bonne réponse vaut 2 XP, une victoire 10 de plus. Deux classements : l’étape du jour (même tirage pour tout le monde, envoyé tout seul à la fin de l’étape) et les duels de la semaine (3 points la victoire, 2 l’égalité, 1 la défaite). Sans serveur configuré, rien de tout cela n’apparaît et l’app est entièrement hors-ligne.' },
+      { t: 'Se repérer', d: 'L’étape « À suivre » est celle par où continuer. En haut d’une destination, la rangée des villes permet d’en changer, et trois raccourcis mènent aux étapes, aux mots voyageurs et aux jeux. Le bouton retour du téléphone ferme l’écran ouvert ; quitter une étape entamée demande toujours confirmation. Un voyage effacé par erreur se reprend pendant quelques secondes (« Annuler »).' },
       { t: 'Hors-ligne et vie privée', d: 'Tout reste sur ton appareil : aucun compte, aucune publicité. Dès la première ouverture, toute l’app est gardée sur ton appareil, polices comprises : elle fonctionne sans connexion, et les mises à jour arrivent d’elles-mêmes au lancement suivant — pense à sauvegarder ton voyage. Seul le jeu en ligne, si tu l’actives, envoie quelque chose : ton pseudonyme, tes scores et tes temps, sous un identifiant tiré au hasard — jamais un compte, un e-mail ou un numéro.' },
     ],
   },
@@ -356,6 +406,13 @@ const fr = {
     sousTitre: 'Suggère une langue, signale une traduction',
     bouton: 'Proposer une amélioration',
   },
+  photos: {
+    photo: 'Photo :',
+    recadree: '(recadrée)',
+    domainePublic: 'domaine public',
+    titre: 'Crédits photo',
+    sousTitre: 'Les photos des villes viennent de Wikimedia Commons. Elles ont été recadrées et allégées, et restent sous la licence de leur auteur.',
+  },
   voyageurs: {
     titre: 'Les mots voyageurs',
     sousTitre: 'Partis de l’arabe, arrivés jusqu’ici',
@@ -404,10 +461,48 @@ const ar = {
   visaObtenu: 'حصلت على التأشيرة',
   aDecouvrir: 'لم تُكتشف بعد',
   etapeSur: (a, b) => `المرحلة ${a} من ${b}`,
+  etapeNumero: (n) => `المرحلة ${n}`,
   etapesFaites: (a, b) => `${a} من ${b} مراحل`,
   km: (n) => `${n.toLocaleString('fr-MA')} كلم`,
   serieCourte: (n) => `${n} يوم`,
-  onglets: { carte: 'الخريطة', apprendre: 'تعلّم', passeport: 'جواز السفر', reglages: 'الإعدادات' },
+  onglets: { carte: 'الرئيسية', apprendre: 'تعلّم', passeport: 'جواز السفر', reglages: 'الإعدادات' },
+  passerAuQuiz: 'انتقل إلى الاختبار',
+  aSuivre: 'التالية',
+  changerDestination: 'غيّر الوجهة',
+  sommaire: { titre: 'اذهب إلى', etapes: 'المراحل', voyageurs: 'الكلمات المسافرة', jeux: 'الألعاب' },
+  quitter: {
+    titreLecon: 'مغادرة هذه المرحلة؟',
+    texteLecon: 'لن تُحفظ إجاباتك: ستعيد المرحلة من البداية.',
+    titreJeu: 'مغادرة اللعبة؟',
+    texteJeu: 'لن تُحتسب نقاط هذه الجولة.',
+    rester: 'واصل',
+    partir: 'غادر',
+  },
+  reglagesSections: { voyage: 'رحلتك', affichage: 'اللغة والمظهر', aide: 'المساعدة والحفظ' },
+  effacement: {
+    titre: 'مسح كل رحلتك؟',
+    texte: 'النقاط والتأشيرات والسلسلة والدفتر تعود إلى الصفر.',
+    garder: 'احتفظ برحلتي',
+    effacer: 'امسح الكل',
+    fait: 'تم مسح الرحلة.',
+    reprendre: 'تراجع',
+  },
+  remplacement: {
+    titre: 'استبدال رحلتك؟',
+    texte: 'سيُستبدل تقدمك الحالي بما في النسخة المحفوظة.',
+    garder: 'إلغاء',
+    remplacer: 'استبدل',
+  },
+  bienvenue: {
+    titre: 'كيف يعمل التطبيق',
+    points: [
+      'اختر مرحلة: 8 كلمات، ثلاث دقائق.',
+      'أجب عن الأسئلة: عند 75٪ تُعتمد المرحلة.',
+      'عُد كل يوم: سلسلتك تكبر، وتأشيراتك أيضاً.',
+    ],
+    guide: 'الدليل كاملاً',
+    fermer: 'فهمت',
+  },
   etapesVoyage: 'مراحل الرحلة',
   niveau1: 'المستوى 1 · البقاء',
   niveau2: 'المستوى 2 · المحادثة',
@@ -454,7 +549,7 @@ const ar = {
   apparence: { titre: 'المظهر', clair: 'فاتح', auto: 'تلقائي', sombre: 'ليلي' },
   sourceReglage: {
     titre: 'لغة الشرح',
-    sousTitre: 'اللغة التي تُترجم ما تتعلمه',
+    sousTitre: 'اللغة التي تُترجم ما تتعلمه. وعند تعلّم الفرنسية أو العربية نفسها، تترجم اللغة الأخرى.',
     auto: 'تلقائي',
     fr: 'Français',
     ar: 'العربية',
@@ -475,7 +570,7 @@ const ar = {
     souk: 'السوق',
     soukDesc: '45 ثانية لالتقاط الكلمة الصحيحة',
     caravane: 'القافلة',
-    caravaneDesc: 'تهجَّ الكلمات لتتقدم النجمة',
+    caravaneDesc: 'تهجَّ الكلمات لتتقدم القافلة',
     quelEtal: 'في أي دكان؟',
     epelle: 'تهجَّ هذه الكلمة',
     motSur: (a, b) => `الكلمة ${a} من ${b}`,
@@ -567,12 +662,13 @@ const ar = {
       { t: 'النقاط وهدف اليوم', d: 'كل شيء يمنح نقاطاً: الدروس والألعاب ومرحلة اليوم والمراجعات. اختر هدفك اليومي (10 أو 20 أو 30 نقطة) في الإعدادات؛ شريط الصفحة الرئيسية يتابع يومك.' },
       { t: 'السلسلة والخان', d: 'أكمل مرحلة أو مرحلة اليوم لتتقدم سلسلتك. يوم غياب واحد يصفّرها — إلا إذا حجزت ليلة في الخان (150 نقطة في جواز السفر): تغطي يوم غياب واحد.' },
       { t: 'الدفتر', d: 'كل مرحلة مكتملة تضع كلماتها في الدفتر. تعود على فترات متزايدة (1 ثم 3 ثم 7 ثم 16 ثم 35 ثم 90 يوماً): إجابة صحيحة ترفع الكلمة رتبة، وخطأ يعيدها إلى الرتبة 1. الكلمة التي أصبتها منذ الدرس تبدأ مباشرة من الرتبة 2، والكلمات الهشة تأتي دائماً أولاً. هكذا تترسخ الذاكرة.' },
-      { t: 'مرحلة اليوم', d: 'تحدٍّ يومي من 10 أسئلة يخلط اللغات الأربع عشرة — نفس الأسئلة للجميع. أول إنجاز في اليوم يقدّم سلسلتك.' },
-      { t: 'ألعاب الرحلة', d: 'خمس طرق للمراجعة: زليج الأزواج، السوق (45 ثانية)، القافلة (تهجئة)، الأذن (استماع فقط)، والمبارزة (لاعبان على هاتف واحد).' },
+      { t: 'مرحلة اليوم', d: 'تحدٍّ يومي من 10 أسئلة يخلط كل لغات الطريق — نفس الأسئلة للجميع. أول إنجاز في اليوم يقدّم سلسلتك.' },
+      { t: 'ألعاب الرحلة', d: 'خمس طرق للمراجعة: زليج الأزواج (كل زوج تجده يكشف جزءاً من المدينة)، السوق (45 ثانية، ريثما تغرب الشمس)، القافلة (تهجئة — كلمة صحيحة، مرحلة نحو المدينة)، الأذن (استماع فقط)، والمبارزة (لاعبان على هاتف واحد). وتنتهي كل لعبة ببطاقة بريدية من الوجهة.' },
       { t: 'البريد — تحدَّ صديقاً', d: 'كان البريد بريدَ القوافل. هنا تلعب 10 أسئلة مع الوقت، ثم ينطلق تحديك في رسالة (واتساب، SMS…) على شكل رابط. يفتحه صديقك ويلعب نفس الأسئلة بالضبط، ثم يعيد إليك نتيجته — أو يتحداك فوراً بعشرة أسئلة جديدة. النتيجة أولاً، ثم الوقت عند التعادل، وكل شيء على الشرف. بلا حساب ولا خادم: التحدي كله يسافر داخل الرابط. في التطبيق المثبّت من App Store، الصق الرسالة التي وصلتك في «قبول تحدٍّ». كل إجابة صحيحة بنقطتين، والفوز بعشر نقاط إضافية؛ وحصيلتك في جواز السفر.' },
       { t: 'الكلمات المسافرة', d: 'تحت مراحل كل وجهة: كلمات انطلقت من العربية ووصلت إلى هناك. الزيت يُقال aceite بالإسبانية، والسفر safari بالسواحيلية، والكتاب kitap بالتركية. كلما ابتعدنا عن غرناطة قلّت — وفي آخر الطريق لم تصل إلا بعد عبور أوروبا، مثل القهوة. تحقّقنا من أصل كل كلمة في ويكاموس؛ وعند الشك لا تُدرج الكلمة.' },
       { t: 'الوجهة', d: 'اتبع طريق ابن بطوطة أو ثبّت اللغة التي تريدها: زر «واصل» وتبويب «تعلّم» سيتبعان وجهتك. يمكن تغييرها في أي وقت من الإعدادات.' },
       { t: 'السباق والتصنيفات', d: 'مع تفعيل اللعب عبر الإنترنت: السباق مبارزة مباشرة — مسافران، نفس الأسئلة العشر في الوقت نفسه، في غرفة برمز (ادعُ صديقاً برابط) أو ضد خصم عشوائي. الخادم يسجّل ويحسب الوقت: النتيجة أولاً ثم الوقت، ومن يغادر المباراة يخسر بالانسحاب. كل إجابة صحيحة بنقطتين، والفوز بعشر نقاط إضافية. تصنيفان: مرحلة اليوم (نفس الأسئلة للجميع، تُرسل تلقائياً في نهاية المرحلة) ومبارزات الأسبوع (3 نقاط للفوز، 2 للتعادل، 1 للخسارة). بدون خادم مضبوط لا يظهر شيء من هذا ويبقى التطبيق بلا اتصال تماماً.' },
+      { t: 'كيف تجد طريقك', d: 'المرحلة «التالية» هي التي تواصل منها. في أعلى كل وجهة صفّ المدن لتغيير الوجهة، وثلاثة اختصارات تقود إلى المراحل والكلمات المسافرة والألعاب. زر الرجوع في الهاتف يغلق الشاشة المفتوحة؛ ومغادرة مرحلة بدأتها تطلب التأكيد دائماً. وإذا مسحت رحلتك خطأً يمكنك التراجع خلال ثوانٍ («تراجع»).' },
       { t: 'بدون اتصال وخصوصية', d: 'كل شيء يبقى على جهازك: بلا حساب، بلا إعلانات. منذ أول فتح يُحفظ التطبيق كله على جهازك، بما فيه الخطوط: يعمل بدون اتصال، والتحديثات تصل من تلقاء نفسها عند التشغيل التالي — واحرص على حفظ نسخة من رحلتك. وحده اللعب عبر الإنترنت، إن فعّلته، يرسل شيئاً: اسمك المستعار ونتائجك وأوقاتك، تحت معرّف عشوائي — لا حساب أبداً ولا بريد إلكتروني ولا رقم.' },
     ],
   },
@@ -745,6 +841,13 @@ const ar = {
     sousTitre: 'اقترح لغة أو بلّغ عن ترجمة',
     bouton: 'اقترح تحسيناً',
   },
+  photos: {
+    photo: 'الصورة:',
+    recadree: '(مقصوصة)',
+    domainePublic: 'ملك عام',
+    titre: 'حقوق الصور',
+    sousTitre: 'صور المدن مأخوذة من ويكيميديا كومنز. قُصّت وخُفّف حجمها، وتبقى تحت رخصة أصحابها.',
+  },
   voyageurs: {
     titre: 'الكلمات المسافرة',
     sousTitre: 'انطلقت من العربية ووصلت إلى هنا',
@@ -789,6 +892,7 @@ export const sens = (mot, locale) => (locale === 'ar' ? mot.ar : mot.fr)
 
 // Sens pour l'APPRENTISSAGE : respecte la langue des définitions choisie,
 // mais bascule automatiquement sur l'autre langue quand on apprend justement
-// celle des définitions (arabe → arabe n'aurait aucun sens).
+// celle des définitions (arabe → arabe ou français → français n'auraient
+// aucun sens).
 export const sensPour = (mot, source, langueId) =>
   sens(mot, langueId === source ? (source === 'fr' ? 'ar' : 'fr') : source)

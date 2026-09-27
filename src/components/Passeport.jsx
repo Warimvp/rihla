@@ -7,6 +7,7 @@ import { bilanBarid } from '../lib/barid.js'
 import { LettreIcone, TenteIcone } from './Icones.jsx'
 import { MarqueRihla } from './Logo.jsx'
 import { TamponVisa } from './TamponVisa.jsx'
+import { VignetteVille } from './Vignettes.jsx'
 
 export function Passeport({ t, locale, progres, surAcheterGel, surNuitOfferte }) {
   const visas = nbVisas(progres, LANGUES)
@@ -187,15 +188,17 @@ export function Passeport({ t, locale, progres, surAcheterGel, surNuitOfferte })
           gap: 12,
         }}
       >
-        {LANGUES.map((langue, i) => {
+        {LANGUES.map((langue) => {
           const obtenu = visaObtenu(progres, langue)
           const validees = etapesValidees(progres, langue)
           return obtenu ? (
             <div key={langue.id} className="tampon-case">
-              <TamponVisa langue={langue} index={i} locale={locale} />
+              <TamponVisa langue={langue} locale={locale} />
             </div>
           ) : (
             <div key={langue.id} className="tampon-case tampon-case--vide">
+              {/* L'emplacement du tampon à venir : la vignette, en filigrane. */}
+              <VignetteVille langue={langue} taille={30} trait={2.2} style={{ color: 'var(--encre-3)' }} />
               <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--encre-2)' }}>{nomVille(langue, locale)}</span>
               <span style={{ fontSize: 10.5, color: 'var(--encre-3)' }}>
                 {nomLangue(langue, locale)}

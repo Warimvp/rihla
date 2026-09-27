@@ -5,15 +5,16 @@ import { assembler, cibleEpellation, construireLettres } from '../lib/epellation
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
-import { Croix, Etoile8 } from './Icones.jsx'
-import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute } from './Ecoute.jsx'
+import { FinDeJeu } from './FinDeJeu.jsx'
+import { PisteCaravane } from './ScenesJeux.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_MOTS = 8
 
 // La Caravane : épelle chaque mot avec les tuiles-lettres ;
-// à chaque mot réussi, l'étoile avance d'une étape sur la piste.
+// à chaque mot réussi, la caravane avance d'une étape vers la ville.
 export function JeuCaravane({ t, locale, source, langue, surXp, surQuitter }) {
   const [partie, setPartie] = useState(0)
   const mots = useMemo(
@@ -93,25 +94,17 @@ export function JeuCaravane({ t, locale, source, langue, surXp, surQuitter }) {
 
   if (fin) {
     return (
-      <div className="vue vue--pleine" style={{ alignItems: 'center', justifyContent: 'center', gap: 18, textAlign: 'center' }}>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 120, height: 120 }}>
-          <EclatEtoiles />
-          <span className="tampon--anime" style={{ display: 'inline-flex' }}>
-            <Etoile8 taille={84} couleur="var(--majorelle)" />
-          </span>
-        </div>
-        <h1 style={{ fontSize: 27 }}>{t.jeux.caravaneArrivee}</h1>
-        <p className="texte-2">{t.jeux.motSur(mots.length, mots.length)}</p>
-        <span className="chip chip--safran">{t.plusXp(fin.xp)}</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 10 }}>
-          <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={surQuitter}>
-            {t.retourEtapes}
-          </button>
-          <button type="button" className="bouton bouton--secondaire bouton--pleine" onClick={rejouer}>
-            {t.rejouer}
-          </button>
-        </div>
-      </div>
+      <FinDeJeu
+        t={t}
+        locale={locale}
+        langue={langue}
+        titre={t.jeux.caravaneArrivee}
+        detail={t.jeux.motSur(mots.length, mots.length)}
+        xp={fin.xp}
+        couleur="var(--majorelle)"
+        surQuitter={surQuitter}
+        surRejouer={rejouer}
+      />
     )
   }
 
@@ -123,44 +116,14 @@ export function JeuCaravane({ t, locale, source, langue, surXp, surQuitter }) {
   return (
     <div className="vue vue--pleine" style={{ gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <button
-          type="button"
-          onClick={surQuitter}
-          aria-label={t.fermer}
-          style={{
-            width: 44,
-            height: 44,
-            marginInlineStart: -11,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--encre-2)',
-            flex: '0 0 auto',
-          }}
-        >
-          <Croix taille={22} trait={2.2} />
-        </button>
+        <BoutonQuitter t={t} etiquette={t.fermer} aPerdre={iMot > 0 || etat === 'bonne'} jeu surQuitter={surQuitter} />
         <span style={{ flex: '1 1 auto', fontSize: 15.5, fontWeight: 600 }}>{t.jeux.caravane}</span>
         <span className="texte-2" style={{ fontSize: 13, fontWeight: 600 }}>{t.jeux.motSur(iMot + 1, mots.length)}</span>
       </div>
 
-      <div style={{ position: 'relative', height: 36, flex: '0 0 auto' }}>
-        <div style={{ position: 'absolute', insetInline: 12, top: 18, borderTop: '2px dashed var(--ligne-2)' }}></div>
-        <span
-          style={{
-            position: 'absolute',
-            top: 6,
-            insetInlineStart: `calc(12px + ${(iMot / Math.max(1, mots.length - 1)) * 88}%)`,
-            transition: 'inset-inline-start 0.5s ease',
-            display: 'inline-flex',
-          }}
-        >
-          <Etoile8 taille={22} couleur="var(--safran)" />
-        </span>
-      </div>
+      {/* Un mot épelé, une étape de faite : au dernier, la caravane entre en
+          ville. Décoratif — « Mot 3 sur 8 » est écrit juste au-dessus. */}
+      <PisteCaravane langue={langue} etape={iMot + (etat === 'bonne' ? 1 : 0)} total={mots.length} />
 
       <div
         className={`carte ${etat === 'fausse' ? 'anim-secouer' : etat === 'bonne' ? 'anim-pop' : ''}`}

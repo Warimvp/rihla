@@ -36,7 +36,7 @@ describe('codeLangue', () => {
     expect(codeLangue('')).toBe(undefined)
   })
 
-  it('couvre les 14 destinations', () => {
+  it('couvre toutes les destinations', () => {
     for (const langue of LANGUES) expect(codeLangue(langue)).toMatch(/^[a-z]{2}-[A-Z]{2}$/)
   })
 })

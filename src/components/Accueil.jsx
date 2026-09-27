@@ -4,9 +4,11 @@ import { defiDuJour, etapesValidees, jourLocal, prochaineEtape, visaObtenu, xpDu
 import { bilanBarid } from '../lib/barid.js'
 import { enLigneDisponible } from '../lib/enligne.js'
 import { AnneauProgres, ChipSerie, Pastille } from './Communs.jsx'
-import { Boussole, CarnetIcone, ChevronAvant, Coche, CoupeIcone, CourseIcone, Etoile8, FlecheAvant, LettreIcone } from './Icones.jsx'
+import { Aide, Boussole, CarnetIcone, ChevronAvant, Coche, CoupeIcone, CourseIcone, Etoile8, FlecheAvant, LettreIcone } from './Icones.jsx'
+import { ImageVille } from './ImageVille.jsx'
+import { VignetteVille } from './Vignettes.jsx'
 
-export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi, surCarnet, surBarid, surCourse, surClassement, cap = 'route' }) {
+export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi, surCarnet, surBarid, surCourse, surClassement, surGuide, bienvenue = false, surFermerBienvenue, cap = 'route' }) {
   const duels = bilanBarid(progres)
   const enLigne = enLigneDisponible()
   const suite = prochaineEtape(progres, LANGUES, cap)
@@ -27,7 +29,15 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
           <h1>{t.salut}</h1>
           <p className="texte-2" style={{ fontSize: 13 }}>{t.pretEtape}</p>
         </div>
-        <ChipSerie compte={progres.serie.compte} t={t} />
+        <span style={{ display: 'flex', alignItems: 'center', gap: 4, flex: '0 0 auto' }}>
+          <ChipSerie compte={progres.serie.compte} t={t} />
+          {/* Le guide vivait au fond des Réglages : c'est au début qu'on le cherche. */}
+          {surGuide ? (
+            <button type="button" className="bouton-aide" onClick={surGuide} aria-label={t.guide.ouvrir}>
+              <Aide taille={22} trait={1.9} />
+            </button>
+          ) : null}
+        </span>
       </header>
 
       <div className="carte apparition" style={{ padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -58,23 +68,12 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
       </div>
 
       {suite ? (
-        <button
-          type="button"
-          className="fond-zellige apparition"
-          onClick={() => surLecon(suite.langue, suite.lecon)}
-          style={{
-            border: 'none',
-            borderRadius: 'var(--r-carte)',
-            padding: 16,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-            boxShadow: 'var(--ombre-cta)',
-            cursor: 'pointer',
-            textAlign: 'start',
-            fontFamily: 'var(--police-ui)',
-          }}
-        >
+        <button type="button" className="carte-depart apparition" onClick={() => surLecon(suite.langue, suite.lecon)}>
+          {/* Où l'on va : la photo (ou le paysage) de la prochaine destination.
+              Décorative — la ville est nommée dans le bandeau. `key` : une
+              image neuve quand la destination change. */}
+          <ImageVille key={suite.langue.id} langue={suite.langue} format="bandeau" />
+          <span className="carte-depart__bandeau fond-zellige">
           <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 7 }}>
             <span style={{ color: 'var(--sur-majorelle)', fontSize: 15.5, fontWeight: 600 }}>
               {aCommence ? t.reprendre : t.commencer} — {nomVille(suite.langue, locale)}
@@ -109,7 +108,34 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
           >
             <FlecheAvant taille={20} couleur="var(--majorelle-fonce)" trait={2.2} />
           </span>
+          </span>
         </button>
+      ) : null}
+
+      {/* Pour qui arrive : trois lignes, juste sous le bouton qu'elles
+          expliquent. La carte s'en va d'elle-même à la première étape jouée. */}
+      {bienvenue ? (
+        <section className="carte bienvenue apparition" aria-labelledby="bienvenue-titre">
+          <h2 id="bienvenue-titre">{t.bienvenue.titre}</h2>
+          <ol>
+            {t.bienvenue.points.map((point, i) => (
+              <li key={point}>
+                <span className="bienvenue__rang" aria-hidden="true">{i + 1}</span>
+                <span>{point}</span>
+              </li>
+            ))}
+          </ol>
+          <div className="bienvenue__pied">
+            <button type="button" className="bouton bouton--secondaire" onClick={surFermerBienvenue}>
+              {t.bienvenue.fermer}
+            </button>
+            {surGuide ? (
+              <button type="button" className="bouton bouton--fantome" onClick={surGuide}>
+                {t.bienvenue.guide}
+              </button>
+            ) : null}
+          </div>
+        </section>
       ) : null}
 
       <button
@@ -324,7 +350,7 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
               key={langue.id}
               type="button"
               className={`${classe} apparition`}
-              style={{ animationDelay: `${i * 45}ms` }}
+              style={{ animationDelay: `${Math.min(i * 45, 360)}ms` }}
               onClick={() => surDestination(langue)}
             >
               <Pastille langue={langue} estompee={!visa && !entamee} />
@@ -380,6 +406,10 @@ export function Accueil({ t, locale, progres, surDestination, surLecon, surDefi,
               ) : (
                 <span className="texte-2" style={{ fontSize: 12 }}>{t.km(langue.km)}</span>
               )}
+              {/* Décorative : la ville est nommée sur la ligne. */}
+              <span className={`vignette-etape ${visa || entamee ? '' : 'vignette-etape--future'}`}>
+                <VignetteVille langue={langue} taille={30} trait={2.4} />
+              </span>
             </button>
           )
         })}

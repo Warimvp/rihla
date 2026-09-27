@@ -1,14 +1,27 @@
+import { useEffect, useRef } from 'react'
 import { LANGUES, langueParId, nomVille } from '../data/langues.js'
 import { TOUTE_LA_ROUTE } from '../lib/barid.js'
 import { Boussole, Etoile8, Livre, PasseportIcone, Rouages } from './Icones.jsx'
 
 // La destination d'un duel (Barid, Course) : « toute la route » ou une ville,
 // en chips défilantes. `t.barid.destination` / `t.barid.touteLaRoute` servent
-// aux deux — c'est la même question.
-export function ChoixDestination({ t, locale, valeur, surChoisir }) {
+// aux deux — c'est la même question. Dans Apprendre (`avecRoute={false}`),
+// la même rangée sert à changer de destination sans repasser par l'accueil.
+export function ChoixDestination({ t, locale, valeur, surChoisir, avecRoute = true, etiquette = t.barid.destination }) {
+  const rangee = useRef(null)
+  // La ville choisie se montre : Tokyo est au bout de la rangée, hors de vue.
+  // On ne fait glisser QUE la rangée — scrollIntoView ferait aussi remonter la
+  // page, qui vient peut-être de retrouver sa position.
+  useEffect(() => {
+    const choisie = rangee.current?.querySelector('[aria-pressed="true"]')
+    if (!choisie) return
+    const cadre = rangee.current.getBoundingClientRect()
+    const chip = choisie.getBoundingClientRect()
+    rangee.current.scrollLeft += chip.left + chip.width / 2 - (cadre.left + cadre.width / 2)
+  }, [valeur])
   return (
-    <div role="group" aria-label={t.barid.destination} style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '2px 0 6px', scrollbarWidth: 'none' }}>
-      {[TOUTE_LA_ROUTE, ...LANGUES.map((l) => l.id)].map((id) => {
+    <div ref={rangee} role="group" aria-label={etiquette} className="rangee-destinations">
+      {[...(avecRoute ? [TOUTE_LA_ROUTE] : []), ...LANGUES.map((l) => l.id)].map((id) => {
         const actif = valeur === id
         const langue = id === TOUTE_LA_ROUTE ? null : langueParId(id)
         return (
@@ -20,8 +33,8 @@ export function ChoixDestination({ t, locale, valeur, surChoisir }) {
             onClick={() => surChoisir(id)}
             style={{
               flex: '0 0 auto',
-              minHeight: 36,
-              paddingInline: '6px 12px',
+              minHeight: 44,
+              paddingInline: '8px 14px',
               border: '1.5px solid',
               borderColor: actif ? 'var(--majorelle)' : 'var(--ligne)',
               background: actif ? 'var(--majorelle-pale)' : 'var(--papier)',

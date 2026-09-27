@@ -13,12 +13,15 @@ import { LANGUES, nomLangue } from '../data/langues.js'
 import { getDictionary, sensPour } from '../i18n.js'
 import { chargerProgres, enregistrerEtape, figerAvancement, progresInitial, sauverProgres } from '../lib/progression.js'
 import { construireBarid, encoderLettre, terminerBarid } from '../lib/barid.js'
+import { cibleEpellation } from '../lib/epellation.js'
 import { ciblePhrase } from '../lib/phrase.js'
 import { mulberry32 } from '../lib/quiz.js'
 import { DEBIT_LENT, DEBIT_NORMAL } from '../lib/tts.js'
 import { Accueil } from './Accueil.jsx'
 import { Apprendre } from './Apprendre.jsx'
 import { motsVoyageurs, totalVoyageurs } from '../data/voyageurs.js'
+import { Cap } from './Cap.jsx'
+import { Passeport } from './Passeport.jsx'
 import { JeuSouk } from './JeuSouk.jsx'
 import { Lecon } from './Lecon.jsx'
 import { Course } from './Course.jsx'
@@ -81,7 +84,6 @@ describe('une leçon jouée jusqu’au bilan', () => {
         source="fr"
         langue={es}
         lecon={es.lecons[0]}
-        indexLangue={0}
         surTerminer={surTerminer}
         surSuivante={surSuivante}
         surQuitter={() => {}}
@@ -152,7 +154,6 @@ describe('une leçon jouée jusqu’au bilan', () => {
         source="fr"
         langue={es}
         lecon={es.lecons[0]}
-        indexLangue={0}
         surTerminer={() => ({ xpGagne: 0, valide: false, gelConsomme: false, nouveauVisa: false, suivante: null })}
         surSuivante={() => {}}
         surQuitter={() => {}}
@@ -212,7 +213,6 @@ describe('réécouter, et lentement', () => {
         source="fr"
         langue={langue}
         lecon={langue.lecons[0]}
-        indexLangue={0}
         surTerminer={() => ({ xpGagne: 0, valide: false, gelConsomme: false, nouveauVisa: false, suivante: null })}
         surSuivante={() => {}}
         surQuitter={() => {}}
@@ -328,7 +328,6 @@ describe('la phrase dans l’ordre', () => {
         source="fr"
         langue={es}
         lecon={lecon}
-        indexLangue={0}
         surTerminer={() => ({ xpGagne: 0, valide: false, gelConsomme: false, nouveauVisa: false, suivante: null })}
         surSuivante={() => {}}
         surQuitter={() => {}}
@@ -777,5 +776,167 @@ describe('les classements', () => {
     const vue = monter(<Classement t={t} progres={progresInitial()} surQuitter={() => {}} transport={transport} />)
     expect(vue.textContent).toContain(t.enligne.consentTitre)
     expect(transport.lireClassement).not.toHaveBeenCalled()
+  })
+})
+
+describe('le français, quinzième destination', () => {
+  const fr = LANGUES.find((l) => l.id === 'fr')
+  const ARABE = /[؀-ۿ]/
+
+  it('montre le sens ARABE au verso des cartes, même sous interface et définitions françaises', () => {
+    const vue = monter(
+      <Lecon t={t} locale="fr" source="fr" langue={fr} lecon={fr.lecons[0]} surTerminer={() => ({})} surSuivante={() => {}} surQuitter={() => {}} />
+    )
+    // « Bonjour → Bonjour » n'apprendrait rien à personne.
+    expect(vue.querySelector('.carte-mot').textContent).toContain('Bonjour')
+    clic(primaire(vue))
+    expect(vue.querySelector('.carte-mot').textContent).toContain('مرحبا')
+  })
+
+  it('se joue sans faute jusqu’au bilan : sens arabes, mots accentués épelés, phrases à apostrophe remises dans l’ordre', () => {
+    // La leçon la plus riche en phrases, hors celles qui ont des images.
+    const lecon = [...fr.lecons]
+      .filter((l) => l.niveau >= 3)
+      .sort((a, b) => b.mots.filter((m) => ciblePhrase(m)).length - a.mots.filter((m) => ciblePhrase(m)).length)[0]
+    const surTerminer = vi.fn(() => ({ xpGagne: 100, valide: true, gelConsomme: false, nouveauVisa: false, suivante: null }))
+    const vue = monter(
+      <Lecon t={t} locale="fr" source="fr" langue={fr} lecon={lecon} surTerminer={surTerminer} surSuivante={() => {}} surQuitter={() => {}} />
+    )
+    for (let i = 0; i < 2 * lecon.mots.length; i++) clic(primaire(vue))
+
+    const vus = { comprendre: 0, produire: 0, epeler: 0, ordonner: 0 }
+    const parmi = (selecteur, texte) => [...vue.querySelectorAll(selecteur)].find((b) => b.textContent.trim() === texte)
+    for (let q = 0; q < lecon.mots.length; q++) {
+      const enonce = vue.querySelector('.carte .mot-cible').textContent.trim()
+      const parSens = lecon.mots.find((m) => m.ar === enonce)
+      const parCible = lecon.mots.find((m) => m.t === enonce)
+      // L'énoncé est un mot français ou un sens arabe — jamais un sens français.
+      expect(Boolean(parSens) !== Boolean(parCible), enonce).toBe(true)
+      if (vue.querySelector('.option')) {
+        const textes = [...vue.querySelectorAll('.option')].map((o) => o.textContent.trim())
+        if (parCible) {
+          vus.comprendre++
+          for (const texte of textes) expect(texte, texte).toMatch(ARABE)
+          clic(parmi('.option', parCible.ar))
+        } else {
+          vus.produire++
+          for (const texte of textes) expect(lecon.mots.some((m) => m.t === texte), texte).toBe(true)
+          clic(parmi('.option', parSens.t))
+        }
+      } else if (vue.querySelector('.lettre--mot')) {
+        vus.ordonner++
+        for (const jeton of ciblePhrase(parSens)) clic(parmi('.lettre--mot:not([disabled])', jeton))
+      } else {
+        vus.epeler++
+        for (const lettre of cibleEpellation(parSens).replaceAll(' ', '')) clic(parmi('.lettre:not([disabled])', lettre))
+      }
+      expect(vue.querySelector('[role="status"]').textContent, enonce).toContain(t.bonneReponse)
+      clic(bouton(vue, t.continuer))
+    }
+    expect(vus.comprendre).toBeGreaterThan(0)
+    expect(vus.ordonner).toBeGreaterThan(0)
+    expect(surTerminer).toHaveBeenCalledTimes(1)
+    expect(surTerminer.mock.calls[0].slice(0, 2)).toEqual([8, 8])
+  })
+
+  it('prend sa place sur la route : Paris entre Lisbonne et Venise, quinze destinations', () => {
+    const vue = monter(
+      <Accueil t={t} locale="fr" progres={progresInitial()} surDestination={() => {}} surLecon={() => {}} surDefi={() => {}} surCarnet={() => {}} surBarid={() => {}} />
+    )
+    const villes = [...vue.querySelectorAll('.etape-itineraire')].map((e) => e.textContent)
+    expect(villes).toHaveLength(15)
+    expect(villes[1]).toContain('Lisbonne')
+    expect(villes[2]).toContain('Paris')
+    expect(villes[2]).toContain('Français')
+    expect(villes[3]).toContain('Venise')
+    expect(vue.textContent).toContain(t.nDestinations(15))
+  })
+
+  it('montre ses mots voyageurs avec le sens arabe, et Le Caire les compte', () => {
+    const vue = monter(<Apprendre t={t} locale="fr" source="fr" progres={progresInitial()} langue={fr} surLecon={() => {}} surJeu={() => {}} />)
+    const cartes = [...vue.querySelectorAll('.voyageur')]
+    expect(cartes).toHaveLength(motsVoyageurs('fr').length)
+    expect(cartes.map((c) => c.querySelector('.voyageur__cible').textContent)).toEqual(['sucre', 'café', 'coton', 'sirop', 'girafe', 'toubib'])
+    // Jamais la glose française : on apprend le français.
+    expect(vue.textContent).not.toContain('le médecin (familier)')
+    expect(cartes[5].textContent).toContain('طبيب (كلمة عامية)')
+    expect(totalVoyageurs()).toBe(65)
+  })
+})
+
+describe('les images des villes', () => {
+  const fr = LANGUES.find((l) => l.id === 'fr')
+  // Par l'attribut, pas par un sélecteur : jsdom met `viewBox` en minuscules
+  // dans un sélecteur d'attribut, et ne retrouve alors aucun svg.
+  const dessins = (element, grille) => [...element.querySelectorAll('svg')].filter((svg) => svg.getAttribute('viewBox') === grille)
+  const accueil = (progres, cap = 'route') =>
+    monter(
+      <Accueil t={t} locale="fr" progres={progres} cap={cap} surDestination={() => {}} surLecon={() => {}} surDefi={() => {}} surCarnet={() => {}} surBarid={() => {}} />
+    )
+
+  it('l’accueil montre le paysage de la PROCHAINE destination, et la vignette de chacune sur l’itinéraire', () => {
+    const vue = accueil(progresInitial())
+    // Au départ : Grenade, au crépuscule.
+    const depart = vue.querySelector('.carte-depart')
+    expect(depart.querySelector('.paysage').getAttribute('class')).toContain('paysage--crepuscule')
+    expect(depart.textContent).toContain('Grenade')
+    // Décoratif : le nom est écrit, l'image ne se fait pas lire deux fois.
+    expect(depart.querySelector('.paysage').getAttribute('aria-hidden')).toBe('true')
+    const lignes = [...vue.querySelectorAll('.etape-itineraire')]
+    expect(lignes).toHaveLength(LANGUES.length)
+    for (const ligne of lignes) expect(dessins(ligne.querySelector('.vignette-etape'), '0 0 64 64')).toHaveLength(1)
+    // Rien de visité : toutes les vignettes sont « à venir ».
+    expect(vue.querySelectorAll('.vignette-etape--future')).toHaveLength(LANGUES.length)
+  })
+
+  it('le paysage de l’accueil suit le cap, et la vignette d’une destination entamée s’allume', () => {
+    const progres = enregistrerEtape(progresInitial(), 'fr', 'salutations', 8, 8, '2026-09-27').progres
+    const vue = accueil(progres, 'fr')
+    const depart = vue.querySelector('.carte-depart')
+    expect(depart.textContent).toContain('Paris')
+    expect(depart.querySelector('.paysage').getAttribute('class')).toContain('paysage--aube')
+    const paris = [...vue.querySelectorAll('.etape-itineraire')].find((l) => l.textContent.includes('Paris'))
+    expect(paris.querySelector('.vignette-etape').classList.contains('vignette-etape--future')).toBe(false)
+    expect(vue.querySelectorAll('.vignette-etape--future')).toHaveLength(LANGUES.length - 1)
+  })
+
+  it('une destination s’ouvre sur sa carte postale, et chaque étape porte l’icône de son thème', () => {
+    const progres = enregistrerEtape(progresInitial(), 'fr', 'enroute', 7, 8, '2026-09-27').progres
+    const vue = monter(<Apprendre t={t} locale="fr" source="fr" progres={progres} langue={fr} surLecon={() => {}} surJeu={() => {}} />)
+    const carte = vue.querySelector('.carte-ville')
+    expect(carte.querySelector('.paysage').getAttribute('viewBox')).toBe('0 0 320 150')
+    expect(carte.querySelector('h1').textContent).toBe('Paris')
+    expect(carte.textContent).toContain('Notre-Dame')
+
+    const medaillons = [...vue.querySelectorAll('.medaillon-etape')]
+    expect(medaillons).toHaveLength(24)
+    for (const m of medaillons) expect(dessins(m, '0 0 24 24').length).toBeGreaterThanOrEqual(1)
+    // L'état ne tient pas à la couleur seule : l'étape validée porte une coche.
+    const validees = medaillons.filter((m) => m.classList.contains('medaillon-etape--validee'))
+    expect(validees).toHaveLength(1)
+    expect(validees[0].querySelector('.medaillon-etape__coche')).not.toBeNull()
+    expect(vue.querySelectorAll('.medaillon-etape__coche')).toHaveLength(1)
+    const ligne = validees[0].closest('button')
+    expect(ligne.textContent).toContain('En route')
+    expect(ligne.textContent).toContain(`${t.etapeNumero(2)} · ${t.scoreSur(7, 8)}`)
+    // Pas encore jouée : le nombre de mots.
+    expect(medaillons[0].closest('button').textContent).toContain(`${t.etapeNumero(1)} · ${t.motsCompte(8)}`)
+  })
+
+  it('le choix du cap illustre les quinze destinations, et choisit toujours la bonne', () => {
+    const surChoisir = vi.fn()
+    const vue = monter(<Cap t={t} locale="fr" capActuel="route" surChoisir={surChoisir} surFermer={() => {}} />)
+    const cartes = [...vue.querySelectorAll('.carte-cap')]
+    expect(cartes).toHaveLength(LANGUES.length)
+    for (const carte of cartes) expect(carte.querySelector('.paysage').getAttribute('viewBox')).toBe('0 0 320 112')
+    clic(cartes.find((c) => c.textContent.includes('Paris')))
+    expect(surChoisir).toHaveBeenCalledWith('fr')
+  })
+
+  it('le passeport garde la place de chaque tampon, avec la vignette de la ville en filigrane', () => {
+    const vue = monter(<Passeport t={t} locale="fr" progres={progresInitial()} surAcheterGel={() => {}} surNuitOfferte={() => {}} />)
+    const vides = [...vue.querySelectorAll('.tampon-case--vide')]
+    expect(vides).toHaveLength(LANGUES.length)
+    for (const c of vides) expect(dessins(c, '0 0 64 64')).toHaveLength(1)
   })
 })

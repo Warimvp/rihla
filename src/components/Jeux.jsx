@@ -1,12 +1,18 @@
 import { peutParler } from '../lib/tts.js'
 import { useVoixPretes } from './Ecoute.jsx'
 import { enLigneDisponible } from '../lib/enligne.js'
-import { Auvent, CaravaneIcone, ChevronAvant, CourseIcone, DuelIcone, LettreIcone, Onde, TuileZellige } from './Icones.jsx'
+import { Auvent, ChevronAvant, CourseIcone, DuelIcone, LettreIcone, Onde } from './Icones.jsx'
+import { DosZellige, Dromadaire } from './ScenesJeux.jsx'
+
+// Le médaillon annonce le décor du jeu : la tuile du Zellige, le dromadaire
+// de la Caravane, l'auvent du Souk.
+const TuileMedaillon = () => <DosZellige teinte={0} />
+const DromadaireMedaillon = () => <Dromadaire taille={30} />
 
 const JEUX = [
-  { id: 'zellige', Icone: TuileZellige },
+  { id: 'zellige', Icone: TuileMedaillon },
   { id: 'souk', Icone: Auvent },
-  { id: 'caravane', Icone: CaravaneIcone },
+  { id: 'caravane', Icone: DromadaireMedaillon },
   { id: 'oreille', Icone: Onde },
   { id: 'duel', Icone: DuelIcone },
   // Le Barid et la Course ne sont pas des jeux comme les autres (ils sortent
@@ -25,7 +31,7 @@ export function SectionJeux({ t, langue, surJeu }) {
   const audioOk = peutParler(langue?.tts)
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+      <div id="jeux" className="ancre" style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
         <h2>{t.jeux.titre}</h2>
         <span className="texte-2 texte-petit">{t.jeux.sousTitre}</span>
       </div>
@@ -41,7 +47,7 @@ export function SectionJeux({ t, langue, surJeu }) {
               disabled={desactive}
               onClick={() => surJeu(id)}
             >
-              <span className="carte-jeu__medaillon">
+              <span className={`carte-jeu__medaillon carte-jeu__medaillon--${id}`}>
                 <Icone taille={24} trait={1.7} />
               </span>
               <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 2 }}>

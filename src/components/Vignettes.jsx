@@ -8,7 +8,9 @@
 // steppe qu'Ibn Battuta a vue — une yourte au bord de la Volga.
 //
 // Grille 64, trait 2, bouts ronds, comme Icones.jsx. Les vignettes servent au
-// tampon du passeport (qui les colore avec son encre) et au carnet de route.
+// tampon du passeport (qui les colore avec son encre), à l'itinéraire, et au
+// centre des paysages (Paysages.jsx). L'eau d'une vignette porte la classe
+// `vignette__eau` : un paysage dessine la sienne, et efface celle-là.
 
 const Vignette = ({ taille = 64, trait = 2, titre, className, style, x, y, children }) => (
   <svg
@@ -58,7 +60,21 @@ const pt = (
     <path d="M23 33h10M23 41h10" />
     <path d="M42 54V34h8v20M42 34l4-4 4 4" />
     <path d="M6 54h52" />
-    <path d="M8 58h14M32 58h20" opacity=".5" />
+    <path className="vignette__eau" d="M8 58h14M32 58h20" opacity=".5" />
+  </>
+)
+
+// Paris — Notre-Dame : deux tours, la rose, la flèche ; la Seine devant.
+const fr = (
+  <>
+    <path d="M16 52V18h10v34M38 52V18h10v34" />
+    <path d="M21 24v7M43 24v7" />
+    <path d="M26 30h12" />
+    <path d="M30 30l2-21 2 21" opacity=".5" />
+    <circle cx="32" cy="37" r="3.5" />
+    <path d="M28 52v-5a4 4 0 0 1 8 0v5" />
+    <path d="M8 52h48" />
+    <path className="vignette__eau" d="M10 58c6-3 12 3 18 0s12 3 18 0" opacity=".5" />
   </>
 )
 
@@ -71,7 +87,7 @@ const it = (
     <path d="M30 34h16M34 50V40h8v10" />
     <path d="M38 26v-4" />
     <path d="M8 50h48" />
-    <path d="M10 56c6-3 12 3 18 0s12 3 18 0" opacity=".5" />
+    <path className="vignette__eau" d="M10 56c6-3 12 3 18 0s12 3 18 0" opacity=".5" />
   </>
 )
 
@@ -140,7 +156,7 @@ const ru = (
     <path d="M32 30v-5" />
     <path d="M18 38h28" opacity=".5" />
     <path d="M6 52h52" />
-    <path d="M8 58c6-3 12 3 18 0s12 3 18 0" opacity=".5" />
+    <path className="vignette__eau" d="M8 58c6-3 12 3 18 0s12 3 18 0" opacity=".5" />
   </>
 )
 
@@ -152,7 +168,7 @@ const fa = (
     <path d="M4 34h56" />
     <path d="M6 46v-7a5 5 0 0 1 10 0v7M16 46v-7a5 5 0 0 1 10 0v7M26 46v-7a5 5 0 0 1 10 0v7M36 46v-7a5 5 0 0 1 10 0v7M46 46v-7a5 5 0 0 1 10 0v7" />
     <path d="M4 46h56" />
-    <path d="M8 52c6-3 12 3 18 0s12 3 18 0 12 3 16 0" opacity=".5" />
+    <path className="vignette__eau" d="M8 52c6-3 12 3 18 0s12 3 18 0 12 3 16 0" opacity=".5" />
   </>
 )
 
@@ -162,7 +178,7 @@ const sw = (
     <path d="M32 46V12l16 22H32" />
     <path d="M32 46L18 30h14" opacity=".5" />
     <path d="M12 46h40l-6 8H18z" />
-    <path d="M6 56c6-3 12 3 18 0s12 3 18 0 12 3 16 0" opacity=".5" />
+    <path className="vignette__eau" d="M6 56c6-3 12 3 18 0s12 3 18 0 12 3 16 0" opacity=".5" />
   </>
 )
 
@@ -217,7 +233,7 @@ const ja = (
   </>
 )
 
-export const VIGNETTES = { es, pt, it, de, en, tr, ar, ru, fa, sw, hi, zh, ko, ja }
+export const VIGNETTES = { es, pt, fr, it, de, en, tr, ar, ru, fa, sw, hi, zh, ko, ja }
 
 export const aUneVignette = (langueId) => Boolean(VIGNETTES[langueId])
 

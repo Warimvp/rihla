@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { LANGUES, langueParId, nomLangue } from '../data/langues.js'
-import { NB_QUESTIONS_BARID, TOUTE_LA_ROUTE, construireBarid, estBonneOption } from '../lib/barid.js'
+import { NB_QUESTIONS_BARID, TOUTE_LA_ROUTE, construireBarid, estBonneOption, estTouteLaRoute } from '../lib/barid.js'
 import { etatClientInitial, normaliserCode, reduireClient } from '../lib/salle.js'
 import {
   chercherAdversaire as chercherParDefaut,
@@ -13,6 +13,7 @@ import { identite, reglerNom } from '../lib/voyageur.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { CoupeIcone, CourseIcone, Croix, Etoile8 } from './Icones.jsx'
+import { BoutonQuitter } from './Quitter.jsx'
 import { ChoixDestination } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { ConsentementEnLigne } from './EnLigne.jsx'
@@ -94,7 +95,7 @@ export function Course({
 
   const total = NB_QUESTIONS_BARID
   const nomAffiche = nom || t.barid.anonyme
-  const nomDestination = (id) => (id === TOUTE_LA_ROUTE ? t.barid.touteLaRoute : nomLangue(langueParId(id), locale))
+  const nomDestination = (id) => (estTouteLaRoute(id) ? t.barid.touteLaRoute : nomLangue(langueParId(id), locale))
   const moi = salle.joueurs.find((j) => j.id === voyageur.id) ?? null
   const autre = salle.joueurs.find((j) => j.id !== voyageur.id) ?? null
   const nomAutre = autre?.nom || t.course.adversaire
@@ -604,9 +605,7 @@ export function Course({
       surContinuer={continuer}
       enTete={
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button type="button" onClick={quitterSalle} aria-label={t.fermer} style={boutonFermer}>
-            <Croix taille={22} trait={2.2} />
-          </button>
+          <BoutonQuitter t={t} aPerdre jeu surQuitter={quitterSalle} />
           <span className="surtitre" style={{ flex: '1 1 auto' }}>
             {t.course.titre} · {nomDestination(salle.langue ?? destination)}
           </span>

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { LANGUES, langueParId, nomLangue, nomVille } from './data/langues.js'
-import { defaultLocale, getDictionary, getDirection, locales } from './i18n.js'
+import { getDictionary, getDirection, localeDuSysteme, locales } from './i18n.js'
 import {
   acheterGel,
   ajouterXp,
@@ -23,6 +23,7 @@ import { CLE_LIEN, accuserReponse, decoderLettre, terminerBarid } from './lib/ba
 import { CLE_LIEN_SALLE, enLigneActif, envoyerScore } from './lib/enligne.js'
 import { normaliserCode } from './lib/salle.js'
 import { identite } from './lib/voyageur.js'
+import { EVENEMENT_RETOUR, profondeurDe } from './lib/retour.js'
 import { Accueil } from './components/Accueil.jsx'
 import { Barid } from './components/Barid.jsx'
 import { Classement } from './components/Classement.jsx'
@@ -43,6 +44,9 @@ import { JeuSouk } from './components/JeuSouk.jsx'
 import { JeuZellige } from './components/JeuZellige.jsx'
 
 const JEUX = { zellige: JeuZellige, souk: JeuSouk, caravane: JeuCaravane, oreille: JeuOreille, duel: JeuDuel }
+
+// Le temps laissé pour reprendre un voyage qu'on vient d'effacer.
+export const DELAI_REPRISE = 10000
 
 const lireLocal = (cle, defaut) => {
   try {
@@ -78,9 +82,10 @@ const capValide = (valeur) =>
   valeur === 'route' || LANGUES.some((l) => l.id === valeur) ? valeur : null
 
 export default function App() {
+  // La langue choisie dans l'app ; au premier lancement, celle du téléphone.
   const [locale, setLocale] = useState(() => {
-    const l = lireLocal('rihla.langue', defaultLocale)
-    return locales.includes(l) ? l : defaultLocale
+    const l = lireLocal('rihla.langue', null)
+    return locales.includes(l) ? l : localeDuSysteme(typeof navigator === 'undefined' ? null : (navigator.languages ?? navigator.language))
   })
   const t = getDictionary(locale)
 
@@ -174,6 +179,103 @@ export default function App() {
     return () => window.removeEventListener('hashchange', lireLien)
   }, [])
 
+  // ————— Le retour du système —————
+  // Le bouton retour (Android, navigateur) ferme l'écran ouvert au lieu de
+  // quitter l'app : chaque écran qui s'ouvre pose une entrée dans
+  // l'historique, le retour la reprend. Les écrans, du dessus vers le dessous
+  // (l'ordre dans lequel App les rend) :
+  const ecrans = [
+    [guideOuvert, () => setGuideOuvert(false)],
+    // Le cap du premier lancement ne se ferme pas : il n'est pas de la pile.
+    [cap !== null && capOuvert, () => setCapOuvert(false)],
+    [classementActif, () => setClassementActif(false)],
+    [Boolean(courseActive), () => setCourseActive(null)],
+    [Boolean(baridActif), () => setBaridActif(null)],
+    [Boolean(carnetActif), () => setCarnetActif(null)],
+    [defiActif, () => setDefiActif(false)],
+    [Boolean(jeuActif), () => setJeuActif(null)],
+    [
+      Boolean(leconActive),
+      () => {
+        setLeconActive(null)
+        setOnglet('apprendre')
+      },
+    ],
+  ]
+  const profondeur = ecrans.filter(([ouvert]) => ouvert).length
+  const fermerDessus = useRef(null)
+  fermerDessus.current = () => ecrans.find(([ouvert]) => ouvert)?.[1]()
+  // Ce que NOUS avons posé dans l'historique (et pas encore repris).
+  const pile = useRef(0)
+
+  useEffect(() => {
+    if (profondeur > pile.current) {
+      for (let niveau = pile.current + 1; niveau <= profondeur; niveau++) window.history.pushState({ rihla: niveau }, '')
+    } else if (profondeur < pile.current) {
+      // Fermé par l'écran lui-même (la croix, « Retour aux étapes ») : on
+      // reprend nos entrées, sinon le retour suivant ne ferait rien.
+      window.history.go(profondeur - pile.current)
+    }
+    pile.current = profondeur
+  }, [profondeur])
+
+  useEffect(() => {
+    const surRetour = (e) => {
+      // Où l'on arrive dans NOTRE pile : en dessous, c'est un retour.
+      if (profondeurDe(e.state) >= pile.current) return
+      // L'écran ouvert peut retenir le voyageur (une étape entamée demande
+      // confirmation) : il annule l'événement, et l'entrée reprise est reposée.
+      const demande = new Event(EVENEMENT_RETOUR, { cancelable: true })
+      if (!window.dispatchEvent(demande)) {
+        window.history.pushState({ rihla: pile.current }, '')
+        return
+      }
+      pile.current -= 1
+      fermerDessus.current()
+    }
+    window.addEventListener('popstate', surRetour)
+    return () => window.removeEventListener('popstate', surRetour)
+  }, [])
+
+  // ————— Là où l'on en était —————
+  // Chaque onglet retrouve sa position de défilement : on sort d'une étape au
+  // milieu de la liste, pas en haut de la page. La vue est démontée quand un
+  // écran s'ouvre — on note donc sa position au fil du défilement.
+  const positions = useRef({})
+  const cleVue = profondeur > 0 || cap === null ? null : onglet === 'apprendre' ? `apprendre:${destinationId}` : onglet
+  const cleVueCourante = useRef(cleVue)
+  cleVueCourante.current = cleVue
+
+  useEffect(() => {
+    const noter = (e) => {
+      const cle = cleVueCourante.current
+      if (cle && e.target?.classList?.contains('vue')) positions.current[cle] = e.target.scrollTop
+    }
+    // Le défilement ne remonte pas (il ne « bulle » pas) : on le capture.
+    document.addEventListener('scroll', noter, true)
+    return () => document.removeEventListener('scroll', noter, true)
+  }, [])
+
+  useLayoutEffect(() => {
+    const vue = cleVue ? document.querySelector('.app > .vue') : null
+    // Une vue jamais visitée commence en haut — y compris quand c'est le même
+    // écran qui change de sujet (Apprendre passe de Grenade à Paris sans être
+    // démonté : sans ce zéro, Paris s'ouvrirait au milieu de sa liste).
+    if (vue) vue.scrollTop = positions.current[cleVue] ?? 0
+  }, [cleVue])
+
+  // Le voyage effacé, tant qu'on peut encore le reprendre.
+  const [efface, setEfface] = useState(null)
+  useEffect(() => {
+    if (!efface) return undefined
+    const minuteur = setTimeout(() => setEfface(null), DELAI_REPRISE)
+    return () => clearTimeout(minuteur)
+  }, [efface])
+
+  // « Comment ça marche », pour qui arrive : jusqu'à la première étape jouée,
+  // ou jusqu'à « J'ai compris ».
+  const [bienvenueVue, setBienvenueVue] = useState(() => lireLocal('rihla.bienvenue', null) === 'vu')
+
   // Point de passage unique : tout gain d'XP est attribué au jour où il tombe
   // (c'est ce qui alimente l'objectif quotidien).
   const majProgres = (p) => {
@@ -182,7 +284,10 @@ export default function App() {
     sauverProgres(final)
   }
 
+  // Ouvrir une destination, c'est arriver en haut de sa page — pas là où on
+  // l'avait laissée la dernière fois.
   const ouvrirDestination = (langue) => {
+    delete positions.current[`apprendre:${langue.id}`]
     setDestinationId(langue.id)
     setOnglet('apprendre')
   }
@@ -202,8 +307,23 @@ export default function App() {
     setLeconActive({ langueId: langue.id, leconId: lecon.id })
   }
 
+  // Effacer se reprend : le voyage d'avant reste sous la main quelques
+  // secondes (« Annuler »). La question, elle, est posée par les Réglages.
   const effacer = () => {
-    if (window.confirm(t.confirmEffacer)) majProgres(progresInitial())
+    setEfface(progres)
+    majProgres(progresInitial())
+  }
+
+  const reprendreVoyage = () => {
+    if (!efface) return
+    setProgres(efface)
+    sauverProgres(efface)
+    setEfface(null)
+  }
+
+  const fermerBienvenue = () => {
+    setBienvenueVue(true)
+    ecrireLocal('rihla.bienvenue', 'vu')
   }
 
   if (guideOuvert) {
@@ -222,6 +342,7 @@ export default function App() {
           locale={locale}
           capActuel={cap ?? 'route'}
           annulable={capOuvert}
+          surLocale={setLocale}
           surChoisir={choisirCap}
           surFermer={() => setCapOuvert(false)}
         />
@@ -373,7 +494,6 @@ export default function App() {
           source={source}
           langue={langue}
           lecon={lecon}
-          indexLangue={LANGUES.indexOf(langue)}
           surTerminer={terminer}
           surSuivante={(suite) => ouvrirLecon(suite.langue, suite.lecon)}
           surQuitter={() => {
@@ -401,6 +521,9 @@ export default function App() {
           surBarid={() => setBaridActif({ lettre: null, langueId: cap && cap !== 'route' ? cap : destinationId })}
           surCourse={() => setCourseActive({ langueId: cap && cap !== 'route' ? cap : destinationId })}
           surClassement={() => setClassementActif(true)}
+          surGuide={() => setGuideOuvert(true)}
+          bienvenue={!bienvenueVue && Object.keys(progres.etapes).length === 0}
+          surFermerBienvenue={fermerBienvenue}
           cap={cap ?? 'route'}
         />
       ) : null}
@@ -411,6 +534,7 @@ export default function App() {
           source={source}
           progres={progres}
           langue={destination}
+          surDestination={ouvrirDestination}
           surLecon={ouvrirLecon}
           surJeu={(type) =>
             type === 'barid'
@@ -460,6 +584,7 @@ export default function App() {
             sauverProgres(restaure)
           }}
           surEffacer={effacer}
+          surReprendre={efface ? reprendreVoyage : null}
         />
       ) : null}
       <BarreOnglets actif={onglet} sur={setOnglet} t={t} />

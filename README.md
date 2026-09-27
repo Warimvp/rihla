@@ -1,29 +1,31 @@
 # Rihla · رحلة — les langues du monde, gratuites pour toujours
 
-**➜ Sur iPhone : [App Store](https://apps.apple.com/app/id6809222617)** (gratuite, publiée le 21/09/2026) · **➜ Sur le web : https://warimvp.github.io/rihla/** (PWA installable — déployée automatiquement à chaque push sur `main`). Code sous licence [MIT](LICENSE) : libre d'usage, de copie et de modification — comme l'app, pour toujours.
+**➜ Sur iPhone : [App Store](https://apps.apple.com/app/id6809222617)** (gratuite, publiée le 21/09/2026) · **➜ Sur le web : https://warimvp.github.io/rihla/** (PWA installable — déployée automatiquement à chaque push sur `main`). Code sous licence [MIT](LICENSE) : libre d'usage, de copie et de modification — comme l'app, pour toujours. Les photos des villes gardent la licence de leur auteur ([crédits](#crédits-photo)).
 
 En 1325, Ibn Battuta quitte Tanger pour 29 ans de voyage et 120 000 km. **Rihla** (« le voyage ») reprend sa route : chaque langue est une **destination**, chaque leçon une **étape**, chaque réussite un **tampon** dans ton passeport.
 
-- 14 destinations : Grenade (espagnol), **Lisbonne (portugais)**, Venise (italien), **Vienne (allemand)**, Londres (anglais), Istanbul (turc), Le Caire (arabe), **Saraï (russe)**, Ispahan (persan), Mombasa (swahili), Delhi (hindi), Pékin (mandarin), **Séoul (coréen)**, Tokyo (japonais)
-- **Langue des définitions au choix** (Réglages) : apprends l'anglais avec des sens en arabe, ou l'arabe avec des sens en français — indépendamment de la langue de l'interface
+- 15 destinations : Grenade (espagnol), **Lisbonne (portugais)**, **Paris (français)**, Venise (italien), **Vienne (allemand)**, Londres (anglais), Istanbul (turc), Le Caire (arabe), **Saraï (russe)**, Ispahan (persan), Mombasa (swahili), Delhi (hindi), Pékin (mandarin), **Séoul (coréen)**, Tokyo (japonais)
+- **Une photo par ville** : l'Alhambra, la tour de Belém, Notre-Dame, Sainte-Sophie, les pyramides… quinze vraies photos (Wikimedia Commons, licences libres, créditées), embarquées dans l'app — tout reste hors-ligne. Derrière chacune, un paysage dessiné par le code, qui s'affiche le temps qu'elle arrive ; une vignette sur l'itinéraire et dans le passeport, une icône par étape
+- **Langue des définitions au choix** (Réglages) : apprends l'anglais avec des sens en arabe, ou l'arabe avec des sens en français — indépendamment de la langue de l'interface (le français, lui, s'apprend toujours avec des sens en arabe)
 - Leçons en deux temps : cartes-mots (avec prononciation) puis quiz — six exercices : comprendre, écouter, produire, épeler, lire l'écriture, et **voir** (retrouver le mot d'après une image, sans passer par la traduction)
 - **Des images pour apprendre sans traduire** : couleurs, nombres et jours engendrés par le code ; pictogrammes de la ville, du corps et de la maison sur les cartes-mots et dans le Zellige
-- Cinq jeux de révision par destination : **Zellige des paires** (memory), **Le Souk** (45 s chrono, combos), **La Caravane** (épellation, l'étoile avance sur la piste), **L'Oreille** (compréhension orale pure) et **Le Duel** (2 joueurs face à face sur un seul téléphone)
+- Cinq jeux de révision par destination, chacun avec son décor : **Zellige des paires** (memory — chaque paire trouvée s'envole et découvre la photo de la ville), **Le Souk** (45 s chrono, combos — le soleil se lève, culmine et se couche avec le chrono), **La Caravane** (épellation — trois dromadaires avancent vers la ville, un mot après l'autre), **L'Oreille** (compréhension orale pure) et **Le Duel** (2 joueurs face à face sur un seul téléphone) ; chaque partie se termine par une carte postale de la destination
 - **Le Barid** : le duel à distance, sans serveur ni compte — 10 questions chrono, le défi part à un ami dans un message (lien), l'ami joue exactement les mêmes questions et riposte ; verdict au score puis au temps
 - **En ligne, si un serveur est branché** (dossier `serveur/`, Worker Cloudflare gratuit, opt-in avec identité anonyme — jamais de compte) : **La Course** (duel en direct, salle à code ou adversaire au hasard, le serveur note et chronomètre) et les **classements** (l'étape du jour, les duels de la semaine). Sans serveur, rien de tout cela n'apparaît : l'app reste 100 % hors-ligne
-- **L'étape du jour** : un défi quotidien qui mélange les 14 langues — même tirage pour tout le monde, et il fait avancer ta série de jours de voyage
+- **L'étape du jour** : un défi quotidien qui mélange les 15 langues — même tirage pour tout le monde, et il fait avancer ta série de jours de voyage
 - **Le Carnet** : la révision espacée du voyageur (Leitner, 6 rangs — 1/3/7/16/35/90 jours, les mots fragiles d'abord) : chaque étape validée y verse ses mots, et ils reviennent juste avant que tu les oublies
 - **Guide du voyageur** intégré : toutes les mécaniques expliquées en 9 sections, dans l'app
 - **Sauvegarde de ton voyage** : copie ta progression en un bouton, restaure-la sur un autre appareil (rien n'est envoyé nulle part)
 - **Ta semaine** : 7 jours d'activité en un coup d'œil dans le passeport
 - **Ton cap, ton choix** : au premier lancement, « Où va ta rihla ? » — suis la route d'Ibn Battuta ou épingle la langue de ton choix ; « Reprendre » et l'onglet Apprendre suivent ton cap (changeable dans les Réglages)
-- **Cinq niveaux par destination** : Niveau 1 · Survie (8 étapes de vocabulaire), Niveau 2 · Conversation (faire connaissance, se débrouiller, exprimer, le temps qu'il fait, l'heure), Niveau 3 · Récits (à l'hôtel, chez le médecin, au téléphone, prendre la route), Niveau 4 · Le quotidien (la ville, la maison, le corps, travail et études) et **Niveau 5 · Nuances** (raconter hier, parler de demain, donner son avis) — 192 mots et phrases par langue, 2 688 au total
+- **Cinq niveaux par destination** : Niveau 1 · Survie (8 étapes de vocabulaire), Niveau 2 · Conversation (faire connaissance, se débrouiller, exprimer, le temps qu'il fait, l'heure), Niveau 3 · Récits (à l'hôtel, chez le médecin, au téléphone, prendre la route), Niveau 4 · Le quotidien (la ville, la maison, le corps, travail et études) et **Niveau 5 · Nuances** (raconter hier, parler de demain, donner son avis) — 192 mots et phrases par langue, 2 880 au total
 - **Leçons à exercices variés** : compréhension, écoute pure, production et épellation à tuiles s'enchaînent dans chaque étape
 - **Objectif du jour** (10/20/30 XP) avec barre de progression, et le **Caravansérail** : réserve une nuit (150 XP) pour couvrir un jour manqué — ta série survit
 - **Rappel quotidien** : une notification locale à l'heure de ton choix (app installée iPhone/Android)
 - **Sons et vibrations** de feedback, synthétisés (zéro téléchargement), coupables dans les Réglages
 - XP, kilomètres parcourus, série de « jours de voyage », visas à collectionner
-- Interface **français / arabe (RTL)** — pensée pour le Maroc
+- Interface **français / arabe (RTL)** — pensée pour le Maroc ; au premier lancement elle prend la langue du téléphone, et le premier écran permet d'en changer
+- **Rien à deviner** : l'étape « À suivre » est marquée, on change de destination sur place, un sommaire mène aux jeux, le bouton retour du téléphone ferme l'écran ouvert, et quitter une étape entamée demande confirmation
 - **100 % gratuit, pour toujours** : pas de pub, pas de compte, pas de paywall, fonctionne hors-ligne (PWA)
 
 Thème complet (logo boussole-zellige, palette Majorelle/terracotta/safran/menthe, composants, écrans) sur le canvas Claude Design : https://claude.ai/code/artifact/9646c563-567e-49f4-8bd9-cfcd80494524 — sources dans `design/`.
@@ -61,11 +63,33 @@ Une organisation n'est **pas** requise pour publier : l'adhésion **« Individua
 
 Google Play : compte développeur à 25 $ **une seule fois** — ou distribution directe d'APK / PWA sans aucun compte.
 
+## Crédits photo
+
+Les photos des villes viennent de [Wikimedia Commons](https://commons.wikimedia.org). Elles ont été **recadrées et compressées** (720×338, WebP) par `scripts/photos.mjs`, et restent **sous la licence de leur auteur** — la licence MIT de ce dépôt couvre le code, pas ces images (`src/assets/photos/`). Les mêmes crédits sont affichés dans l'app (sous chaque photo en grand, et dans Réglages → Crédits photo) ; ils vivent dans `src/data/credits-photos.js`.
+
+| Ville | Ce qu'on voit | Auteur (source) | Licence |
+|---|---|---|---|
+| Grenade | L’Alhambra et la Sierra Nevada | [Diego Delso](https://commons.wikimedia.org/wiki/File:Granada_-_View_from_Mirador_de_San_Nicol%C3%A1s_-_02.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| Lisbonne | La tour de Belém | [Berthold Werner](https://commons.wikimedia.org/wiki/File:Lisbon_Torre_de_Bel%C3%A9m_BW_2018-10-03_16-35-39.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| Paris | Notre-Dame et l’île de la Cité, au crépuscule | [DXR](https://commons.wikimedia.org/wiki/File:Notre-Dame_de_Paris_and_%C3%8Ele_de_la_Cit%C3%A9_at_dusk_140516_1.jpg) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
+| Venise | Le campanile de Saint-Marc et le palais des Doges | [Martin Falbisoner](https://commons.wikimedia.org/wiki/File:Saint_Mark's_Campanile_and_Palazzo_Ducale%2C_Venice%2C_September_2017_-2.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| Vienne | Vienne, vue de la tour de Stephansdom | [Dietmar Rabich](https://commons.wikimedia.org/wiki/File:Wien%2C_Stephansdom%2C_Blick_vom_S%C3%BCdturm_--_2018_--_3271-3.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| Londres | La tour de l’horloge, au coucher du soleil | [Colin](https://commons.wikimedia.org/wiki/File:Big_Ben_at_sunset_-_2014-10-27_17-30.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| Istanbul | Sainte-Sophie | [Arild Vågen](https://commons.wikimedia.org/wiki/File:Hagia_Sophia_Mars_2013.jpg) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
+| Le Caire | Les pyramides de Gizeh | [Ricardo Liberato](https://commons.wikimedia.org/wiki/File:All_Gizah_Pyramids.jpg) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) |
+| Saraï | L’Akhtouba, le bras de la Volga où s’élevait Saraï | [High Contrast](https://commons.wikimedia.org/wiki/File:Achtuba.JPG) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) |
+| Ispahan | Le Si-o-se-pol, le pont aux trente-trois arches | [Reza Haji-pour](https://commons.wikimedia.org/wiki/File:Si-o-se-Pol.jpg) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) |
+| Mombasa | Fort Jesus, au-dessus du vieux port | [Zahra Abdulmajid](https://commons.wikimedia.org/wiki/File:The_Fort_Jesus_Mombasa%2C_Kenya.JPG) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
+| Delhi | Le Qutub Minar | [IM3847](https://commons.wikimedia.org/wiki/File:A_Potrait_view_of_Qutub_Minar.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| Pékin | Le temple du Ciel | [Fong Chen](https://commons.wikimedia.org/wiki/File:Hall_of_Prayer_for_Good_Harvest.JPG) | [Domaine public](https://creativecommons.org/publicdomain/mark/1.0/) |
+| Séoul | La porte Heungnyemun, au palais Gyeongbokgung | [Basile Morin](https://commons.wikimedia.org/wiki/File:Front_view_of_Heungnyemun_Gate_in_Gyeongbokgung_Palace_Seoul_South_Korea.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| Tokyo | Un torii du sanctuaire Meiji | [Asanagi](https://commons.wikimedia.org/wiki/File:Meiji_Shrine_Minami-sando-torii_2023-01-26.jpg) | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
+
 ## Architecture
 
 ```
 src/
-  data/langues.js      # 14 langues × 24 leçons × 8 mots (sens FR/AR partagés par index)
+  data/langues.js      # 15 langues × 24 leçons × 8 mots (sens FR/AR partagés par index)
   lib/progression.js   # XP, série de jours, visas, km — pur + localStorage injectable
   lib/quiz.js          # quiz déterministe (rng injectable) : compréhension ↔ production
   lib/tts.js           # prononciation via la synthèse vocale du système (gratuite, hors-ligne)

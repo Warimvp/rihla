@@ -16,7 +16,7 @@ export function SectionVoyageurs({ t, source, langue }) {
   if (langue.id === DEPART) {
     return (
       <>
-        <h2>{t.voyageurs.titre}</h2>
+        <h2 id="voyageurs" className="ancre">{t.voyageurs.titre}</h2>
         <div className="carte" style={{ padding: '14px 16px' }}>
           <p className="voyageurs-depart" style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--encre-2)' }}>
             {t.voyageurs.depart(totalVoyageurs())}
@@ -32,7 +32,7 @@ export function SectionVoyageurs({ t, source, langue }) {
   return (
     <>
       {/* Le titre est long : le sous-titre passe dessous plutôt que de le casser. */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', justifyContent: 'space-between', columnGap: 10, rowGap: 2 }}>
+      <div id="voyageurs" className="ancre" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', justifyContent: 'space-between', columnGap: 10, rowGap: 2 }}>
         <h2>{t.voyageurs.titre}</h2>
         <span className="texte-2 texte-petit">{t.voyageurs.sousTitre}</span>
       </div>

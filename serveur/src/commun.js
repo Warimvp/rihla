@@ -2,14 +2,14 @@
 // le module d'entrée d'un Worker ne peut exporter que le gestionnaire par
 // défaut et des classes : workerd refuse toute autre valeur nommée.
 import { LANGUES } from '../../src/data/langues.js'
-import { TOUTE_LA_ROUTE } from '../../src/lib/barid.js'
+import { routeConnue } from '../../src/lib/barid.js'
 import { genererCode } from '../../src/lib/salle.js'
 
 export const VERSION = '1'
 
 const TYPES_CLASSEMENT = { jour: /^\d{4}-\d{2}-\d{2}$/, semaine: /^\d{4}-W\d{2}$/ }
 
-export const langueConnue = (langue) => langue === TOUTE_LA_ROUTE || LANGUES.some((l) => l.id === langue)
+export const langueConnue = (langue) => routeConnue(langue) || LANGUES.some((l) => l.id === langue)
 
 export const cleClassementValide = (type, cle) => Boolean(TYPES_CLASSEMENT[type]?.test(String(cle ?? '')))
 

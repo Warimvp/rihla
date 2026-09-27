@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { sensPour } from '../i18n.js'
 import { LANGUES } from './langues.js'
 
 // Garde-fou du contenu : les sens sont partagés par index entre toutes les
@@ -61,6 +62,30 @@ describe('données des langues', () => {
     const mots = LANGUES[0].lecons.flatMap((l) => l.mots)
     expect(new Set(mots.map((m) => m.fr)).size, 'sens FR').toBe(mots.length)
     expect(new Set(mots.map((m) => m.ar)).size, 'sens AR').toBe(mots.length)
+  })
+
+  it('suit la route : quinze destinations rangées par distance, Paris entre Lisbonne et Venise', () => {
+    expect(LANGUES.map((l) => l.id)).toEqual([
+      'es', 'pt', 'fr', 'it', 'de', 'en', 'tr', 'ar', 'ru', 'fa', 'sw', 'hi', 'zh', 'ko', 'ja',
+    ])
+    const km = LANGUES.map((l) => l.km)
+    expect(km).toEqual([...km].sort((a, b) => a - b))
+    for (const langue of LANGUES) expect(langue.tts, langue.id).toMatch(/^[a-z]{2}-[A-Z]{2}$/)
+  })
+
+  it('le français et l’arabe sont les deux langues des définitions : leurs mots cibles SONT les sens', () => {
+    // C'est ce qui oblige `sensPour` à basculer sur l'autre langue — et ce
+    // qui garantit que la destination ne dérive pas du programme commun.
+    const typo = (texte) => texte.replaceAll("'", '’')
+    for (const [id, champ] of [['fr', 'fr'], ['ar', 'ar']]) {
+      const langue = LANGUES.find((l) => l.id === id)
+      for (const mot of langue.lecons.flatMap((l) => l.mots)) {
+        expect(mot.t, `${id}:${mot.id}`).toBe(typo(mot[champ]))
+        expect(sensPour(mot, id, id), `${id}:${mot.id}`).not.toBe(mot[champ])
+      }
+    }
+    // Écriture latine : pas de romanisation, donc pas d'exercice « lire ».
+    expect(LANGUES.find((l) => l.id === 'fr').lecons.flatMap((l) => l.mots).some((m) => m.r)).toBe(false)
   })
 
   it('les écritures non latines portent toutes une romanisation', () => {

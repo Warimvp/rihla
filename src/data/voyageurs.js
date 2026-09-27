@@ -38,6 +38,19 @@ export const VOYAGEURS = {
     { t: 'armazém', arabe: 'المخزن', arabeR: 'al-makhzan', fr: 'l’entrepôt', ar: 'المخزن', preuve: `${W}armazém#Portuguese` },
     { t: 'oxalá', arabe: 'شاء الله', arabeR: 'châ’a llâh', fr: 'pourvu que (« si Dieu le veut »)', ar: 'إن شاء الله', chemin: ['es'], preuve: `${W}oxalá#Portuguese` },
   ],
+  // Le sens affiché est toujours l'arabe (on apprend le français) : il ne
+  // s'écrit que s'il ajoute quelque chose à l'étymon. Écartés : « magasin »
+  // (Wiktionary hésite sur le relais), « matelas » (« probablement » par
+  // l'italien), « algèbre » (la page française ne donne pas la chaîne).
+  fr: [
+    { t: 'sucre', arabe: 'سكر', arabeR: 'soukkar', fr: 'le sucre', ar: 'سكر', chemin: ['it'], preuve: `${W}sucre#French` },
+    { t: 'café', arabe: 'قهوة', arabeR: 'qahwa', fr: 'le café', ar: 'قهوة', chemin: ['ota', 'it'], preuve: `${W}café#French` },
+    { t: 'coton', arabe: 'قطن', arabeR: 'qoutoun', fr: 'le coton', ar: 'قطن', chemin: ['it'], preuve: `${W}coton#French` },
+    { t: 'sirop', arabe: 'شراب', arabeR: 'charâb', fr: 'le sirop (en arabe : la boisson)', ar: 'شراب مركّز محلّى', chemin: ['la'], preuve: `${W}sirop#French` },
+    { t: 'girafe', arabe: 'زرافة', arabeR: 'zourâfa', fr: 'la girafe', ar: 'زرافة', chemin: ['it'], preuve: `${W}girafe#French` },
+    // Emprunt direct, par l'argot des soldats du 19e siècle (arabe d'Algérie).
+    { t: 'toubib', arabe: 'طبيب', arabeR: 'tabîb', fr: 'le médecin (familier)', ar: 'طبيب (كلمة عامية)', preuve: `${W}toubib#French` },
+  ],
   it: [
     { t: 'zucchero', arabe: 'سكر', arabeR: 'soukkar', fr: 'le sucre', ar: 'سكر', preuve: `${W}zucchero#Italian` },
     { t: 'magazzino', arabe: 'مخازن', arabeR: 'makhâzin', fr: 'l’entrepôt (en arabe : les entrepôts)', ar: 'مخزن', preuve: `${W}magazzino#Italian` },

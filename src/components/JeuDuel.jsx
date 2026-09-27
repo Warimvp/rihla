@@ -4,8 +4,10 @@ import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
-import { Croix, DuelIcone, Etoile8 } from './Icones.jsx'
-import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { Etoile8 } from './Icones.jsx'
+import { BoutonQuitter } from './Quitter.jsx'
+import { FinDeJeu } from './FinDeJeu.jsx'
+import { ImageVille } from './ImageVille.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
@@ -81,9 +83,16 @@ export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
   if (phase === 'intro') {
     return (
       <div className="vue vue--pleine" style={{ alignItems: 'center', justifyContent: 'center', gap: 18, textAlign: 'center' }}>
-        <span style={{ color: 'var(--majorelle-fonce)' }}>
-          <DuelIcone taille={72} trait={1.4} />
-        </span>
+        {/* Le terrain du duel : la ville, et les deux étoiles face à face. */}
+        <div className="duel-affiche">
+          <ImageVille langue={langue} format="bandeau" />
+          <span className="duel-affiche__etoile duel-affiche__etoile--a">
+            <Etoile8 taille={34} couleur="var(--majorelle)" />
+          </span>
+          <span className="duel-affiche__etoile duel-affiche__etoile--b">
+            <Etoile8 taille={34} couleur="var(--terracotta)" />
+          </span>
+        </div>
         <h1 style={{ fontSize: 27 }}>{t.jeux.duel}</h1>
         <p className="texte-2" style={{ maxWidth: '32ch', lineHeight: 1.6 }}>{t.jeux.posezTelephone}</p>
         <div style={{ display: 'flex', gap: 10 }}>
@@ -106,29 +115,23 @@ export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
     const { haut, bas } = fin.scores
     const titre = haut === bas ? t.jeux.egalite : t.jeux.gagne(haut > bas ? t.jeux.joueurA : t.jeux.joueurB)
     return (
-      <div className="vue vue--pleine" style={{ alignItems: 'center', justifyContent: 'center', gap: 18, textAlign: 'center' }}>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 120, height: 120 }}>
-          <EclatEtoiles />
-          <span className="tampon--anime" style={{ display: 'inline-flex' }}>
-            <Etoile8 taille={84} couleur={haut === bas ? 'var(--safran)' : haut > bas ? 'var(--majorelle)' : 'var(--terracotta)'} />
-          </span>
-        </div>
-        <h1 style={{ fontSize: 27 }}>{titre}</h1>
-        <p style={{ fontSize: 22, fontWeight: 700 }}>
-          <span style={{ color: 'var(--majorelle-fonce)' }}>{haut}</span>
-          <span className="texte-2"> — </span>
-          <span style={{ color: 'var(--terracotta-fonce)' }}>{bas}</span>
-        </p>
-        <span className="chip chip--safran">{t.plusXp(fin.xp)}</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 10 }}>
-          <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={surQuitter}>
-            {t.retourEtapes}
-          </button>
-          <button type="button" className="bouton bouton--secondaire bouton--pleine" onClick={commencer}>
-            {t.rejouer}
-          </button>
-        </div>
-      </div>
+      <FinDeJeu
+        t={t}
+        locale={locale}
+        langue={langue}
+        titre={titre}
+        detail={
+          <p style={{ fontSize: 22, fontWeight: 700 }}>
+            <span style={{ color: 'var(--majorelle-fonce)' }}>{haut}</span>
+            <span className="texte-2"> — </span>
+            <span style={{ color: 'var(--terracotta-fonce)' }}>{bas}</span>
+          </p>
+        }
+        xp={fin.xp}
+        couleur={haut === bas ? 'var(--safran)' : haut > bas ? 'var(--majorelle)' : 'var(--terracotta)'}
+        surQuitter={surQuitter}
+        surRejouer={commencer}
+      />
     )
   }
 
@@ -139,7 +142,7 @@ export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
     const verrouille = verrous[nom]
     return (
       <div
-        className={`duel-moitie duel-moitie--${nom}`}
+        className={`duel-moitie duel-moitie--${nom} ${gagnee ? 'duel-moitie--gagnee' : ''}`}
         style={{
           flex: '1 1 0',
           minHeight: 0,
@@ -152,7 +155,8 @@ export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span className="chip" style={{ background: nom === 'haut' ? 'var(--majorelle-pale)' : 'var(--terracotta-pale)', color: couleurFonce, minHeight: 26 }}>
+          {/* Sur papier : le camp est déjà teinté, la pastille s'y fondrait. */}
+          <span className="chip" style={{ background: 'var(--papier)', color: couleurFonce, minHeight: 26 }}>
             {nom === 'haut' ? t.jeux.joueurA : t.jeux.joueurB} · {scores[nom]}
           </span>
           {verrouille && !gagnee ? (
@@ -197,14 +201,7 @@ export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
     <div className="vue vue--pleine" style={{ padding: 0, gap: 0 }}>
       {cote('haut')}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '6px 16px', borderBlock: '1px dashed var(--ligne-2)' }}>
-        <button
-          type="button"
-          onClick={surQuitter}
-          aria-label={t.fermer}
-          style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--encre-2)' }}
-        >
-          <Croix taille={18} trait={2.2} />
-        </button>
+        <BoutonQuitter t={t} aPerdre={iManche > 0 || Boolean(vainqueurManche)} jeu surQuitter={surQuitter} taille={18} style={{ marginInlineStart: 0 }} />
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--encre-2)' }}>
           {t.jeux.manche(iManche + 1, NB_MANCHES)} · {nomLangue(langue, locale)}
         </span>

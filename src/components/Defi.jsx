@@ -6,6 +6,7 @@ import { jourLocal } from '../lib/progression.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { Coche, Croix, Etoile8 } from './Icones.jsx'
+import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute } from './Ecoute.jsx'
 import { Pastille } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
@@ -70,26 +71,7 @@ export function Defi({ t, locale, source, surTerminer, surQuitter }) {
   return (
     <div className="vue vue--pleine" style={{ gap: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <button
-          type="button"
-          onClick={surQuitter}
-          aria-label={t.fermer}
-          style={{
-            width: 44,
-            height: 44,
-            marginInlineStart: -11,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--encre-2)',
-            flex: '0 0 auto',
-          }}
-        >
-          <Croix taille={22} trait={2.2} />
-        </button>
+        <BoutonQuitter t={t} etiquette={t.fermer} aPerdre={iQuestion > 0 || choix !== null} surQuitter={surQuitter} />
         <div className="piste-progres" style={{ flex: '1 1 auto', height: 8 }}>
           <div className="piste-progres__barre" style={{ width: `${((iQuestion + 1) / total) * 100}%`, height: 8, background: 'var(--safran)' }}></div>
         </div>

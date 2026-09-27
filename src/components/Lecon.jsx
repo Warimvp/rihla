@@ -7,13 +7,14 @@ import { construireQuiz, estBonne } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler, peutParler } from '../lib/tts.js'
 import { Coche, Croix, Etoile8 } from './Icones.jsx'
+import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute } from './Ecoute.jsx'
 import { TamponVisa } from './TamponVisa.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
 import { VisuelConcept, aUnVisuel, visuelDeQuiz } from '../lib/visuels.jsx'
 
-export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTerminer, surSuivante, surQuitter }) {
+export function Lecon({ t, locale, source, langue, lecon, surTerminer, surSuivante, surQuitter }) {
   const [phase, setPhase] = useState('cartes')
   const [tour, setTour] = useState(0)
   const [iCarte, setICarte] = useState(0)
@@ -131,7 +132,7 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
           {bilan.valide ? <EclatEtoiles nombre={bilan.nouveauVisa ? 14 : 10} /> : null}
           {bilan.nouveauVisa ? (
             <div style={{ width: 180, height: 180 }}>
-              <TamponVisa langue={langue} index={indexLangue} locale={locale} anime />
+              <TamponVisa langue={langue} locale={locale} anime />
             </div>
           ) : (
             <span className={bilan.valide ? 'tampon--anime' : undefined} style={{ display: 'inline-flex' }}>
@@ -220,26 +221,7 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
   return (
     <div className="vue vue--pleine" style={{ gap: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <button
-          type="button"
-          onClick={surQuitter}
-          aria-label={t.quitterLecon}
-          style={{
-            width: 44,
-            height: 44,
-            marginInlineStart: -11,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--encre-2)',
-            flex: '0 0 auto',
-          }}
-        >
-          <Croix taille={22} trait={2.2} />
-        </button>
+        <BoutonQuitter t={t} etiquette={t.quitterLecon} aPerdre={phase === 'quiz' && (iQuestion > 0 || reponse !== null)} surQuitter={surQuitter} />
         <div className="piste-progres" style={{ flex: '1 1 auto', height: 8 }}>
           <div className="piste-progres__barre" style={{ width: `${fraction * 100}%`, height: 8 }}></div>
         </div>
@@ -305,6 +287,11 @@ export function Lecon({ t, locale, source, langue, lecon, indexLangue, surTermin
             }
           >
             {retournee ? t.suivant : t.voirReponse}
+          </button>
+          {/* Les cartes sont une présentation, pas un péage : qui connaît déjà
+              ces mots — ou rejoue l'étape — va droit aux questions. */}
+          <button type="button" className="bouton bouton--fantome bouton--pleine" onClick={() => setPhase('quiz')}>
+            {t.passerAuQuiz}
           </button>
         </>
       ) : (
