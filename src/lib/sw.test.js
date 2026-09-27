@@ -330,6 +330,78 @@ describe('installation', () => {
   })
 })
 
+describe('mise à jour : ne retélécharger que ce qui a changé', () => {
+  const POLICE = './polices/amiri-441f50a6.woff2'
+  const SOCLE = './assets/socle-B1Pd96jx.js'
+  const woff2 = (corps) => new Reponse(corps, { contentType: 'font/woff2' })
+  const js = (corps) => new Reponse(corps, { contentType: 'text/javascript' })
+
+  it('reprend du build précédent les fichiers au nom haché, et ne demande au réseau que le reste', async () => {
+    const sw = executer({ precache: ['./', POLICE, SOCLE, './assets/app-Zz9_-aB3.js', './polices/polices.css'] })
+    const ancien = await sw.cache('rihla-0.1.0-abcdef')
+    await ancien.put(POLICE, woff2('police déjà là'))
+    await ancien.put(SOCLE, js('react déjà là'))
+    await ancien.put('./assets/app-AAAAAAAA.js', js('ancienne app'))
+    await ancien.put('./polices/polices.css', new Reponse('vieilles règles', { contentType: 'text/css' }))
+    const demandes = []
+    sw.reseau.repondre = async (requete) => {
+      demandes.push(requete.url)
+      return js(`réseau : ${requete.url}`)
+    }
+
+    await sw.install()
+
+    // polices.css n'est PAS haché : il est redemandé, même s'il était en cache.
+    expect(demandes.sort()).toEqual([RACINE, `${RACINE}assets/app-Zz9_-aB3.js`, `${RACINE}polices/polices.css`].sort())
+    const stock = await sw.cache(CACHE)
+    expect((await stock.match(POLICE)).corps).toBe('police déjà là')
+    expect((await stock.match(SOCLE)).corps).toBe('react déjà là')
+    expect((await stock.match('./polices/polices.css')).corps).toContain('réseau')
+    // L'ancienne app n'est pas dans le nouveau build : elle n'est pas reprise.
+    expect(stock.urls()).not.toContain(`${RACINE}assets/app-AAAAAAAA.js`)
+
+    // Et les legs survivent à la purge : l'ancien cache peut disparaître.
+    await sw.activate()
+    expect([...sw.stockage.keys()]).toEqual([CACHE])
+    expect((await (await sw.cache(CACHE)).match(POLICE)).corps).toBe('police déjà là')
+  })
+
+  it('ne lègue pas la page d’un portail captif rangée sous un nom haché', async () => {
+    const sw = executer({ precache: [POLICE, SOCLE] })
+    const ancien = await sw.cache('rihla-0.1.0-abcdef')
+    await ancien.put(POLICE, new Reponse('bienvenue à l’hôtel', { contentType: 'text/html; charset=utf-8' }))
+    await ancien.put(SOCLE, new Reponse('bienvenue à l’hôtel', { contentType: 'text/javascript', redirected: true }))
+    sw.reseau.repondre = async () => woff2('du serveur')
+
+    await sw.install()
+
+    const stock = await sw.cache(CACHE)
+    expect((await stock.match(POLICE)).corps).toBe('du serveur')
+    expect((await stock.match(SOCLE)).corps).toBe('du serveur')
+  })
+
+  it('ne touche pas aux caches des autres apps de la même origine', async () => {
+    const sw = executer({ precache: [POLICE] })
+    const voisin = await sw.cache('autre-app')
+    await voisin.put(POLICE, woff2('la police du voisin'))
+    sw.reseau.repondre = async () => woff2('du serveur')
+
+    await sw.install()
+
+    expect((await (await sw.cache(CACHE)).match(POLICE)).corps).toBe('du serveur')
+  })
+
+  it('ne garde pas sous un nom haché une réponse redirigée', async () => {
+    const sw = executer()
+    sw.reseau.repondre = async () => new Reponse('bienvenue à l’hôtel', { redirected: true })
+
+    const reponse = await sw.demander('./assets/index-a1b2c3d4.js')
+    expect(reponse.corps).toBe('bienvenue à l’hôtel')
+    await souffler()
+    expect(await (await sw.cache(CACHE)).match('./assets/index-a1b2c3d4.js')).toBeUndefined()
+  })
+})
+
 describe('activation', () => {
   it('supprime les caches des builds précédents et prend la main', async () => {
     const sw = executer()

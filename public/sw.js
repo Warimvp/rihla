@@ -9,6 +9,11 @@
 //     Vite (assets/index-a1b2c3.js) ou re-téléchargés de toute façon, puisque
 //     le cache change de nom à chaque build.
 //
+// Une mise à jour ne retélécharge que ce qui a CHANGÉ : un fichier au nom
+// haché (assets de Vite, polices) dit son contenu, il est donc repris tel
+// quel du cache du build précédent — sur un réseau capricieux, c'est la
+// différence entre quelques requêtes et trente (voir `IMMUABLE`).
+//
 // BUILD et PRECACHE sont réécrits pendant `vite build` par le plugin
 // « rihla-sw » (vite.config.js) : BUILD dérive du contenu réellement livré,
 // donc plus personne n'a à penser à bumper un numéro à la main. Les valeurs
@@ -28,20 +33,51 @@ const DELAI_RESEAU = 4000
 // (pré-cache) dont les en-têtes diffèrent de celle du navigateur.
 const trouver = (cache, requete) => cache.match(requete, { ignoreVary: true })
 
+// Les fichiers dont le NOM porte l'empreinte du contenu : tout assets/ (Vite
+// hache chaque fichier qu'il y écrit) et les polices embarquées. Même URL,
+// mêmes octets — les seuls qu'on ait le droit de reprendre d'un ancien cache.
+// Les dossiers sont nommés exprès : un « guide-pratique.js » posé un jour dans
+// public/ ressemblerait à un nom haché sans en être un.
+const IMMUABLE = /\/(?:assets\/[^/]+-[\w-]{8}\.\w+|polices\/[^/]+-[0-9a-f]{8}\.woff2)$/
+
+// Une réponse qu'on peut léguer au build suivant : la nôtre, directe, et pas
+// une page HTML (un portail captif répond 200 à tout, même à une police).
+const leguable = (reponse) =>
+  Boolean(reponse) &&
+  reponse.ok &&
+  reponse.type === 'basic' &&
+  !reponse.redirected &&
+  !(reponse.headers.get('content-type') || '').includes('text/html')
+
+async function reprendre(anciens, url) {
+  for (const nom of anciens) {
+    const reponse = await trouver(await caches.open(nom), url)
+    if (leguable(reponse)) return reponse
+  }
+  return null
+}
+
+async function precacher(cache, anciens, url) {
+  if (IMMUABLE.test(new URL(url, self.location.href).pathname)) {
+    if (leguable(await trouver(cache, url))) return
+    const legs = await reprendre(anciens, url)
+    if (legs) return cache.put(url, legs)
+  }
+  // 'no-cache' : on revalide auprès du serveur (304 si inchangé), pour
+  // ne pas figer dans le cache du SW un index.html sorti du cache HTTP.
+  return cache.add(new Request(url, { cache: 'no-cache' }))
+}
+
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE).then((cache) =>
-      // add() un par un, et non addAll() : addAll est ATOMIQUE, un seul 404
+    Promise.all([caches.open(CACHE), caches.keys()]).then(([cache, cles]) => {
+      // Les anciens caches vivent encore : `activate` ne les supprime qu'après.
+      const anciens = cles.filter((k) => k.startsWith('rihla-') && k !== CACHE)
+      // Un par un, et non addAll() : addAll est ATOMIQUE, un seul 404
       // ferait échouer toute l'installation et laisserait l'app sans cache.
       // Ici un fichier manquant ne coûte que lui-même.
-      Promise.all(
-        PRECACHE.map((url) =>
-          // 'no-cache' : on revalide auprès du serveur (304 si inchangé), pour
-          // ne pas figer dans le cache du SW un index.html sorti du cache HTTP.
-          cache.add(new Request(url, { cache: 'no-cache' })).catch(() => {})
-        )
-      )
-    )
+      return Promise.all(PRECACHE.map((url) => precacher(cache, anciens, url).catch(() => {})))
+    })
   )
   self.skipWaiting()
 })
@@ -122,6 +158,8 @@ async function cacheDabord(request) {
   const enCache = await trouver(cache, request)
   if (enCache) return enCache
   const reponse = await fetch(request)
-  if (reponse.ok) cache.put(request, reponse.clone())
+  // Une réponse redirigée (portail captif) est servie, jamais gardée : sous un
+  // nom haché elle serait léguée de build en build.
+  if (reponse.ok && !reponse.redirected) cache.put(request, reponse.clone())
   return reponse
 }

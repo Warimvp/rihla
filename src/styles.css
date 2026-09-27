@@ -429,6 +429,8 @@ p {
   align-items: center;
   gap: 13px;
   width: 100%;
+  /* Une ligne entière se touche du doigt : jamais moins de 48 px de haut. */
+  min-height: 48px;
   text-align: start;
   background: none;
   border: none;
@@ -722,6 +724,295 @@ p {
   animation: tamponner 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
 }
 
+/* ————— Paysages de destination (src/components/Paysages.jsx) —————
+   La couleur d'un paysage vient de son HEURE — aube, jour, crépuscule — et
+   seulement des jetons du thème : aucun hex ici, donc le mode nuit suit sans
+   qu'on y pense (les -pale s'assombrissent, le ciel avec eux). Les teintes
+   intermédiaires sont des mélanges de jetons ; sans color-mix (vieux
+   navigateurs) les replis ci-dessous restent lisibles. */
+
+.paysage {
+  display: block;
+  width: 100%;
+  height: auto;
+  --astre: var(--safran);
+  --terre: var(--piste);
+  --eau: var(--majorelle-pale);
+  --vague: var(--majorelle);
+}
+
+.paysage--aube {
+  --ciel: var(--safran-pale);
+  --relief: var(--terracotta-pale);
+  --ville: var(--safran-bord);
+}
+
+.paysage--jour {
+  --ciel: var(--majorelle-pale);
+  --relief: var(--menthe-pale);
+  --ville: var(--ligne-2);
+}
+
+.paysage--crepuscule {
+  --ciel: var(--terracotta-pale);
+  --astre: var(--terracotta);
+  --relief: var(--safran-pale);
+  --ville: var(--safran-bord);
+}
+
+@supports (color: color-mix(in srgb, red, blue)) {
+  .paysage {
+    --terre: color-mix(in srgb, var(--safran-fonce) 14%, var(--papier));
+    --eau: color-mix(in srgb, var(--majorelle) 16%, var(--papier));
+    --sable-dune: color-mix(in srgb, var(--safran) 34%, var(--safran-pale));
+  }
+
+  .paysage--aube {
+    --relief: color-mix(in srgb, var(--terracotta) 22%, var(--safran-pale));
+    --ville: color-mix(in srgb, var(--safran-fonce) 30%, var(--safran-pale));
+  }
+
+  .paysage--jour {
+    --relief: color-mix(in srgb, var(--menthe) 26%, var(--majorelle-pale));
+    --ville: color-mix(in srgb, var(--majorelle) 30%, var(--majorelle-pale));
+  }
+
+  .paysage--crepuscule {
+    --relief: color-mix(in srgb, var(--majorelle) 20%, var(--terracotta-pale));
+    --ville: color-mix(in srgb, var(--terracotta) 38%, var(--terracotta-pale));
+  }
+}
+
+.paysage__ciel {
+  fill: var(--ciel);
+}
+
+.paysage__astre {
+  fill: var(--astre);
+}
+
+.paysage__relief {
+  fill: var(--relief);
+}
+
+/* Le désert reste de sable à toute heure : des dunes vertes seraient des collines. */
+.paysage__relief--dunes {
+  fill: var(--sable-dune, var(--safran-bord));
+}
+
+.paysage__ville {
+  fill: var(--ville);
+}
+
+.paysage__palmes {
+  fill: none;
+  stroke: var(--ville);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.paysage__sol {
+  fill: var(--terre);
+}
+
+.paysage__eau {
+  fill: var(--eau);
+}
+
+.paysage__vagues,
+.paysage__chemin {
+  fill: none;
+  stroke: var(--vague);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  opacity: 0.35;
+}
+
+.paysage__chemin {
+  stroke: var(--encre-2);
+  stroke-dasharray: 2 7;
+}
+
+.paysage__nuage {
+  fill: var(--papier);
+  opacity: 0.85;
+}
+
+.paysage__oiseaux {
+  fill: none;
+  stroke: var(--encre-2);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.7;
+}
+
+.paysage__etoiles {
+  fill: var(--safran);
+  opacity: 0.8;
+}
+
+.paysage__halo {
+  color: var(--ciel);
+}
+
+.paysage__monument {
+  color: var(--encre);
+}
+
+/* L'eau dessinée par la vignette laisse la place à celle du paysage. */
+.paysage .vignette__eau {
+  display: none;
+}
+
+/* La carte postale d'une destination : le paysage coiffe la carte. */
+.carte-ville {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+}
+
+.carte-ville__titre {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 16px 0;
+}
+
+.carte-ville__histoire {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px 16px;
+}
+
+/* Le choix du cap : une vignette-paysage par destination. */
+.carte-cap {
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  font-family: var(--police-ui);
+  color: var(--encre);
+  text-align: start;
+}
+
+.carte-cap:focus-visible {
+  outline: 3px solid var(--majorelle-fonce);
+  outline-offset: 2px;
+}
+
+.carte-cap__pied {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 11px 11px;
+}
+
+/* L'accueil : la carte de départ — le paysage, puis le bandeau Majorelle. */
+.carte-depart {
+  appearance: none;
+  border: none;
+  padding: 0;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--r-carte);
+  box-shadow: var(--ombre-cta);
+  cursor: pointer;
+  text-align: start;
+  font-family: var(--police-ui);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.carte-depart:focus-visible {
+  outline: 3px solid var(--majorelle-fonce);
+  outline-offset: 2px;
+}
+
+.carte-depart__bandeau {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px 16px;
+}
+
+/* L'itinéraire : la vignette de la ville, au bout de la ligne. */
+.vignette-etape {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--piste);
+  color: var(--encre);
+}
+
+.vignette-etape--future {
+  background: none;
+  border: 1.5px dashed var(--ligne-2);
+  color: var(--encre-2);
+}
+
+/* Le médaillon d'une étape : l'icône de son thème. */
+.medaillon-etape {
+  position: relative;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--majorelle-pale);
+  color: var(--majorelle-fonce);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.medaillon-etape--validee {
+  background: var(--menthe-pale);
+  color: var(--menthe-fonce);
+}
+
+.medaillon-etape__coche {
+  position: absolute;
+  inset-inline-end: -3px;
+  bottom: -3px;
+  width: 19px;
+  height: 19px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--menthe);
+  /* --papier des deux côtés : le même couple que la coche des visas. */
+  color: var(--papier);
+  border: 2px solid var(--papier);
+}
+
+/* L'astre se lève quand le paysage arrive (coupé par prefers-reduced-motion,
+   comme toutes les animations). */
+@keyframes lever {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.paysage__astre {
+  animation: lever 0.9s ease-out both;
+}
+
 /* ————— Apparitions en cascade ————— */
 
 @keyframes apparaitre {
@@ -737,6 +1028,382 @@ p {
 
 .apparition {
   animation: apparaitre 0.4s ease both;
+}
+
+/* ————— Se repérer ————— */
+
+/* Les Réglages rangés par sujet : un petit titre au-dessus de chaque groupe. */
+.titre-section {
+  font-family: var(--police-ui);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--encre-2);
+  margin-top: 10px;
+}
+
+[dir='rtl'] .titre-section {
+  letter-spacing: 0;
+}
+
+/* La rangée des destinations : elle défile de côté, la ville choisie au milieu. */
+.rangee-destinations {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 6px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.rangee-destinations::-webkit-scrollbar {
+  display: none;
+}
+
+/* Le sommaire d'une destination : trois raccourcis vers ce qui est plus bas. */
+.sommaire {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+}
+
+.sommaire__lien {
+  appearance: none;
+  flex: 1 1 0;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: var(--r-bouton);
+  border: 1px solid var(--ligne);
+  background: var(--papier);
+  color: var(--majorelle-fonce);
+  font-family: var(--police-ui);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sommaire__lien:focus-visible,
+.bouton-aide:focus-visible {
+  outline: 3px solid var(--majorelle-fonce);
+  outline-offset: 2px;
+}
+
+/* Un titre où l'on arrive par le sommaire ne se colle pas au bord. */
+.ancre {
+  scroll-margin-top: 14px;
+}
+
+/* L'étape à suivre : la seule carte de la liste qui porte un liseré. */
+.carte-etape--a-suivre {
+  border-color: var(--majorelle);
+  border-width: 1.5px;
+}
+
+.chip--a-suivre {
+  flex: 0 0 auto;
+  min-height: 26px;
+  padding: 2px 10px;
+  background: var(--majorelle-pale);
+  color: var(--majorelle-fonce);
+  font-size: 12px;
+}
+
+.bouton-aide {
+  appearance: none;
+  width: 44px;
+  height: 44px;
+  margin-inline-end: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 999px;
+  color: var(--encre-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* La langue de l'app, sur le premier écran : discrète, au bord. */
+.segmente--langue {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  width: min(100%, 230px);
+}
+
+/* L'annonce : au-dessus de la barre d'onglets, où qu'on soit dans la page. */
+.annonce {
+  position: fixed;
+  z-index: 30;
+  inset-inline: 16px;
+  bottom: calc(92px + env(safe-area-inset-bottom));
+  max-width: 448px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding-block: 8px;
+  padding-inline: 16px 8px;
+  border-radius: var(--r-bouton);
+  background: var(--encre);
+  color: var(--papier);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  animation: monter 0.24s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+.annonce__action {
+  appearance: none;
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 11px;
+  background: none;
+  /* L'annonce est à l'envers du thème (encre sur papier devient papier sur
+     encre) : son action prend un -pale, qui est toujours du côté opposé à
+     l'encre — clair le jour, sombre la nuit. */
+  color: var(--majorelle-pale);
+  font-family: var(--police-ui);
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.annonce__action:focus-visible {
+  outline: 3px solid var(--majorelle-pale);
+  outline-offset: -2px;
+}
+
+/* « Comment ça marche » : trois lignes pour qui arrive. */
+.bienvenue {
+  flex: 0 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bienvenue h2 {
+  font-size: 18px;
+}
+
+.bienvenue ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bienvenue li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.bienvenue__rang {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--majorelle-pale);
+  color: var(--majorelle-fonce);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.bienvenue__pied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.bienvenue__pied .bouton {
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+/* Le guide : des sections qu'on ouvre. */
+.guide-section {
+  flex: 0 0 auto;
+  padding: 0 16px;
+}
+
+.guide-section summary {
+  list-style: none;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.guide-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.guide-section summary:focus-visible {
+  outline: 3px solid var(--majorelle-fonce);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+.guide-section__puce {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--majorelle-pale);
+}
+
+.guide-section__titre {
+  flex: 1 1 auto;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.guide-section summary::after,
+.credits-photos summary::after {
+  content: '';
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  margin-inline-end: 4px;
+  border-inline-end: 2px solid var(--encre-2);
+  border-bottom: 2px solid var(--encre-2);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+[dir='rtl'] .guide-section summary::after,
+[dir='rtl'] .credits-photos summary::after {
+  transform: translateY(-2px) rotate(-45deg);
+}
+
+.guide-section[open] summary::after,
+.credits-photos[open] summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+
+[dir='rtl'] .guide-section[open] summary::after,
+[dir='rtl'] .credits-photos[open] summary::after {
+  transform: translateY(2px) rotate(135deg);
+}
+
+.guide-section p {
+  margin: 0;
+  padding: 0 0 16px;
+  padding-inline-start: 42px;
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+/* De nuit, une pastille sombre (Delhi est couleur d'encre) se fondait dans le
+   papier : un filet clair la détoure. Deux règles, une par mode nuit. */
+[data-theme='sombre'] .pastille {
+  box-shadow: inset 0 0 0 1.5px rgba(242, 233, 216, 0.24);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='clair']) .pastille {
+    box-shadow: inset 0 0 0 1.5px rgba(242, 233, 216, 0.24);
+  }
+}
+
+/* ————— Quitter une étape, une partie (src/components/Quitter.jsx) ————— */
+
+.bouton-quitter {
+  appearance: none;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  margin-inline-start: -11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 999px;
+  color: var(--encre-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bouton-quitter:focus-visible {
+  outline: 3px solid var(--majorelle-fonce);
+  outline-offset: -2px;
+}
+
+/* Le voile isole la question de l'écran qu'elle interrompt ; la feuille se
+   pose en bas, à portée de pouce. Un noir plutôt qu'un jeton : de jour comme
+   de nuit, c'est l'écran derrière qu'il faut éteindre. */
+.voile {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  background: rgba(15, 11, 9, 0.56);
+  animation: voiler 0.2s ease-out both;
+}
+
+.feuille {
+  width: min(100%, 448px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 20px 18px;
+  background: var(--papier);
+  color: var(--encre);
+  border: 1px solid var(--ligne);
+  border-radius: 22px;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
+  text-align: start;
+  animation: monter 0.26s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* Seul le FOND du voile se fond : animer son opacité rendrait la feuille
+   elle-même translucide, et la question se lirait à travers l'écran. */
+@keyframes voiler {
+  from {
+    background-color: rgba(15, 11, 9, 0);
+  }
+  to {
+    background-color: rgba(15, 11, 9, 0.56);
+  }
+}
+
+@keyframes monter {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* ————— Réglages : sélecteur segmenté ————— */
@@ -848,15 +1515,57 @@ p {
 }
 
 .carte-jeu__medaillon {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
   background: var(--majorelle-pale);
   color: var(--majorelle-fonce);
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
+}
+
+/* Chaque jeu a sa couleur — la même que son décor et que l'étoile de sa
+   carte postale. */
+.carte-jeu__medaillon--souk {
+  background: var(--terracotta-pale);
+  color: var(--terracotta-fonce);
+}
+
+.carte-jeu__medaillon--caravane {
+  background: var(--safran-pale);
+  color: var(--safran-fonce);
+}
+
+.carte-jeu__medaillon--oreille,
+.carte-jeu__medaillon--course {
+  background: var(--menthe-pale);
+  color: var(--menthe-fonce);
+}
+
+/* Le Duel : les deux camps, en diagonale. */
+.carte-jeu__medaillon--duel {
+  background: linear-gradient(135deg, var(--majorelle-pale) 0 50%, var(--terracotta-pale) 50% 100%);
+  color: var(--encre);
+}
+
+/* Le Souk : l'auvent rayé court en haut du médaillon. */
+.carte-jeu__medaillon--souk::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 7px;
+  background: repeating-linear-gradient(90deg, var(--terracotta) 0 7px, var(--papier) 7px 14px);
+}
+
+.carte-jeu:disabled .carte-jeu__medaillon {
+  background: var(--desactive);
+  color: var(--encre-2);
 }
 
 /* Tuiles du memory zellige (recto caché / verso mot) */
@@ -953,18 +1662,41 @@ p {
 .etal {
   position: relative;
   overflow: hidden;
-  padding-top: 16px;
+  padding-top: 26px;
+  --auvent: var(--terracotta);
 }
 
+.etal:nth-child(3n + 2) {
+  --auvent: var(--safran);
+}
+
+.etal:nth-child(3n + 3) {
+  --auvent: var(--menthe);
+}
+
+/* La toile rayée… */
 .etal::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 8px;
-  background: repeating-linear-gradient(90deg, var(--terracotta) 0 14px, var(--papier) 14px 28px);
-  opacity: 0.8;
+  height: 12px;
+  background: repeating-linear-gradient(90deg, var(--auvent) 0 14px, var(--papier) 14px 28px);
+}
+
+/* … et son feston : un demi-rond sous chaque rayure, de la même couleur. */
+.etal::after {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 0;
+  right: 0;
+  height: 7px;
+  background:
+    radial-gradient(circle at 7px 0, var(--auvent) 6.5px, transparent 7px) 0 0 / 28px 7px repeat-x,
+    radial-gradient(circle at 7px 0, var(--papier) 6.5px, transparent 7px) 14px 0 / 28px 7px repeat-x;
+  filter: drop-shadow(0 1px 0 var(--ligne));
 }
 
 /* Caravane des lettres */
@@ -1091,6 +1823,397 @@ p {
   font-family: var(--police-titre);
   font-size: 21px;
   text-align: center;
+}
+
+/* ————— Photos des villes (src/components/ImageVille.jsx) —————
+   La photo s'inscrit dans le paysage dessiné, qui donne la hauteur et reste
+   dessous : il se voit pendant le chargement, et si le fichier manque. */
+
+.image-ville {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.image-ville__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  -webkit-user-drag: none;
+}
+
+.image-ville__photo--prete {
+  opacity: 1;
+}
+
+/* De nuit, une photo en plein soleil éblouit : on la voile un peu. Les deux
+   règles vont ensemble, comme les deux blocs de jetons du mode nuit. */
+[data-theme='sombre'] .image-ville__photo {
+  filter: brightness(0.84) saturate(0.95);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='clair']) .image-ville__photo {
+    filter: brightness(0.84) saturate(0.95);
+  }
+}
+
+.credit-photo {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--encre-2);
+}
+
+.credits-photos {
+  flex: 0 0 auto;
+  padding: 4px 16px;
+}
+
+.credits-photos[open] {
+  padding-bottom: 16px;
+}
+
+.credits-photos summary {
+  cursor: pointer;
+  list-style: none;
+  /* Toute la ligne se touche, à la hauteur du doigt. */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.credits-photos summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Le chevron est celui du guide (« Se repérer », plus bas). */
+
+.credits-photos summary:focus-visible {
+  outline: 3px solid var(--majorelle-fonce);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+
+.credits-photos ul {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.credit-photo a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.credit-photo a:focus-visible {
+  outline: 2px solid var(--majorelle-fonce);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ————— Décors des jeux (src/components/ScenesJeux.jsx) ————— */
+
+.scene-jeu {
+  flex: 0 0 auto;
+  border-radius: var(--r-carte);
+  overflow: hidden;
+  border: 1px solid var(--ligne);
+  box-shadow: var(--ombre);
+  line-height: 0;
+}
+
+/* Le soleil du Souk : il voyage au rythme du chrono (une seconde par pas). */
+.paysage__course {
+  transition: transform 1s linear;
+}
+
+.paysage__ciel,
+.paysage__relief,
+.paysage__ville {
+  transition: fill 1.2s ease;
+}
+
+/* La caravane avance d'un mot à l'autre. En arabe la piste se lit de droite à
+   gauche : toute la scène se retourne, la ville passe à gauche. */
+.caravane {
+  transition: transform 0.9s cubic-bezier(0.3, 0.1, 0.2, 1);
+}
+
+.caravane__bete {
+  fill: var(--encre);
+}
+
+.caravane__bete--tete {
+  fill: var(--terracotta-fonce);
+}
+
+.caravane__longe {
+  fill: none;
+  stroke: var(--encre-2);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+}
+
+[dir='rtl'] .scene-caravane {
+  transform: scaleX(-1);
+}
+
+/* L'Oreille : trois ronds qui s'élargissent autour du haut-parleur. */
+.ondes {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+}
+
+/* Centrés sur le grand haut-parleur (le premier de la rangée), pas sur la
+   rangée entière : c'est lui qui émet. */
+.ondes__rond {
+  position: absolute;
+  inset-inline-start: 26px;
+  top: calc(50% - 38px);
+  width: 76px;
+  height: 76px;
+  border-radius: 999px;
+  border: 2px solid var(--majorelle);
+  opacity: 0;
+  pointer-events: none;
+  animation: onde 2.7s ease-out infinite;
+}
+
+.ondes__rond--2 {
+  animation-delay: 0.9s;
+}
+
+.ondes__rond--3 {
+  animation-delay: 1.8s;
+}
+
+@keyframes onde {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+/* Le Zellige : le plateau, l'image derrière, le dos des tuiles. */
+.zellige-plateau {
+  position: relative;
+  flex: 0 0 auto;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.zellige-plateau__image {
+  position: absolute;
+  inset: 0;
+}
+
+/* L'image remplit le plateau (plus haut que large) : on en voit le milieu,
+   là où se tient le monument. */
+.zellige-plateau__image .image-ville,
+.zellige-plateau__image .paysage {
+  width: 100%;
+  height: 100%;
+}
+
+.zellige-plateau__grille {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* La case porte le joint : opaque, couleur sable, elle cache l'image jusque
+   dans les coins tant que sa tuile est là — puis s'efface avec elle. */
+.zellige-case {
+  display: flex;
+  padding: 5px;
+  background: var(--sable);
+  transition: background-color 0.6s ease;
+}
+
+.zellige-case--ouverte {
+  background: transparent;
+}
+
+.zellige-case .tuile {
+  flex: 1 1 auto;
+  border-radius: 14px;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.tuile--envolee {
+  opacity: 0;
+  transform: scale(0.82);
+  pointer-events: none;
+}
+
+.dos-zellige {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 13px;
+  --fond: var(--majorelle);
+  --trait: var(--sur-majorelle);
+}
+
+.dos-zellige--1 {
+  --fond: var(--terracotta);
+  --trait: var(--papier);
+}
+
+.dos-zellige--2 {
+  --fond: var(--menthe);
+  --trait: var(--papier);
+}
+
+.dos-zellige--3 {
+  --fond: var(--safran);
+  --trait: var(--encre);
+}
+
+.dos-zellige__fond {
+  fill: var(--fond);
+}
+
+.dos-zellige__trait {
+  fill: none;
+  stroke: var(--trait);
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+
+.dos-zellige__plein {
+  fill: var(--trait);
+  opacity: 0.9;
+}
+
+/* Le Duel : l'affiche (la ville, deux étoiles face à face), puis deux camps
+   qui se reconnaissent à leur teinte — et la manche gagnée s'allume. */
+.duel-affiche {
+  position: relative;
+  width: min(100%, 320px);
+  border-radius: var(--r-carte);
+  overflow: hidden;
+  border: 1px solid var(--ligne);
+  box-shadow: var(--ombre);
+  line-height: 0;
+}
+
+.duel-affiche__etoile {
+  position: absolute;
+  top: 50%;
+  width: 54px;
+  height: 54px;
+  margin-top: -27px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--papier);
+  box-shadow: var(--ombre);
+  animation: pop 0.5s ease both;
+}
+
+.duel-affiche__etoile--a {
+  inset-inline-start: 14px;
+}
+
+.duel-affiche__etoile--b {
+  inset-inline-end: 14px;
+  animation-delay: 0.15s;
+}
+
+.duel-moitie {
+  transition: background-color 0.3s ease;
+}
+
+.duel-moitie--haut {
+  background: var(--majorelle-pale);
+}
+
+.duel-moitie--bas {
+  background: var(--terracotta-pale);
+}
+
+.duel-moitie--gagnee {
+  background: var(--menthe-pale);
+}
+
+/* La carte postale de fin de jeu. Le tampon est dans le coin : les étoiles
+   qui en jaillissent sortent de l'écran — elles ne doivent pas le faire
+   défiler de côté. */
+.fin-de-jeu {
+  overflow-x: hidden;
+}
+
+.carte-postale {
+  position: relative;
+  width: min(100%, 300px);
+  padding: 8px 8px 0;
+  background: var(--papier);
+  border: 1px solid var(--ligne);
+  border-radius: 10px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+  transform: rotate(-2.2deg);
+  animation: poser 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+}
+
+@keyframes poser {
+  from {
+    opacity: 0;
+    transform: translateY(26px) rotate(5deg) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-2.2deg);
+  }
+}
+
+.carte-postale__image {
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.carte-postale__legende {
+  font-family: var(--police-titre);
+  font-size: 17px;
+  line-height: 1.2;
+  padding: 9px 4px 11px;
+  text-align: start;
+  color: var(--encre);
+}
+
+.carte-postale__tampon {
+  position: absolute;
+  inset-inline-end: -20px;
+  bottom: -22px;
+  width: 78px;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Éclat d'étoiles (validation, visas) */

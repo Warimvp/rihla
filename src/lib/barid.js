@@ -12,7 +12,37 @@ import { melanger, mulberry32 } from './quiz.js'
 
 export const NB_QUESTIONS_BARID = 10
 export const VERSION_LETTRE = 1
-export const TOUTE_LA_ROUTE = '*'
+// « Toute la route » nomme le CATALOGUE qu'elle tire : '*' = les quatorze
+// destinations d'origine, '*2' = avec celles arrivées au catalogue 2 (le
+// français), et ainsi de suite. Une graine ne donne les mêmes questions que
+// sur la même liste de langues : sans ce numéro, ajouter une destination
+// aurait changé en silence les questions d'un défi déjà parti — et le serveur
+// de la Course aurait jugé des réponses à d'autres questions que les siennes.
+// Une version plus ancienne de l'app ne connaît pas '*2' : elle répond
+// « destination inconnue, mets à jour » (erreur `langue`), jamais un faux duel.
+// ⚠️ Nouvelle destination = `catalogue: N` dans langues.js ET N ici
+// (barid.test.js casse si les deux divergent).
+export const CATALOGUE_COURANT = 2
+export const ROUTE_ORIGINE = '*'
+export const jetonRoute = (catalogue) => (catalogue <= 1 ? ROUTE_ORIGINE : `${ROUTE_ORIGINE}${catalogue}`)
+export const TOUTE_LA_ROUTE = jetonRoute(CATALOGUE_COURANT)
+
+// Le catalogue que nomme un jeton de route, ou null si ce n'en est pas un
+// ('*' → 1, '*2' → 2 ; '*1', '*02' et '*x' ne sont pas des jetons).
+export function catalogueDuJeton(id) {
+  const m = /^\*([2-9]|[1-9]\d)?$/.exec(String(id ?? ''))
+  return m ? Number(m[1] ?? 1) : null
+}
+
+export const estTouteLaRoute = (id) => catalogueDuJeton(id) !== null
+
+// Une route que CETTE version sait tirer (la sienne, ou une plus ancienne).
+export const routeConnue = (id) => {
+  const catalogue = catalogueDuJeton(id)
+  return catalogue !== null && catalogue <= CATALOGUE_COURANT
+}
+
+export const catalogueDe = (langue) => langue.catalogue ?? 1
 export const LONGUEUR_NOM = 24
 export const XP_PAR_BONNE = 2
 export const XP_VICTOIRE = 10
@@ -32,7 +62,9 @@ export const nouvelleGraine = (alea = Math.random) => 1 + Math.floor(alea() * (G
 // options sont des mots cibles, mêler les langues trahirait la réponse — et
 // les sens sont uniques dans une langue, donc jamais deux options synonymes.
 export function construireBarid(langues, langueId, graine, nbQuestions = NB_QUESTIONS_BARID) {
-  const retenues = langueId === TOUTE_LA_ROUTE ? langues : langues.filter((l) => l.id === langueId)
+  const catalogue = catalogueDuJeton(langueId)
+  const retenues =
+    catalogue !== null ? langues.filter((l) => catalogueDe(l) <= catalogue) : langues.filter((l) => l.id === langueId)
   if (!retenues.length) return []
   const alea = mulberry32(graine % GRAINE_MAX)
   const paires = retenues.flatMap((langue) =>
@@ -110,7 +142,10 @@ function canoniser(lettre) {
 }
 
 const lettreValide = (l, idsLangues) => {
-  const langueOk = (id) => id === TOUTE_LA_ROUTE || !idsLangues || idsLangues.includes(id)
+  // Un jeton de route se juge à son catalogue, même sans liste de langues :
+  // '*3' reçu par une version qui s'arrête au catalogue 2 est une destination
+  // inconnue, pas une lettre abîmée.
+  const langueOk = (id) => (estTouteLaRoute(id) ? routeConnue(id) : !idsLangues || idsLangues.includes(id))
   const defiOk = (d) => d.g !== null && d.s !== null && d.t !== null && d.l !== ''
   if (l.g !== undefined && !defiOk(l)) return 'abime'
   if (l.re && (!defiOk(l.re) || l.re.s0 === null || l.re.t0 === null)) return 'abime'

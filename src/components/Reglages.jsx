@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import { LANGUES } from '../data/langues.js'
+import { photosLivrees } from '../data/photos.js'
+import { CreditsPhotos } from './ImageVille.jsx'
+import { Annonce, Feuille } from './Feuille.jsx'
 import { OBJECTIFS_JOUR, jourLocal } from '../lib/progression.js'
 import { exporterProgres, importerProgres } from '../lib/sauvegarde.js'
 import { BoiteIcone, CarnetIcone, PartagerIcone } from './Icones.jsx'
@@ -24,6 +28,7 @@ export function Reglages({
   progres,
   surRestaurer,
   surEffacer,
+  surReprendre = null,
 }) {
   const [sons, setSons] = useState(() => sonsActifs())
   const [enLigne, setEnLigne] = useState(() => enLigneActif())
@@ -33,6 +38,8 @@ export function Reglages({
   const pourboire = lienPourboire()
   const [message, setMessage] = useState(null)
   const [zoneRestaure, setZoneRestaure] = useState(null)
+  // La question en cours : 'effacer', ou le voyage lu dans une sauvegarde.
+  const [question, setQuestion] = useState(null)
 
   const annoncer = (texte) => {
     setMessage(texte)
@@ -57,8 +64,12 @@ export function Reglages({
       annoncer(t.sauvegarde.erreurs[resultat.erreur] ?? t.sauvegarde.erreurs.corrompu)
       return
     }
-    if (!window.confirm(t.sauvegarde.confirmer)) return
-    surRestaurer(resultat.progres)
+    setQuestion({ remplacer: resultat.progres })
+  }
+
+  const remplacer = () => {
+    surRestaurer(question.remplacer)
+    setQuestion(null)
     setZoneRestaure(null)
     annoncer(t.sauvegarde.succes)
   }
@@ -104,6 +115,8 @@ export function Reglages({
     <div className="vue">
       <h1>{t.onglets.reglages}</h1>
 
+      <h2 className="titre-section">{t.reglagesSections.voyage}</h2>
+
       <div className="carte" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: 13 }}>
         <span style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.cap.reglage}</span>
@@ -112,50 +125,11 @@ export function Reglages({
         <button
           type="button"
           className="bouton bouton--secondaire"
-          style={{ minHeight: 40, padding: '0 14px', fontSize: 13, flex: '0 0 auto' }}
+          style={{ minHeight: 44, padding: '0 14px', fontSize: 13, flex: '0 0 auto' }}
           onClick={surChangerCap}
         >
           {t.cap.changer}
         </button>
-      </div>
-
-      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.langueInterface}</span>
-        <div className="segmente">
-          <button
-            type="button"
-            className={`segmente__choix ${locale === 'fr' ? 'segmente__choix--actif' : ''}`}
-            onClick={() => surLocale('fr')}
-          >
-            {t.francais}
-          </button>
-          <button
-            type="button"
-            className={`segmente__choix ${locale === 'ar' ? 'segmente__choix--actif' : ''}`}
-            onClick={() => surLocale('ar')}
-          >
-            {t.arabe}
-          </button>
-        </div>
-      </div>
-
-      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.sourceReglage.titre}</span>
-          <span className="texte-2" style={{ fontSize: 12.5 }}>{t.sourceReglage.sousTitre}</span>
-        </div>
-        <div className="segmente">
-          {['auto', 'fr', 'ar'].map((choix) => (
-            <button
-              key={choix}
-              type="button"
-              className={`segmente__choix ${sourceChoix === choix ? 'segmente__choix--actif' : ''}`}
-              onClick={() => surSource(choix)}
-            >
-              {t.sourceReglage[choix]}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -176,49 +150,6 @@ export function Reglages({
           ))}
         </div>
       </div>
-
-      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.sons.titre}</span>
-        <div className="segmente">
-          {[true, false].map((valeur) => (
-            <button
-              key={String(valeur)}
-              type="button"
-              className={`segmente__choix ${sons === valeur ? 'segmente__choix--actif' : ''}`}
-              onClick={() => {
-                reglerSons(valeur)
-                setSons(valeur)
-              }}
-            >
-              {valeur ? t.sons.oui : t.sons.non}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {enLigneDisponible() ? (
-        <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.enligne.reglageTitre}</span>
-            <span className="texte-2" style={{ fontSize: 12.5 }}>{t.enligne.reglageSousTitre}</span>
-          </div>
-          <div className="segmente">
-            {[true, false].map((valeur) => (
-              <button
-                key={String(valeur)}
-                type="button"
-                className={`segmente__choix ${enLigne === valeur ? 'segmente__choix--actif' : ''}`}
-                onClick={() => {
-                  reglerEnLigne(valeur)
-                  setEnLigne(valeur)
-                }}
-              >
-                {valeur ? t.enligne.actif : t.enligne.inactif}
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
 
       <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -263,6 +194,71 @@ export function Reglages({
         ) : null}
       </div>
 
+      {enLigneDisponible() ? (
+        <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.enligne.reglageTitre}</span>
+            <span className="texte-2" style={{ fontSize: 12.5 }}>{t.enligne.reglageSousTitre}</span>
+          </div>
+          <div className="segmente">
+            {[true, false].map((valeur) => (
+              <button
+                key={String(valeur)}
+                type="button"
+                className={`segmente__choix ${enLigne === valeur ? 'segmente__choix--actif' : ''}`}
+                onClick={() => {
+                  reglerEnLigne(valeur)
+                  setEnLigne(valeur)
+                }}
+              >
+                {valeur ? t.enligne.actif : t.enligne.inactif}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <h2 className="titre-section">{t.reglagesSections.affichage}</h2>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.langueInterface}</span>
+        <div className="segmente">
+          <button
+            type="button"
+            className={`segmente__choix ${locale === 'fr' ? 'segmente__choix--actif' : ''}`}
+            onClick={() => surLocale('fr')}
+          >
+            {t.francais}
+          </button>
+          <button
+            type="button"
+            className={`segmente__choix ${locale === 'ar' ? 'segmente__choix--actif' : ''}`}
+            onClick={() => surLocale('ar')}
+          >
+            {t.arabe}
+          </button>
+        </div>
+      </div>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.sourceReglage.titre}</span>
+          <span className="texte-2" style={{ fontSize: 12.5 }}>{t.sourceReglage.sousTitre}</span>
+        </div>
+        <div className="segmente">
+          {['auto', 'fr', 'ar'].map((choix) => (
+            <button
+              key={choix}
+              type="button"
+              className={`segmente__choix ${sourceChoix === choix ? 'segmente__choix--actif' : ''}`}
+              onClick={() => surSource(choix)}
+            >
+              {t.sourceReglage[choix]}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.apparence.titre}</span>
         <div className="segmente">
@@ -278,6 +274,27 @@ export function Reglages({
           ))}
         </div>
       </div>
+
+      <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.sons.titre}</span>
+        <div className="segmente">
+          {[true, false].map((valeur) => (
+            <button
+              key={String(valeur)}
+              type="button"
+              className={`segmente__choix ${sons === valeur ? 'segmente__choix--actif' : ''}`}
+              onClick={() => {
+                reglerSons(valeur)
+                setSons(valeur)
+              }}
+            >
+              {valeur ? t.sons.oui : t.sons.non}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <h2 className="titre-section">{t.reglagesSections.aide}</h2>
 
       <button
         type="button"
@@ -342,11 +359,10 @@ export function Reglages({
               </div>
             </>
           )}
-          {message ? (
-            <p className="texte-2" style={{ fontSize: 12.5, margin: 0 }} role="status">{message}</p>
-          ) : null}
         </div>
       </div>
+
+      <h2 className="titre-section">{t.aPropos}</h2>
 
       <div className="carte" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: 13 }}>
         <span style={{ width: 42, height: 42, borderRadius: 14, background: 'var(--safran-pale)', color: 'var(--safran-fonce)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
@@ -356,7 +372,7 @@ export function Reglages({
           <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.partager.titre}</span>
           <span className="texte-2" style={{ fontSize: 12.5 }}>{t.partager.sousTitre}</span>
         </span>
-        <button type="button" className="bouton bouton--secondaire" style={{ minHeight: 40, padding: '0 14px', fontSize: 13, flex: '0 0 auto' }} onClick={partager}>
+        <button type="button" className="bouton bouton--secondaire" style={{ minHeight: 44, padding: '0 14px', fontSize: 13, flex: '0 0 auto' }} onClick={partager}>
           {t.partager.bouton}
         </button>
       </div>
@@ -396,6 +412,8 @@ export function Reglages({
         </a>
       </div>
 
+      <CreditsPhotos t={t} locale={locale} photos={photosLivrees(LANGUES)} />
+
       <div className="carte" style={{ padding: '18px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <MarqueRihla taille={44} />
@@ -413,9 +431,42 @@ export function Reglages({
         </p>
       </div>
 
-      <button type="button" className="bouton bouton--secondaire" onClick={surEffacer}>
+      <button type="button" className="bouton bouton--secondaire" onClick={() => setQuestion('effacer')}>
         {t.effacer}
       </button>
+
+      {/* Ce qui vient de se passer, dit au-dessus de la barre d'onglets — pas
+          dans une carte restée trois écrans plus haut. Un voyage effacé se
+          reprend tant que l'annonce est là. */}
+      <Annonce
+        message={surReprendre ? t.effacement.fait : message}
+        action={surReprendre ? { libelle: t.effacement.reprendre, sur: surReprendre } : null}
+      />
+
+      {question === 'effacer' ? (
+        <Feuille
+          titre={t.effacement.titre}
+          texte={t.effacement.texte}
+          sur={{ libelle: t.effacement.garder, action: () => setQuestion(null) }}
+          autre={{
+            libelle: t.effacement.effacer,
+            action: () => {
+              setQuestion(null)
+              surEffacer()
+            },
+          }}
+          surFermer={() => setQuestion(null)}
+        />
+      ) : null}
+      {question?.remplacer ? (
+        <Feuille
+          titre={t.remplacement.titre}
+          texte={t.remplacement.texte}
+          sur={{ libelle: t.remplacement.garder, action: () => setQuestion(null) }}
+          autre={{ libelle: t.remplacement.remplacer, action: remplacer }}
+          surFermer={() => setQuestion(null)}
+        />
+      ) : null}
     </div>
   )
 }

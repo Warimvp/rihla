@@ -39,7 +39,7 @@ export function choisirDistracteurs(mots, mot, n, alea = Math.random) {
 // et, un tour sur deux, trois substitutions :
 // - 'lire'       : à la place de 'comprendre' — on montre le mot dans son
 //                  ÉCRITURE seule, on choisit sa romanisation (si le mot en a
-//                  une : sept langues sur quatorze) ;
+//                  une : les écritures non latines) ;
 // - 'voir'       : à la place de 'produire' — on montre une IMAGE du concept,
 //                  on choisit le mot cible, sans passer par le français ni par
 //                  l'arabe. L'image est une capacité INJECTÉE

@@ -1,6 +1,6 @@
 // Les visuels de concepts : ce qu'un mot désigne, montré sans passer par le
 // français ni par l'arabe. Indexés par id de concept — un concept est partagé
-// par les 14 langues, donc « le thé » se dessine une fois pour شاي, çay, chá
+// par toutes les langues, donc « le thé » se dessine une fois pour شاي, çay, chá
 // et お茶. Zéro octet dans langues.js, aucun champ ajouté aux mots : ce module
 // est un index à part, et `langues.test.js` n'a rien à en savoir.
 //

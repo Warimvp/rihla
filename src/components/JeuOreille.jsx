@@ -4,10 +4,12 @@ import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { peutParler } from '../lib/tts.js'
-import { Coche, Croix, Etoile8 } from './Icones.jsx'
-import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { Coche, Croix } from './Icones.jsx'
+import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute, useVoixPretes } from './Ecoute.jsx'
+import { FinDeJeu } from './FinDeJeu.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
+import { OndesOreille } from './ScenesJeux.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_MANCHES = 10
@@ -85,51 +87,25 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
 
   if (fin) {
     return (
-      <div className="vue vue--pleine" style={{ alignItems: 'center', justifyContent: 'center', gap: 18, textAlign: 'center' }}>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 120, height: 120 }}>
-          {fin.score > 0 ? <EclatEtoiles /> : null}
-          <span className="tampon--anime" style={{ display: 'inline-flex' }}>
-            <Etoile8 taille={84} couleur={fin.score > 0 ? 'var(--menthe)' : 'var(--ligne-2)'} />
-          </span>
-        </div>
-        <h1 style={{ fontSize: 27 }}>{t.jeux.bienJoue}</h1>
-        <p className="texte-2">{t.scoreSur(fin.score, manches.length)}</p>
-        <span className="chip chip--safran">{t.plusXp(fin.xp)}</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 10 }}>
-          <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={surQuitter}>
-            {t.retourEtapes}
-          </button>
-          <button type="button" className="bouton bouton--secondaire bouton--pleine" onClick={rejouer}>
-            {t.rejouer}
-          </button>
-        </div>
-      </div>
+      <FinDeJeu
+        t={t}
+        locale={locale}
+        langue={langue}
+        titre={t.jeux.bienJoue}
+        detail={t.scoreSur(fin.score, manches.length)}
+        xp={fin.xp}
+        succes={fin.score > 0}
+        couleur="var(--menthe)"
+        surQuitter={surQuitter}
+        surRejouer={rejouer}
+      />
     )
   }
 
   return (
     <div className="vue vue--pleine" style={{ gap: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <button
-          type="button"
-          onClick={surQuitter}
-          aria-label={t.fermer}
-          style={{
-            width: 44,
-            height: 44,
-            marginInlineStart: -11,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--encre-2)',
-            flex: '0 0 auto',
-          }}
-        >
-          <Croix taille={22} trait={2.2} />
-        </button>
+        <BoutonQuitter t={t} etiquette={t.fermer} aPerdre={iManche > 0 || choix !== null} jeu surQuitter={surQuitter} />
         <div className="piste-progres" style={{ flex: '1 1 auto', height: 8 }}>
           <div className="piste-progres__barre" style={{ width: `${((iManche + 1) / manches.length) * 100}%`, height: 8 }}></div>
         </div>
@@ -142,9 +118,12 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
         {t.jeux.oreille} · {nomLangue(langue, locale)}
       </span>
 
-      <div className="carte" style={{ padding: '26px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, flex: '0 0 auto' }}>
-        {/* Se prononce seule à chaque manche (la clé remonte le composant). */}
-        <Ecoute key={`${partie}:${iManche}`} t={t} texte={manche.mot.t} langue={langue} grand auto />
+      <div className="carte" style={{ padding: '8px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, flex: '0 0 auto', overflow: 'hidden' }}>
+        {/* Se prononce seule à chaque manche (la clé remonte le composant).
+            Les ronds s'arrêtent avec la réponse : il n'y a plus rien à écouter. */}
+        <OndesOreille actives={!choix}>
+          <Ecoute key={`${partie}:${iManche}`} t={t} texte={manche.mot.t} langue={langue} grand auto />
+        </OndesOreille>
       </div>
 
       <p style={{ fontSize: 15, fontWeight: 500 }}>

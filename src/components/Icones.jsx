@@ -24,6 +24,15 @@ export const Boussole = (props) => (
   </Svg>
 )
 
+// L'aide : un point d'interrogation, le même dans toutes les langues.
+export const Aide = (props) => (
+  <Svg {...props}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.4 9.4a2.7 2.7 0 0 1 5.2 1c0 1.8-2.6 2.2-2.6 3.9" />
+    <path d="M12 17.3v.1" />
+  </Svg>
+)
+
 export const Livre = (props) => (
   <Svg {...props}>
     <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" />

@@ -15,7 +15,7 @@ Le serveur importe **le code de l'app** (`../../src/lib/salle.js`, `barid.js`, `
 | Méthode | Route | Réponse |
 |---|---|---|
 | `GET` | `/` | `{ ok, service, version }` |
-| `POST` | `/salles` `{ langue }` | `{ code }` — `langue` = id d'une destination ou `*` |
+| `POST` | `/salles` `{ langue }` | `{ code }` — `langue` = id d'une destination, ou un jeton « toute la route » : `*` (les 14 destinations d'origine) ou `*2` (avec le français) — voir `CATALOGUE_COURANT` dans `src/lib/barid.js` |
 | `GET` | `/salles/:code` (WebSocket, `?id=&nom=`) | la salle ; en HTTP simple : `{ code }` ou 404 |
 | `GET` | `/hall?langue=` (WebSocket, `?id=&nom=`) | `{ type: 'attente' }` puis `{ type: 'salle', code }` |
 | `GET` | `/classement/:type/:cle?id=` | `{ lignes[50], total, moi }` |
@@ -52,6 +52,8 @@ Déployé le 19 septembre 2026 : **https://rihla-serveur.rihla-serveur.workers.d
    - **web (GitHub Pages)** : dépôt → Settings → Secrets and variables → Actions → *Variables* → `VITE_RIHLA_SERVEUR` = l'adresse. Le prochain push la lit (`.github/workflows/pages.yml`).
    - **en local** : `VITE_RIHLA_SERVEUR=…` dans `.env` (voir `.env.example`).
    - **iOS** : `pnpm ios:sync` après avoir mis la variable dans `.env` (elle est figée dans le build).
+
+**Quand l'app gagne une destination, le serveur se redéploie AVANT l'app web** : il tire les questions avec son propre `langues.js`, et refuse (`400 langue`) une destination ou une route qu'il ne connaît pas encore. L'ordre inverse ne casse aucun duel en cours — `*` tire toujours sur les 14 destinations d'origine, chez tout le monde — mais la Course sur la nouvelle destination répond « erreur » tant que le serveur n'a pas suivi.
 
 Ensuite, chaque mise à jour du serveur = `pnpm deploy` ; `pnpm journal` (wrangler tail) suit les logs en direct ; `pnpm verifier` bâtit sans déployer.
 

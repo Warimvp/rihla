@@ -72,7 +72,7 @@ describe('estPhraseJuste', () => {
   })
 })
 
-describe('sur les 14 langues', () => {
+describe('sur toutes les langues', () => {
   it('chaque phrase ordonnable trouve ses deux intrus dans sa leçon — chinois et japonais compris', () => {
     const parLangue = {}
     for (const langue of LANGUES) {

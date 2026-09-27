@@ -4,10 +4,11 @@ import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
-import { Croix, Etoile8 } from './Icones.jsx'
-import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute } from './Ecoute.jsx'
+import { FinDeJeu } from './FinDeJeu.jsx'
 import { MotCible, Romanisation } from './MotCible.jsx'
+import { CielDuSouk } from './ScenesJeux.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const DUREE = 45
@@ -95,27 +96,18 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
 
   if (fin) {
     return (
-      <div className="vue vue--pleine" style={{ alignItems: 'center', justifyContent: 'center', gap: 18, textAlign: 'center' }}>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 120, height: 120 }}>
-          {score > 0 ? <EclatEtoiles /> : null}
-          <span className="tampon--anime" style={{ display: 'inline-flex' }}>
-            <Etoile8 taille={84} couleur={score > 0 ? 'var(--terracotta)' : 'var(--ligne-2)'} />
-          </span>
-        </div>
-        <h1 style={{ fontSize: 27 }}>{t.jeux.soukFerme}</h1>
-        <p className="texte-2">
-          {t.jeux.score(score)} · {t.jeux.meilleurCombo(meilleur)}
-        </p>
-        <span className="chip chip--safran">{t.plusXp(fin.xp)}</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 10 }}>
-          <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={surQuitter}>
-            {t.retourEtapes}
-          </button>
-          <button type="button" className="bouton bouton--secondaire bouton--pleine" onClick={rejouer}>
-            {t.rejouer}
-          </button>
-        </div>
-      </div>
+      <FinDeJeu
+        t={t}
+        locale={locale}
+        langue={langue}
+        titre={t.jeux.soukFerme}
+        detail={`${t.jeux.score(score)} · ${t.jeux.meilleurCombo(meilleur)}`}
+        xp={fin.xp}
+        succes={score > 0}
+        couleur="var(--terracotta)"
+        surQuitter={surQuitter}
+        surRejouer={rejouer}
+      />
     )
   }
 
@@ -124,26 +116,7 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
   return (
     <div className="vue vue--pleine" style={{ gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <button
-          type="button"
-          onClick={surQuitter}
-          aria-label={t.fermer}
-          style={{
-            width: 44,
-            height: 44,
-            marginInlineStart: -11,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--encre-2)',
-            flex: '0 0 auto',
-          }}
-        >
-          <Croix taille={22} trait={2.2} />
-        </button>
+        <BoutonQuitter t={t} etiquette={t.fermer} aPerdre={score > 0} jeu surQuitter={surQuitter} />
         <div className="chrono">
           <div
             className={`chrono__barre ${temps <= 10 ? 'chrono__barre--urgent' : ''}`}
@@ -154,6 +127,10 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
           {t.jeux.secondes(temps)}
         </span>
       </div>
+
+      {/* Le jour passe sur la ville : le soleil se couche quand le souk ferme.
+          Décoratif — le temps est écrit en secondes juste au-dessus. */}
+      <CielDuSouk langue={langue} reste={temps} duree={DUREE} />
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span className="surtitre">

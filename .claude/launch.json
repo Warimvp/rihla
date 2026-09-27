@@ -12,6 +12,16 @@
       "port": 5183
     },
     {
+      "name": "rihla-apercu",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--dir",
+        "/Users/user/Projects/rihla",
+        "preview"
+      ],
+      "port": 5184
+    },
+    {
       "name": "rihla-serveur",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [

@@ -3,6 +3,7 @@ import { LANGUES, langueParId, nomLangue } from '../data/langues.js'
 import {
   NB_QUESTIONS_BARID,
   TOUTE_LA_ROUTE,
+  estTouteLaRoute,
   bilanBarid,
   construireBarid,
   decoderLettre,
@@ -17,6 +18,7 @@ import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { nomVoyageur, reglerNom } from '../lib/voyageur.js'
 import { Boussole, Croix, Etoile8, LettreIcone } from './Icones.jsx'
+import { BoutonQuitter } from './Quitter.jsx'
 import { ChoixDestination } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { QuestionDuel } from './QuestionDuel.jsx'
@@ -92,7 +94,7 @@ export function Barid({
   const total = NB_QUESTIONS_BARID
   const nomPropre = nettoyerNom(nom)
   const nomAffiche = nomPropre || t.barid.anonyme
-  const nomDestination = (id) => (id === TOUTE_LA_ROUTE ? t.barid.touteLaRoute : nomLangue(langueParId(id), locale))
+  const nomDestination = (id) => (estTouteLaRoute(id) ? t.barid.touteLaRoute : nomLangue(langueParId(id), locale))
   const titreVerdict = (v) => (v === 'gagne' ? t.barid.gagne : v === 'perdu' ? t.barid.perdu : t.barid.egalite)
 
   // Une réponse à l'un de nos défis : le verdict s'inscrit dès l'ouverture,
@@ -440,9 +442,7 @@ export function Barid({
       surContinuer={continuer}
       enTete={
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button type="button" onClick={surQuitter} aria-label={t.fermer} style={boutonFermer}>
-            <Croix taille={22} trait={2.2} />
-          </button>
+          <BoutonQuitter t={t} aPerdre={iQuestion > 0 || choix !== null} jeu surQuitter={surQuitter} />
           <div className="piste-progres" style={{ flex: '1 1 auto', height: 8 }}>
             <div className="piste-progres__barre" style={{ width: `${((iQuestion + 1) / total) * 100}%`, height: 8 }}></div>
           </div>

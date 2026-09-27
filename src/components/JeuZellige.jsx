@@ -4,15 +4,25 @@ import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
-import { Croix, Etoile8 } from './Icones.jsx'
-import { EclatEtoiles } from './EclatEtoiles.jsx'
+import { BoutonQuitter } from './Quitter.jsx'
+import { FinDeJeu } from './FinDeJeu.jsx'
+import { ImageVille } from './ImageVille.jsx'
 import { MotCible } from './MotCible.jsx'
+import { DosZellige, teinteZellige } from './ScenesJeux.jsx'
 import { VisuelConcept, aUnVisuel } from '../lib/visuels.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_PAIRES = 6
+// Une paire trouvée reste lisible un instant (on la relit), puis ses deux
+// tuiles s'envolent ; la dernière envolée, on laisse l'image entière à
+// regarder avant la carte postale de fin.
+export const DELAI_PAIRE = 380
+export const DELAI_ENVOL = 1100
+export const DELAI_FIN = 2300
 
 // Memory en mosaïque : 12 tuiles zellige, associer chaque mot à son sens.
+// Derrière le plateau, l'image de la destination : chaque paire trouvée en
+// découvre un morceau — le zellige se défait, la ville apparaît.
 export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
   const [partie, setPartie] = useState(0)
   const paires = useMemo(() => melanger(tousLesMots(langue)).slice(0, NB_PAIRES), [langue, partie])
@@ -34,6 +44,7 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
   )
   const [ouvertes, setOuvertes] = useState([])
   const [gagnees, setGagnees] = useState(() => new Set())
+  const [envolees, setEnvolees] = useState(() => new Set())
   const [coups, setCoups] = useState(0)
   const [fin, setFin] = useState(null)
 
@@ -41,6 +52,7 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
     setPartie(partie + 1)
     setOuvertes([])
     setGagnees(new Set())
+    setEnvolees(new Set())
     setCoups(0)
     setFin(null)
   }
@@ -61,13 +73,16 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
       setTimeout(() => {
         setGagnees((avant) => new Set([...avant, a.motId]))
         setOuvertes([])
-        if (complet) {
+        if (complet) fanfare()
+      }, DELAI_PAIRE)
+      setTimeout(() => setEnvolees((avant) => new Set([...avant, a.motId])), DELAI_ENVOL)
+      if (complet) {
+        setTimeout(() => {
           const xp = 30 + (nbCoups <= 10 ? 20 : nbCoups <= 14 ? 10 : 0)
           surXp(xp)
-          fanfare()
           setFin({ xp })
-        }
-      }, 380)
+        }, DELAI_FIN)
+      }
     } else {
       setTimeout(() => setOuvertes([]), 820)
     }
@@ -75,53 +90,24 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
 
   if (fin) {
     return (
-      <div className="vue vue--pleine" style={{ alignItems: 'center', justifyContent: 'center', gap: 18, textAlign: 'center' }}>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 120, height: 120 }}>
-          <EclatEtoiles />
-          <span className="tampon--anime" style={{ display: 'inline-flex' }}>
-            <Etoile8 taille={84} couleur="var(--safran)" />
-          </span>
-        </div>
-        <h1 style={{ fontSize: 27 }}>{t.jeux.bienJoue}</h1>
-        <p className="texte-2">
-          {t.jeux.pairesTrouvees(paires.length, paires.length)} · {t.jeux.coups(coups)}
-        </p>
-        <span className="chip chip--safran">{t.plusXp(fin.xp)}</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 10 }}>
-          <button type="button" className="bouton bouton--primaire bouton--pleine" onClick={surQuitter}>
-            {t.retourEtapes}
-          </button>
-          <button type="button" className="bouton bouton--secondaire bouton--pleine" onClick={rejouer}>
-            {t.rejouer}
-          </button>
-        </div>
-      </div>
+      <FinDeJeu
+        t={t}
+        locale={locale}
+        langue={langue}
+        titre={t.jeux.bienJoue}
+        detail={`${t.jeux.pairesTrouvees(paires.length, paires.length)} · ${t.jeux.coups(coups)}`}
+        xp={fin.xp}
+        couleur="var(--safran)"
+        surQuitter={surQuitter}
+        surRejouer={rejouer}
+      />
     )
   }
 
   return (
     <div className="vue vue--pleine" style={{ gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <button
-          type="button"
-          onClick={surQuitter}
-          aria-label={t.fermer}
-          style={{
-            width: 44,
-            height: 44,
-            marginInlineStart: -11,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--encre-2)',
-            flex: '0 0 auto',
-          }}
-        >
-          <Croix taille={22} trait={2.2} />
-        </button>
+        <BoutonQuitter t={t} etiquette={t.fermer} aPerdre={coups > 0} jeu surQuitter={surQuitter} />
         <span style={{ flex: '1 1 auto', fontSize: 15.5, fontWeight: 600 }}>{t.jeux.zellige}</span>
         <span className="texte-2" style={{ fontSize: 13, fontWeight: 600 }}>
           {t.jeux.pairesTrouvees(gagnees.size, paires.length)}
@@ -132,21 +118,31 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
         {nomLangue(langue, locale)} · {t.jeux.zelligeDesc}
       </span>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+      <div className="zellige-plateau">
+        {/* Décorative : ce que le plateau découvre, c'est la ville du titre. */}
+        <div className="zellige-plateau__image" aria-hidden="true">
+          <ImageVille langue={langue} />
+        </div>
+        <div className="zellige-plateau__grille">
         {tuiles.map((tuile) => {
           const visible = gagnees.has(tuile.motId) || ouvertes.some((o) => o.idx === tuile.idx)
           const gagnee = gagnees.has(tuile.motId)
+          const envolee = envolees.has(tuile.motId)
           return (
+            <div key={tuile.idx} className={`zellige-case ${envolee ? 'zellige-case--ouverte' : ''}`}>
             <button
-              key={tuile.idx}
               type="button"
-              className={`tuile ${visible ? 'tuile--vue' : ''} ${gagnee ? 'tuile--gagnee' : ''}`}
+              className={`tuile ${visible ? 'tuile--vue' : ''} ${gagnee ? 'tuile--gagnee' : ''} ${envolee ? 'tuile--envolee' : ''}`}
               onClick={() => cliquer(tuile)}
               aria-label={visible ? tuile.texte : t.jeux.zellige}
+              // Envolée, la tuile n'est plus là pour personne : ni au doigt,
+              // ni au clavier, ni au lecteur d'écran.
+              aria-hidden={envolee || undefined}
+              tabIndex={envolee ? -1 : undefined}
             >
               <span className="tuile__interieur" style={{ display: 'block' }}>
                 <span className="tuile__face tuile__face--cachee">
-                  <Etoile8 taille={30} couleur="var(--majorelle-pale)" />
+                  <DosZellige teinte={teinteZellige(tuile.idx)} />
                 </span>
                 <span className="tuile__face tuile__face--mot">
                   {tuile.face === 't' ? (
@@ -159,8 +155,10 @@ export function JeuZellige({ t, locale, source, langue, surXp, surQuitter }) {
                 </span>
               </span>
             </button>
+            </div>
           )
         })}
+        </div>
       </div>
 
       <div style={{ flex: '1 1 auto' }}></div>

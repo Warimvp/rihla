@@ -1,13 +1,13 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { LANGUES } from '../data/langues.js'
-import { TamponVisa } from './TamponVisa.jsx'
+import { ORDRE_TAMPONS, TamponVisa, indexTampon } from './TamponVisa.jsx'
 import { VIGNETTES, VignetteVille, aUneVignette } from './Vignettes.jsx'
 
 const rendre = (langue, props) => renderToStaticMarkup(<VignetteVille langue={langue} {...props} />)
 
 describe('les vignettes de destination', () => {
-  it('existent pour chacune des 14 destinations, et pour elles seulement', () => {
+  it('existent pour chacune des destinations, et pour elles seulement', () => {
     for (const langue of LANGUES) expect(aUneVignette(langue.id), langue.id).toBe(true)
     expect(Object.keys(VIGNETTES).sort()).toEqual(LANGUES.map((l) => l.id).sort())
     expect(aUneVignette('xx')).toBe(false)
@@ -36,10 +36,24 @@ describe('les vignettes de destination', () => {
 })
 
 describe('le tampon de visa', () => {
-  const tampons = LANGUES.map((langue, i) => renderToStaticMarkup(<TamponVisa langue={langue} index={i} />))
+  const tampons = LANGUES.map((langue) => renderToStaticMarkup(<TamponVisa langue={langue} />))
 
-  it('fait 14 tampons tous différents — le passeport est collectionnable', () => {
+  it('fait un tampon par destination, tous différents — le passeport est collectionnable', () => {
     expect(new Set(tampons).size).toBe(LANGUES.length)
+  })
+
+  it('ne redessine jamais un tampon déjà décroché : l’ordre est celui d’entrée au programme, pas celui de la route', () => {
+    // Les quatorze premières gardent leur rang d'origine, quoi qu'on insère
+    // ensuite sur la route (Paris s'est glissée entre Lisbonne et Venise).
+    expect(ORDRE_TAMPONS.slice(0, 14)).toEqual(['es', 'pt', 'it', 'de', 'en', 'tr', 'ar', 'ru', 'fa', 'sw', 'hi', 'zh', 'ko', 'ja'])
+    expect(indexTampon('it')).toBe(2)
+    expect(indexTampon('ja')).toBe(13)
+    // Chaque destination a son rang, une seule fois : l'oubli casse ici.
+    expect([...ORDRE_TAMPONS].sort()).toEqual(LANGUES.map((l) => l.id).sort())
+    const venise = LANGUES.find((l) => l.id === 'it')
+    const html = renderToStaticMarkup(<TamponVisa langue={venise} />)
+    expect(html).toContain('stroke:var(--menthe)')
+    expect(html).toContain('<circle cx="48" cy="48" r="40"')
   })
 
   it('porte la vignette de sa ville, à l’encre du tampon', () => {

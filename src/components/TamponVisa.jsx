@@ -4,7 +4,8 @@ import { VignetteVille } from './Vignettes.jsx'
 // Tampon de visa : la vignette de la ville au centre, trois formes et trois
 // encres qui tournent à des cadences différentes, léger désaxage comme un
 // vrai coup de tampon. Couleurs en jetons CSS (via style, pas en attributs
-// SVG) pour rester lisibles en mode nuit. Quatorze tampons, quatorze dessins.
+// SVG) pour rester lisibles en mode nuit. Un tampon par destination, tous
+// différents.
 
 const ENCRES = [
   { trait: 'var(--terracotta)', texte: 'var(--terracotta-fonce)' },
@@ -15,10 +16,23 @@ const ENCRES = [
 const ROTATIONS = [-5, 4, -3, 5, -4, 3]
 const FORMES = 3
 
-export function TamponVisa({ langue, index = 0, locale = 'fr', anime = false }) {
+// L'ordre où les destinations sont ENTRÉES au programme — pas celui de la
+// route. Un tampon décroché garde son encre et sa forme : ranger Paris entre
+// Lisbonne et Venise d'après la place sur la route aurait redessiné douze
+// tampons déjà collés dans des passeports. Une nouvelle destination s'ajoute
+// À LA FIN (le test refuse une destination absente d'ici).
+export const ORDRE_TAMPONS = ['es', 'pt', 'it', 'de', 'en', 'tr', 'ar', 'ru', 'fa', 'sw', 'hi', 'zh', 'ko', 'ja', 'fr']
+
+export const indexTampon = (langueId) => {
+  const i = ORDRE_TAMPONS.indexOf(langueId)
+  return i < 0 ? ORDRE_TAMPONS.length : i
+}
+
+export function TamponVisa({ langue, locale = 'fr', anime = false }) {
+  const index = indexTampon(langue.id)
   const encre = ENCRES[index % ENCRES.length]
   // La forme change quand les encres ont fait un tour : `index % 3` pour les
-  // deux donnait la même période, donc trois combinaisons pour quatorze villes.
+  // deux donnait la même période, donc trois combinaisons pour toutes les villes.
   const forme = Math.floor(index / ENCRES.length) % FORMES
   const rotation = ROTATIONS[index % ROTATIONS.length]
   const ville = nomVille(langue, locale).toUpperCase()
