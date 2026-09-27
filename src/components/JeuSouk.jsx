@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
@@ -7,7 +6,7 @@ import { parler } from '../lib/tts.js'
 import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute } from './Ecoute.jsx'
 import { FinDeJeu } from './FinDeJeu.jsx'
-import { MotCible, Romanisation } from './MotCible.jsx'
+import { MotCible, Romanisation, Sens } from './MotCible.jsx'
 import { CielDuSouk } from './ScenesJeux.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
@@ -154,7 +153,7 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
             {cible.r ? <Romanisation balise="div" texte={cible.r} /> : null}
           </>
         ) : (
-          <div className="mot-cible" style={{ fontSize: 26 }}>{sensPour(cible, source, langue.id)}</div>
+          <div className="mot-cible" style={{ fontSize: 26 }}><Sens mot={cible} source={source} langue={langue} /></div>
         )}
         <div className="texte-2" style={{ fontSize: 13 }}>{t.jeux.quelEtal}</div>
       </div>
@@ -173,7 +172,7 @@ export function JeuSouk({ t, locale, source, langue, surXp, surQuitter }) {
           return (
             <button key={option.id} type="button" className={classe} onClick={() => repondre(option)}>
               <span>
-                {direction === 'versSens' ? sensPour(option, source, langue.id) : <MotCible texte={option.t} langue={langue} />}
+                {direction === 'versSens' ? <Sens mot={option} source={source} langue={langue} /> : <MotCible texte={option.t} langue={langue} />}
                 {direction === 'versMot' && option.r ? (
                   <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} />
                 ) : null}

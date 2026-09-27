@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
@@ -8,7 +7,7 @@ import { Coche, Croix } from './Icones.jsx'
 import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute, useVoixPretes } from './Ecoute.jsx'
 import { FinDeJeu } from './FinDeJeu.jsx'
-import { MotCible, Romanisation } from './MotCible.jsx'
+import { MotCible, Romanisation, Sens } from './MotCible.jsx'
 import { OndesOreille } from './ScenesJeux.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
@@ -143,7 +142,7 @@ export function JeuOreille({ t, locale, source, langue, surXp, surQuitter }) {
           return (
             <button key={option.id} type="button" className={classe} aria-disabled={revele} onClick={() => choisir(option)}>
               <span>
-                {manche.type === 'sens' ? sensPour(option, source, langue.id) : <MotCible texte={option.t} langue={langue} />}
+                {manche.type === 'sens' ? <Sens mot={option} source={source} langue={langue} /> : <MotCible texte={option.t} langue={langue} />}
                 {manche.type === 'mot' && option.r ? (
                   <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} />
                 ) : null}

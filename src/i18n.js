@@ -890,9 +890,15 @@ export const getDictionary = (locale) => DICTS[locale] ?? DICTS[defaultLocale]
 // Sens d'un mot appris, selon la langue demandée.
 export const sens = (mot, locale) => (locale === 'ar' ? mot.ar : mot.fr)
 
-// Sens pour l'APPRENTISSAGE : respecte la langue des définitions choisie,
-// mais bascule automatiquement sur l'autre langue quand on apprend justement
-// celle des définitions (arabe → arabe ou français → français n'auraient
-// aucun sens).
-export const sensPour = (mot, source, langueId) =>
-  sens(mot, langueId === source ? (source === 'fr' ? 'ar' : 'fr') : source)
+// La langue dans laquelle s'écrit un sens d'APPRENTISSAGE : celle des
+// définitions, sauf quand on apprend justement celle-là — l'autre prend alors
+// le relais (arabe → arabe ou français → français n'auraient aucun sens).
+// Toujours 'fr' ou 'ar', comme `sens` : tout ce qui n'est pas l'arabe est le
+// français. C'est aussi le `lang` que pose <Sens> (MotCible.jsx).
+export const langueDuSens = (source, langueId) => {
+  const choisie = langueId === source ? (source === 'fr' ? 'ar' : 'fr') : source
+  return choisie === 'ar' ? 'ar' : 'fr'
+}
+
+// Sens pour l'APPRENTISSAGE, dans la langue que désigne `langueDuSens`.
+export const sensPour = (mot, source, langueId) => sens(mot, langueDuSens(source, langueId))

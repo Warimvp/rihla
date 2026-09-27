@@ -1,11 +1,10 @@
 import { useEffect, useRef } from 'react'
-import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { estBonneOption } from '../lib/barid.js'
 import { Coche, Croix } from './Icones.jsx'
 import { Ecoute } from './Ecoute.jsx'
 import { Pastille } from './Communs.jsx'
-import { MotCible, Romanisation } from './MotCible.jsx'
+import { MotCible, Romanisation, Sens } from './MotCible.jsx'
 
 /**
  * Une question de duel (Barid, Course) : la carte du mot, l'invite, les
@@ -50,7 +49,7 @@ export function QuestionDuel({ t, locale, source, question, iQuestion, total, ch
         ) : (
           // Produire : le son n'arrive qu'avec la réponse, sinon il la soufflerait.
           <>
-            <div className="mot-cible" style={{ fontSize: 25 }}>{sensPour(question.mot, source, question.langue.id)}</div>
+            <div className="mot-cible" style={{ fontSize: 25 }}><Sens mot={question.mot} source={source} langue={question.langue} /></div>
             {aRepondu ? <Ecoute t={t} texte={question.mot.t} langue={question.langue} /> : null}
           </>
         )}
@@ -72,7 +71,7 @@ export function QuestionDuel({ t, locale, source, question, iQuestion, total, ch
           return (
             <button key={option.id} type="button" className={classe} aria-disabled={aRepondu} onClick={() => surChoisir(option)}>
               <span>
-                {question.type === 'comprendre' ? sensPour(option, source, question.langue.id) : <MotCible texte={option.t} langue={question.langue} />}
+                {question.type === 'comprendre' ? <Sens mot={option} source={source} langue={question.langue} /> : <MotCible texte={option.t} langue={question.langue} />}
                 {question.type === 'produire' && option.r ? <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} /> : null}
               </span>
               {estCorrecte ? <Coche taille={20} trait={2.4} /> : null}
@@ -115,7 +114,7 @@ export function QuestionDuel({ t, locale, source, question, iQuestion, total, ch
                 ) : (
                   <>
                     {t.laBonneEtait}{' '}
-                    {question.type === 'comprendre' ? sensPour(bonneOption, source, question.langue.id) : <MotCible texte={bonneOption.t} langue={question.langue} />}
+                    {question.type === 'comprendre' ? <Sens mot={bonneOption} source={source} langue={question.langue} /> : <MotCible texte={bonneOption.t} langue={question.langue} />}
                   </>
                 )}
               </span>

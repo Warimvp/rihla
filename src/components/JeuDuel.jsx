@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { sensPour } from '../i18n.js'
 import { nomLangue } from '../data/langues.js'
 import { melanger } from '../lib/quiz.js'
 import { fanfare, retourReponse } from '../lib/sons.js'
@@ -8,7 +7,7 @@ import { Etoile8 } from './Icones.jsx'
 import { BoutonQuitter } from './Quitter.jsx'
 import { FinDeJeu } from './FinDeJeu.jsx'
 import { ImageVille } from './ImageVille.jsx'
-import { MotCible, Romanisation } from './MotCible.jsx'
+import { MotCible, Romanisation, Sens } from './MotCible.jsx'
 
 const tousLesMots = (langue) => langue.lecons.flatMap((l) => l.mots)
 const NB_MANCHES = 8
@@ -188,7 +187,7 @@ export function JeuDuel({ t, locale, source, langue, surXp, surQuitter }) {
                 disabled={Boolean(vainqueurManche) || verrouille}
                 onClick={() => toucher(nom, option)}
               >
-                {sensPour(option, source, langue.id)}
+                <Sens mot={option} source={source} langue={langue} />
               </button>
             )
           })}

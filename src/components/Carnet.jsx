@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { sensPour } from '../i18n.js'
 import { LANGUES, nomLangue } from '../data/langues.js'
 import { INTERVALLES, XP_PAR_MOT, construireRevision, motsDus, prochaineBoite } from '../lib/carnet.js'
 import { jourLocal } from '../lib/progression.js'
@@ -10,7 +9,7 @@ import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute } from './Ecoute.jsx'
 import { Pastille } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
-import { MotCible, Romanisation } from './MotCible.jsx'
+import { MotCible, Romanisation, Sens } from './MotCible.jsx'
 
 // La session de révision espacée : les mots dus du carnet, toutes langues
 // mêlées, avec le mouvement de rang annoncé après chaque réponse.
@@ -110,7 +109,7 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
         ) : (
           // Produire : le son n'arrive qu'avec la réponse, sinon il la soufflerait.
           <>
-            <div className="mot-cible" style={{ fontSize: 25 }}>{sensPour(question.mot, source, question.langue.id)}</div>
+            <div className="mot-cible" style={{ fontSize: 25 }}><Sens mot={question.mot} source={source} langue={question.langue} /></div>
             {aRepondu ? <Ecoute t={t} texte={question.mot.t} langue={question.langue} /> : null}
           </>
         )}
@@ -132,7 +131,7 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
           return (
             <button key={option.id} type="button" className={classe} aria-disabled={aRepondu} onClick={() => choisir(option)}>
               <span>
-                {question.type === 'comprendre' ? sensPour(option, source, question.langue.id) : <MotCible texte={option.t} langue={question.langue} />}
+                {question.type === 'comprendre' ? <Sens mot={option} source={source} langue={question.langue} /> : <MotCible texte={option.t} langue={question.langue} />}
                 {question.type === 'produire' && option.r ? (
                   <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} />
                 ) : null}
@@ -177,7 +176,7 @@ export function Carnet({ t, locale, source, progresInitialSession, surReponse, s
                   : (
                       <>
                         {t.laBonneEtait}{' '}
-                        {question.type === 'comprendre' ? sensPour(bonneOption, source, question.langue.id) : <MotCible texte={bonneOption.t} langue={question.langue} />}
+                        {question.type === 'comprendre' ? <Sens mot={bonneOption} source={source} langue={question.langue} /> : <MotCible texte={bonneOption.t} langue={question.langue} />}
                         {' · '}
                         {t.carnet.rangRetombe}
                       </>

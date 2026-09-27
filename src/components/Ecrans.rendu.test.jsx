@@ -13,6 +13,7 @@ import { LANGUES, nomLangue } from '../data/langues.js'
 import { getDictionary, sensPour } from '../i18n.js'
 import { chargerProgres, enregistrerEtape, figerAvancement, progresInitial, sauverProgres } from '../lib/progression.js'
 import { construireBarid, encoderLettre, terminerBarid } from '../lib/barid.js'
+import { ajouterAuCarnet } from '../lib/carnet.js'
 import { cibleEpellation } from '../lib/epellation.js'
 import { ciblePhrase } from '../lib/phrase.js'
 import { mulberry32 } from '../lib/quiz.js'
@@ -23,6 +24,14 @@ import { motsVoyageurs, totalVoyageurs } from '../data/voyageurs.js'
 import { Cap } from './Cap.jsx'
 import { Passeport } from './Passeport.jsx'
 import { JeuSouk } from './JeuSouk.jsx'
+import { JeuZellige } from './JeuZellige.jsx'
+import { JeuDuel } from './JeuDuel.jsx'
+import { JeuOreille } from './JeuOreille.jsx'
+import { JeuCaravane } from './JeuCaravane.jsx'
+import { Carnet } from './Carnet.jsx'
+import { Defi } from './Defi.jsx'
+import { QuestionDuel } from './QuestionDuel.jsx'
+import { SectionVoyageurs } from './Voyageurs.jsx'
 import { Lecon } from './Lecon.jsx'
 import { Course } from './Course.jsx'
 import { Classement } from './Classement.jsx'
@@ -295,7 +304,7 @@ describe('réécouter, et lentement', () => {
     for (let i = 0; i < 12 && (!vus.sens || !vus.mot); i++) {
       const vue = monter(<JeuSouk t={t} locale="fr" source="fr" langue={es} surXp={() => {}} surQuitter={() => {}} />)
       // Manche « sens » : le mot cible est dans la carte ; « mot » : c'est le sens.
-      const versSens = vue.querySelector('.carte [lang]') !== null
+      const versSens = vue.querySelector(`.carte [lang="${es.tts}"]`) !== null
       vus[versSens ? 'sens' : 'mot']++
       expect(parLabel(vue, t.ecouterLent) !== null).toBe(versSens)
       if (versSens) {
@@ -366,7 +375,7 @@ describe('la phrase dans l’ordre', () => {
     expect(vue.querySelectorAll('.lettre--mot')).toHaveLength(jetons.length + 2)
     // Avant la réponse : ni la phrase écrite, ni le moindre mot cible dans la carte.
     expect(vue.querySelector('.phrase-revelee')).toBeNull()
-    expect(vue.querySelector('.carte [lang]')).toBeNull()
+    expect(vue.querySelector(`.carte [lang="${es.tts}"]`)).toBeNull()
     poser(vue, jetons)
     expect(vue.querySelector('[role="status"]').textContent).toContain(t.bonneReponse)
     expect(vue.querySelector('.phrase-revelee').textContent).toBe(mot.t)
@@ -481,11 +490,14 @@ describe('l’app en arabe', () => {
     const mot = vue.querySelector('.carte-mot__face--recto [dir="auto"]')
     expect(mot.textContent).toBe('Hola')
     expect(mot.getAttribute('lang')).toBe('es-ES')
-    // Le sens (langue des définitions) ne porte ni dir="auto" ni lang.
-    const sens = vue.querySelector('.carte-mot__face--verso .mot-cible')
+    // Le sens suit la langue des définitions : isolé lui aussi, avec SA langue
+    // — et en ligne, le bloc qui le porte reste aligné comme l'interface.
+    const bloc = vue.querySelector('.carte-mot__face--verso .mot-cible')
+    expect(bloc.hasAttribute('dir')).toBe(false)
+    const sens = bloc.querySelector('bdi')
     expect(sens.textContent).toBe('مرحبا')
-    expect(sens.hasAttribute('lang')).toBe(false)
-    expect(sens.hasAttribute('dir')).toBe(false)
+    expect(sens.getAttribute('lang')).toBe('ar')
+    expect(sens.getAttribute('dir')).toBe('auto')
   })
 })
 
@@ -938,5 +950,208 @@ describe('les images des villes', () => {
     const vides = [...vue.querySelectorAll('.tampon-case--vide')]
     expect(vides).toHaveLength(LANGUES.length)
     for (const c of vides) expect(dessins(c, '0 0 64 64')).toHaveLength(1)
+  })
+})
+
+// Le sens d'un mot s'écrit dans la langue des définitions, qui n'est pas
+// toujours celle de l'interface. Posé nu, il prenait la direction de la page :
+// « اسمي… » avec ses points de suspension à droite sous interface française,
+// « Où est… ? » avec son point d'interrogation à gauche sous interface arabe.
+describe('les sens s’écrivent dans leur propre direction', () => {
+  const fr = LANGUES.find((l) => l.id === 'fr')
+  const arabe = LANGUES.find((l) => l.id === 'ar')
+  const tAr = getDictionary('ar')
+  const ECRITURE_ARABE = /[؀-ۿ]/
+  const rien = () => {}
+  const sansSuite = () => ({ xpGagne: 0, valide: false, gelConsomme: false, nouveauVisa: false, suivante: null })
+
+  // Les nœuds de TEXTE affichés — un aria-label n'en est pas un.
+  const textes = (vue, garder) => {
+    const marcheur = document.createTreeWalker(vue, NodeFilter.SHOW_TEXT)
+    const trouves = []
+    for (let n = marcheur.nextNode(); n; n = marcheur.nextNode()) if (garder(n.nodeValue)) trouves.push(n)
+    return trouves
+  }
+  // Un mot cible (<MotCible>) : dir="auto" et le code régional de la destination.
+  const estMotCible = (noeud) => {
+    const parent = noeud.parentElement
+    return parent.getAttribute('dir') === 'auto' && /^[a-z]{2}-[A-Z]{2}$/.test(parent.getAttribute('lang') ?? '')
+  }
+  // Un sens isolé : <bdi dir="auto" lang="fr|ar"> autour du texte, et aucun
+  // `dir` au-dessus — le bloc qui le porte reste aligné comme l'interface.
+  const estSensIsole = (noeud, lang) => {
+    const parent = noeud.parentElement
+    return (
+      parent.tagName === 'BDI' &&
+      parent.getAttribute('dir') === 'auto' &&
+      parent.getAttribute('lang') === lang &&
+      parent.parentElement.closest('[dir]') === null
+    )
+  }
+  const lieu = (noeud) => {
+    const element = noeud.parentElement
+    if (element.closest('.carte-mot__face--verso')) return 'verso'
+    if (element.closest('.option')) return 'option'
+    if (element.closest('[role="status"], .bandeau-reponse')) return 'correction'
+    return 'enonce'
+  }
+  const exiger = (noeuds, lang) => {
+    for (const n of noeuds) expect(estSensIsole(n, lang), `« ${n.nodeValue} » (${lieu(n)}) est posé nu`).toBe(true)
+    return noeuds
+  }
+  // Sous interface française, tout ce qui s'affiche en écriture arabe est un
+  // mot cible ou un sens : pas une lettre arabe ne reste nue.
+  const sensArabes = (vue) => exiger(textes(vue, (texte) => ECRITURE_ARABE.test(texte)).filter((n) => !estMotCible(n)), 'ar')
+  // Sous interface arabe, on reconnaît les sens français à leur texte.
+  const sensFrancais = (vue, connus) => exiger(textes(vue, (texte) => connus.has(texte.trim())), 'fr')
+
+  // Joue la leçon de bout en bout — cartes retournées, puis chaque question —
+  // en se trompant exprès dès que les options sont des sens, pour faire parler
+  // la correction. `relever` est appelé à chaque état de l'écran.
+  function jouer(vue, dico, lecon, sensDe, relever) {
+    for (let i = 0; i < lecon.mots.length; i++) {
+      relever()
+      clic(primaire(vue))
+      relever()
+      clic(primaire(vue))
+    }
+    for (let q = 0; q < lecon.mots.length; q++) {
+      relever()
+      const options = [...vue.querySelectorAll('.option')]
+      const enonce = vue.querySelector('.carte .mot-cible')?.textContent.trim()
+      const mot = lecon.mots.find((m) => m.t === enonce)
+      if (options.length) {
+        clic(mot ? options.find((o) => o.textContent.trim() !== sensDe(mot)) : options[0])
+      } else {
+        for (let i = 0; i < 40 && !bouton(vue, dico.continuer); i++) clic(vue.querySelector('.lettre:not([disabled])'))
+      }
+      relever()
+      clic(bouton(vue, dico.continuer))
+    }
+  }
+  const partout = (vus) => {
+    for (const [ou, combien] of Object.entries(vus)) expect(combien, ou).toBeGreaterThan(0)
+  }
+
+  it('à Paris sous interface française : chaque sens arabe porte dir=auto et lang=ar, du verso des cartes à la correction', () => {
+    const lecon = fr.lecons[0]
+    const vue = monter(
+      <Lecon t={t} locale="fr" source="fr" langue={fr} lecon={lecon} surTerminer={sansSuite} surSuivante={rien} surQuitter={rien} />
+    )
+    const vus = { verso: 0, enonce: 0, option: 0, correction: 0 }
+    jouer(vue, t, lecon, (mot) => mot.ar, () => {
+      for (const n of sensArabes(vue)) vus[lieu(n)]++
+    })
+    partout(vus)
+  })
+
+  it('au Caire sous interface arabe : chaque sens français porte dir=auto et lang=fr', () => {
+    const lecon = arabe.lecons[0]
+    const connus = new Set(lecon.mots.map((m) => m.fr))
+    const vue = monter(
+      <Lecon t={tAr} locale="ar" source="ar" langue={arabe} lecon={lecon} surTerminer={sansSuite} surSuivante={rien} surQuitter={rien} />
+    )
+    const vus = { verso: 0, enonce: 0, option: 0, correction: 0 }
+    jouer(vue, tAr, lecon, (mot) => mot.fr, () => {
+      for (const n of sensFrancais(vue, connus)) vus[lieu(n)]++
+    })
+    partout(vus)
+  })
+
+  // Le réglage « Langue des définitions » découple les deux partout ailleurs :
+  // interface française, définitions en arabe, destination espagnole.
+  describe('quand la langue des définitions s’écarte de celle de l’interface', () => {
+    const commun = { t, locale: 'fr', source: 'ar' }
+    const jeu = { ...commun, langue: es, surXp: rien, surQuitter: rien }
+
+    it('au Carnet : énoncé, options et correction', () => {
+      const progres = ajouterAuCarnet(progresInitial(), 'es', es.lecons[0].mots, '2026-01-01')
+      const vue = monter(<Carnet {...commun} progresInitialSession={progres} surReponse={rien} surTerminer={rien} surQuitter={rien} />)
+      const vus = { enonce: 0, option: 0, correction: 0 }
+      for (let q = 0; q < 2; q++) {
+        const mot = es.lecons[0].mots.find((m) => m.t === vue.querySelector('.carte .mot-cible').textContent.trim())
+        const options = [...vue.querySelectorAll('.option')]
+        for (const n of sensArabes(vue)) vus[lieu(n)]++
+        clic(mot ? options.find((o) => o.textContent.trim() !== mot.ar) : options[0])
+        for (const n of sensArabes(vue)) vus[lieu(n)]++
+        clic(bouton(vue, t.continuer))
+      }
+      partout(vus)
+    })
+
+    it('à l’étape du jour : options et correction', () => {
+      const vue = monter(<Defi {...commun} surTerminer={rien} surQuitter={rien} />)
+      const vus = { option: 0, correction: 0 }
+      for (let q = 0; q < 10; q++) {
+        for (const n of sensArabes(vue)) vus[lieu(n)]++
+        clic(vue.querySelector('.option'))
+        for (const n of sensArabes(vue)) vus[lieu(n)]++
+        clic(bouton(vue, t.continuer))
+      }
+      partout(vus)
+    })
+
+    it('au Barid et à la Course : la question de duel', () => {
+      const [comprendre, produire] = construireBarid(LANGUES, 'es', 4242)
+      const fausse = comprendre.options.find((o) => o.id !== comprendre.mot.id)
+      const duel = { ...commun, total: 10, surChoisir: rien, surContinuer: rien }
+      const vus = { enonce: 0, option: 0, correction: 0 }
+      for (const n of sensArabes(monter(<QuestionDuel {...duel} question={comprendre} iQuestion={0} choix={fausse} />))) vus[lieu(n)]++
+      for (const n of sensArabes(monter(<QuestionDuel {...duel} question={produire} iQuestion={1} choix={null} />))) vus[lieu(n)]++
+      expect(vus).toEqual({ enonce: 1, option: 4, correction: 1 })
+    })
+
+    it('au Souk : l’étal comme l’énoncé', () => {
+      const vus = { enonce: 0, option: 0 }
+      for (let i = 0; i < 12 && (!vus.enonce || !vus.option); i++) {
+        for (const n of sensArabes(monter(<JeuSouk {...jeu} />))) vus[lieu(n)]++
+      }
+      partout(vus)
+    })
+
+    it('au Zellige : les tuiles-sens', () => {
+      const vue = monter(<JeuZellige {...jeu} />)
+      const sens = sensArabes(vue)
+      expect(sens.length).toBeGreaterThan(0)
+      for (const n of sens) expect(n.parentElement.closest('.tuile__face--mot')).not.toBeNull()
+    })
+
+    it('au Duel : les quatre réponses de chaque moitié', () => {
+      const vue = monter(<JeuDuel {...jeu} />)
+      clic(bouton(vue, t.commencer))
+      expect(sensArabes(vue)).toHaveLength(8)
+    })
+
+    it('à l’Oreille : les sens à choisir', () => {
+      window.speechSynthesis = {
+        getVoices: () => [{ lang: 'es-ES', name: 'Mónica' }],
+        cancel: rien,
+        speak: rien,
+        addEventListener: rien,
+        removeEventListener: rien,
+      }
+      globalThis.SpeechSynthesisUtterance = window.SpeechSynthesisUtterance = class {}
+      try {
+        const vue = monter(<JeuOreille {...jeu} />)
+        expect(sensArabes(vue)).toHaveLength(4)
+      } finally {
+        delete window.speechSynthesis
+        delete window.SpeechSynthesisUtterance
+        delete globalThis.SpeechSynthesisUtterance
+      }
+    })
+
+    it('à la Caravane : le sens à épeler', () => {
+      expect(sensArabes(monter(<JeuCaravane {...jeu} />))).toHaveLength(1)
+    })
+
+    it('aux mots voyageurs : le sens au pied de la carte', () => {
+      const vue = monter(<SectionVoyageurs t={t} source="ar" langue={es} />)
+      const attendus = motsVoyageurs('es').filter((m) => m.ar !== m.arabe)
+      expect(attendus.length).toBeGreaterThan(0)
+      const sens = sensArabes(vue)
+      expect(sens.map((n) => n.nodeValue)).toEqual(attendus.map((m) => m.ar))
+      for (const n of sens) expect(n.parentElement.closest('.voyageur__pied')).not.toBeNull()
+    })
   })
 })

@@ -11,7 +11,7 @@ import { BoutonQuitter } from './Quitter.jsx'
 import { Ecoute } from './Ecoute.jsx'
 import { TamponVisa } from './TamponVisa.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
-import { MotCible, Romanisation } from './MotCible.jsx'
+import { MotCible, Romanisation, Sens } from './MotCible.jsx'
 import { VisuelConcept, aUnVisuel, visuelDeQuiz } from '../lib/visuels.jsx'
 
 export function Lecon({ t, locale, source, langue, lecon, surTerminer, surSuivante, surQuitter }) {
@@ -195,7 +195,7 @@ export function Lecon({ t, locale, source, langue, lecon, surTerminer, surSuivan
           : optionsEnCible
             ? <MotCible texte={bonne?.t} langue={langue} />
             : bonne
-              ? sensPour(bonne, source, langue.id)
+              ? <Sens mot={bonne} source={source} langue={langue} />
               : ''
     : ''
   const promptTexte = question
@@ -263,7 +263,7 @@ export function Lecon({ t, locale, source, langue, lecon, surTerminer, surSuivan
                 {/* Décoratif : le sens est écrit juste en dessous. */}
                 {aUnVisuel(mots[iCarte].id) ? <VisuelConcept id={mots[iCarte].id} taille={64} /> : null}
                 <div className="mot-cible" style={{ color: 'var(--sur-majorelle)', fontSize: 27 }}>
-                  {sensPour(mots[iCarte], source, langue.id)}
+                  <Sens mot={mots[iCarte]} source={source} langue={langue} />
                 </div>
                 <MotCible balise="div" style={{ fontSize: 14, color: 'var(--sur-majorelle)' }} texte={mots[iCarte].t} langue={langue} />
               </div>
@@ -334,14 +334,14 @@ export function Lecon({ t, locale, source, langue, lecon, surTerminer, surSuivan
                     <Ecoute key={iQuestion} t={t} texte={question.mot.t} langue={langue} grand auto />
                     {reponse ? (
                       <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)', fontSize: 22 }}>
-                        {sensPour(question.mot, source, langue.id)}
+                        <Sens mot={question.mot} source={source} langue={langue} />
                       </div>
                     ) : null}
                   </>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)', fontSize: 24 }}>
-                      {sensPour(question.mot, source, langue.id)}
+                      <Sens mot={question.mot} source={source} langue={langue} />
                     </div>
                     <Ecoute t={t} texte={question.mot.t} langue={langue} />
                   </div>
@@ -372,7 +372,7 @@ export function Lecon({ t, locale, source, langue, lecon, surTerminer, surSuivan
               // Le sens seul, puis la phrase qu'on construit ; l'écrit et le son
               // n'arrivent qu'avec la réponse (avant, ils la souffleraient).
               <>
-                <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)' }}>{sensPour(question.mot, source, langue.id)}</div>
+                <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)' }}><Sens mot={question.mot} source={source} langue={langue} /></div>
                 <div
                   dir="ltr"
                   className="ligne-phrase"
@@ -393,7 +393,7 @@ export function Lecon({ t, locale, source, langue, lecon, surTerminer, surSuivan
             ) : (
               // Produire : l'entendre avant de choisir soufflerait la réponse.
               <>
-                <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)' }}>{sensPour(question.mot, source, langue.id)}</div>
+                <div className="mot-cible" style={{ fontFamily: 'var(--police-titre)' }}><Sens mot={question.mot} source={source} langue={langue} /></div>
                 {reponse ? <Ecoute t={t} texte={question.mot.t} langue={langue} /> : null}
               </>
             )}
@@ -448,7 +448,7 @@ export function Lecon({ t, locale, source, langue, lecon, surTerminer, surSuivan
                       ) : optionsEnCible ? (
                         <MotCible texte={option.t} langue={langue} />
                       ) : (
-                        sensPour(option, source, langue.id)
+                        <Sens mot={option} source={source} langue={langue} />
                       )}
                       {optionsEnCible && option.r ? <Romanisation texte={option.r} style={{ marginInlineStart: 8 }} /> : null}
                     </span>
