@@ -5,7 +5,7 @@
 // WebSockets elles-mêmes (leur tag = la langue, leur pièce jointe = le
 // joueur), ce qui survit à l'hibernation et aux redémarrages.
 import { DurableObject } from 'cloudflare:workers'
-import { nettoyerNom } from '../../src/lib/barid.js'
+import { nomPublic } from '../../src/lib/barid.js'
 import { ouvrirSalle } from './commun.js'
 
 const ATTENTE_MAX = 5 * 60 * 1000
@@ -15,7 +15,7 @@ export class Hall extends DurableObject {
     const url = new URL(request.url)
     const langue = String(url.searchParams.get('langue') ?? '')
     const id = String(url.searchParams.get('id') ?? '').slice(0, 32)
-    const nom = nettoyerNom(url.searchParams.get('nom'))
+    const nom = nomPublic(url.searchParams.get('nom'))
     if (!/^[a-z0-9-]{4,32}$/i.test(id)) return new Response('identifiant invalide', { status: 400 })
 
     const paire = new WebSocketPair()

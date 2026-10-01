@@ -9,6 +9,7 @@
 // score ni son temps. Le contenu (langues.js) n'entre jamais ici : le
 // réducteur reçoit `bonnes` toutes faites.
 import { verdict } from './barid.js'
+import { pseudoPropre } from './pseudo.js'
 
 export const NB_JOUEURS = 2
 export const COMPTE_A_REBOURS = 3000 // ms entre « les deux sont là » et la 1re question
@@ -215,6 +216,14 @@ export function reduire(avant, evenement) {
 export function etatClientInitial() {
   return { phase: 'connexion', joueurs: [], graine: null, langue: null, dans: null, reprise: null, bilan: null, erreur: null }
 }
+
+// Les noms d'un message du serveur viennent d'un autre appareil — ou d'un
+// serveur pas encore à jour : on ne les montre jamais tels quels. Refusé, un
+// nom devient vide (l'écran dit « Adversaire »).
+export const messagePropre = (message) =>
+  Array.isArray(message?.joueurs)
+    ? { ...message, joueurs: message.joueurs.map((j) => ({ ...j, nom: pseudoPropre(j?.nom) })) }
+    : message
 
 export function reduireClient(etat, message) {
   switch (message.type) {

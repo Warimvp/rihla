@@ -1,7 +1,41 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { LANGUES, langueParId, nomVille } from '../data/langues.js'
 import { TOUTE_LA_ROUTE } from '../lib/barid.js'
+import { pseudoAcceptable } from '../lib/pseudo.js'
 import { Boussole, Etoile8, Livre, PasseportIcone, Rouages } from './Icones.jsx'
+
+// « Ton nom de voyageur » (Barid, Course) : le champ garde ce que le voyageur
+// tape — rien ne s'efface en pleine frappe. Un nom que le filtre refuse
+// (pseudo.js : coordonnées, insultes) n'est pas montré aux autres, et on le
+// lui dit dès qu'il marque une pause, pas lettre après lettre.
+export function ChampNom({ t, valeur, surChange, style }) {
+  const [refus, setRefus] = useState(false)
+  useEffect(() => {
+    setRefus(false)
+    if (pseudoAcceptable(valeur)) return undefined
+    const id = setTimeout(() => setRefus(true), 700)
+    return () => clearTimeout(id)
+  }, [valeur])
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.barid.nom}</span>
+        <input
+          type="text"
+          value={valeur}
+          maxLength={24}
+          placeholder={t.barid.nomPlaceholder}
+          autoComplete="nickname"
+          onChange={(e) => surChange(e.target.value)}
+          style={style}
+        />
+      </label>
+      <p role="status" className={refus ? 'texte-2' : 'lecteur-seul'} style={{ fontSize: 12.5, color: 'var(--terracotta-fonce)' }}>
+        {refus ? t.barid.nomRefuse : ''}
+      </p>
+    </div>
+  )
+}
 
 // La destination d'un duel (Barid, Course) : « toute la route » ou une ville,
 // en chips défilantes. `t.barid.destination` / `t.barid.touteLaRoute` servent

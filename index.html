@@ -6,6 +6,23 @@
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#4E46C8" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#171210" />
     <meta name="description" content="Rihla — apprends les langues du monde, gratuitement, pour toujours. Sur les pas d'Ibn Battuta, de Tanger à Tokyo." />
+    <!-- Aperçu d'un lien collé dans un message (WhatsApp, Telegram, X…) : les liens
+         de défi et de salle (#barid=…, #salle=…) sont la diffusion de Rihla, et le
+         fragment ne quitte pas le navigateur — l'aperçu est donc le même pour tous.
+         og:image doit être ABSOLUE : c'est BASE_LIEN (src/lib/barid.js), comme les
+         liens eux-mêmes ; src/lib/apercu.test.js garde l'accord, et que l'image existe. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Rihla · رحلة" />
+    <meta property="og:title" content="Rihla · رحلة — les langues du monde" />
+    <meta property="og:description" content="Apprends les langues du monde, gratuitement, sur les pas d’Ibn Battuta. — تعلّم لغات العالم مجاناً، على خطى ابن بطوطة." />
+    <meta property="og:image" content="https://warimvp.github.io/rihla/icons/icon-512.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="Rihla : une boussole au cœur d’une étoile de zellige, sur fond bleu Majorelle." />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:locale:alternate" content="ar_AR" />
+    <meta name="twitter:card" content="summary" />
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
     <link rel="manifest" href="./manifest.webmanifest" />

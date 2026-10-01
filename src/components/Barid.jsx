@@ -10,7 +10,7 @@ import {
   encoderLettre,
   estBonneOption,
   lienLettre,
-  nettoyerNom,
+  nomPublic,
   nouvelleGraine,
   verdict,
 } from '../lib/barid.js'
@@ -19,7 +19,7 @@ import { parler } from '../lib/tts.js'
 import { nomVoyageur, reglerNom } from '../lib/voyageur.js'
 import { Boussole, Croix, Etoile8, LettreIcone } from './Icones.jsx'
 import { BoutonQuitter } from './Quitter.jsx'
-import { ChoixDestination } from './Communs.jsx'
+import { ChampNom, ChoixDestination } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { QuestionDuel } from './QuestionDuel.jsx'
 
@@ -92,7 +92,7 @@ export function Barid({
   const [texteVisible, setTexteVisible] = useState(null)
 
   const total = NB_QUESTIONS_BARID
-  const nomPropre = nettoyerNom(nom)
+  const nomPropre = nomPublic(nom)
   const nomAffiche = nomPropre || t.barid.anonyme
   const nomDestination = (id) => (estTouteLaRoute(id) ? t.barid.touteLaRoute : nomLangue(langueParId(id), locale))
   const titreVerdict = (v) => (v === 'gagne' ? t.barid.gagne : v === 'perdu' ? t.barid.perdu : t.barid.egalite)
@@ -100,7 +100,7 @@ export function Barid({
   // Une réponse à l'un de nos défis : le verdict s'inscrit dès l'ouverture,
   // même si on referme sans jouer la relance.
   useEffect(() => {
-    if (lettre?.re) surReponseRecue(lettre.re, lettre.n)
+    if (lettre?.re) surReponseRecue(lettre.re, nomPublic(lettre.n))
   }, [])
 
   useEffect(() => {
@@ -122,7 +122,7 @@ export function Barid({
     }
     setErreur(null)
     setZone('')
-    if (resultat.lettre.re) surReponseRecue(resultat.lettre.re, resultat.lettre.n)
+    if (resultat.lettre.re) surReponseRecue(resultat.lettre.re, nomPublic(resultat.lettre.n))
     setRecu(resultat.lettre)
     setPhase('recu')
   }
@@ -219,21 +219,15 @@ export function Barid({
         </div>
 
         <div className="carte" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.barid.nom}</span>
-            <input
-              type="text"
-              value={nom}
-              maxLength={24}
-              placeholder={t.barid.nomPlaceholder}
-              autoComplete="nickname"
-              onChange={(e) => {
-                setNom(e.target.value)
-                reglerNom(e.target.value)
-              }}
-              style={champ}
-            />
-          </label>
+          <ChampNom
+            t={t}
+            valeur={nom}
+            surChange={(valeur) => {
+              setNom(valeur)
+              reglerNom(valeur)
+            }}
+            style={champ}
+          />
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.barid.destination}</span>
@@ -281,7 +275,7 @@ export function Barid({
 
   // ————— La lettre reçue —————
   if (phase === 'recu' && recu) {
-    const nomAdv = recu.n || t.barid.anonyme
+    const nomAdv = nomPublic(recu.n) || t.barid.anonyme
     const re = recu.re
     const verdictRecu = re ? verdict({ s: re.s0, t: re.t0 }, { s: re.s, t: re.t }) : null
     const locale_ = progres.barid?.[recu.g]
@@ -324,7 +318,7 @@ export function Barid({
             <button
               type="button"
               className="bouton bouton--primaire bouton--pleine"
-              onClick={() => commencer({ graine: recu.g, langueId: recu.l, adversaire: { n: recu.n, s: recu.s, t: recu.t } })}
+              onClick={() => commencer({ graine: recu.g, langueId: recu.l, adversaire: { n: nomPublic(recu.n), s: recu.s, t: recu.t } })}
             >
               {t.barid.releve}
             </button>

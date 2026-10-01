@@ -37,6 +37,45 @@ describe('l’identité du voyageur', () => {
     expect(identite(s).nom.startsWith('فاطمة')).toBe(true)
   })
 
+  it('ne fait jamais sortir un nom refusé — mais le garde tel que tapé, pour le champ', () => {
+    const s = stockage()
+    // Ce qui est tapé revient tel quel : le champ ne se vide pas en pleine frappe.
+    expect(reglerNom('Zebi', s)).toBe('Zebi')
+    expect(JSON.parse(s.getItem(CLE_VOYAGEUR)).nom).toBe('Zebi')
+    // Ce qui SORT (envoi au serveur, affichage) est vide : l'écran dit « Un voyageur ».
+    expect(identite(s).nom).toBe('')
+    expect(nomVoyageur(s)).toBe('')
+    // Un nom acceptable reprend aussitôt sa place ; l'identité, elle, n'a pas bougé.
+    const id = identite(s).id
+    expect(reglerNom('Amine', s)).toBe('Amine')
+    expect(identite(s)).toMatchObject({ id, nom: 'Amine' })
+    // Coordonnées : même sort.
+    reglerNom('06 12 34 56 78', s)
+    expect(identite(s).nom).toBe('')
+    // Une liste qui s'assouplit ne laisse pas de nom « condamné » : le filtre se
+    // rejoue à chaque lecture, il n'est pas gravé dans le stockage.
+    const gravee = JSON.parse(s.getItem(CLE_VOYAGEUR))
+    expect(gravee.nom).toBe('06 12 34 56 78')
+  })
+
+  it('filtre aussi l’identité qui ne vit qu’en mémoire (stockage absent ou illisible)', () => {
+    reglerNom('connard', null)
+    expect(identite(null).nom).toBe('')
+    expect(identite(null).id).toMatch(/^[0-9a-f]{16}$/)
+    reglerNom('Amine', null)
+    expect(identite(null).nom).toBe('Amine')
+  })
+
+  it('filtre un nom abîmé ou ancien relu dans le stockage', () => {
+    const s = stockage()
+    s.setItem(CLE_VOYAGEUR, JSON.stringify({ id: 'abcd1234abcd1234', secret: 'secret-de-test-secret', nom: 'ntm' }))
+    expect(identite(s).nom).toBe('')
+    s.setItem('rihla.barid.nom', 'whatsapp')
+    s.removeItem(CLE_VOYAGEUR)
+    oublierIdentite()
+    expect(nomVoyageur(s)).toBe('')
+  })
+
   it('repart de zéro si le stockage est illisible, et survit sans stockage', () => {
     const s = stockage()
     s.setItem(CLE_VOYAGEUR, '{pas du json')

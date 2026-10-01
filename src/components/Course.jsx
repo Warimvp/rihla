@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { LANGUES, langueParId, nomLangue } from '../data/langues.js'
-import { NB_QUESTIONS_BARID, TOUTE_LA_ROUTE, construireBarid, estBonneOption, estTouteLaRoute } from '../lib/barid.js'
-import { etatClientInitial, normaliserCode, reduireClient } from '../lib/salle.js'
+import { NB_QUESTIONS_BARID, TOUTE_LA_ROUTE, construireBarid, estBonneOption, estTouteLaRoute, nomPublic } from '../lib/barid.js'
+import { etatClientInitial, messagePropre, normaliserCode, reduireClient } from '../lib/salle.js'
 import {
   chercherAdversaire as chercherParDefaut,
   creerSalle as creerParDefaut,
@@ -14,7 +14,7 @@ import { fanfare, retourReponse } from '../lib/sons.js'
 import { parler } from '../lib/tts.js'
 import { CoupeIcone, CourseIcone, Croix, Etoile8 } from './Icones.jsx'
 import { BoutonQuitter } from './Quitter.jsx'
-import { ChoixDestination } from './Communs.jsx'
+import { ChampNom, ChoixDestination } from './Communs.jsx'
 import { EclatEtoiles } from './EclatEtoiles.jsx'
 import { ConsentementEnLigne } from './EnLigne.jsx'
 import { QuestionDuel } from './QuestionDuel.jsx'
@@ -94,7 +94,7 @@ export function Course({
   const graineInscrite = useRef(null)
 
   const total = NB_QUESTIONS_BARID
-  const nomAffiche = nom || t.barid.anonyme
+  const nomAffiche = nomPublic(nom) || t.barid.anonyme
   const nomDestination = (id) => (estTouteLaRoute(id) ? t.barid.touteLaRoute : nomLangue(langueParId(id), locale))
   const moi = salle.joueurs.find((j) => j.id === voyageur.id) ?? null
   const autre = salle.joueurs.find((j) => j.id !== voyageur.id) ?? null
@@ -142,7 +142,9 @@ export function Course({
     setBilan({ ...resultat, moi: moiFin, autre: autreFin })
   }
 
-  const surMessage = (m) => {
+  const surMessage = (brut) => {
+    // Un nom venu d'un autre appareil ne se montre jamais tel quel (pseudo.js).
+    const m = messagePropre(brut)
     setSalle((s) => reduireClient(s, m))
     if (m.type === 'salle' || m.type === 'depart' || m.type === 'reprise') langueRef.current = m.langue
     if (m.type === 'depart') {
@@ -370,18 +372,15 @@ export function Course({
         </div>
 
         <div className="carte" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.barid.nom}</span>
-            <input
-              type="text"
-              value={nom}
-              maxLength={24}
-              placeholder={t.barid.nomPlaceholder}
-              autoComplete="nickname"
-              onChange={(e) => setNom(reglerNom(e.target.value))}
-              style={champ}
-            />
-          </label>
+          <ChampNom
+            t={t}
+            valeur={nom}
+            surChange={(valeur) => {
+              setNom(valeur)
+              reglerNom(valeur)
+            }}
+            style={champ}
+          />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.barid.destination}</span>
             <ChoixDestination t={t} locale={locale} valeur={destination} surChoisir={setDestination} />
