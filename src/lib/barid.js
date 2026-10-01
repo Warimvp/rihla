@@ -8,6 +8,7 @@
 //
 // Tout ici est pur : la lettre est un objet, son code un texte, le progrès
 // une valeur — l'écran (Barid.jsx) ne fait que les brancher.
+import { pseudoPropre } from './pseudo.js'
 import { melanger, mulberry32 } from './quiz.js'
 
 export const NB_QUESTIONS_BARID = 10
@@ -107,6 +108,14 @@ export const nettoyerNom = (nom) =>
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, LONGUEUR_NOM)
+
+// Le nom tel qu'on le MONTRE à d'autres : nettoyé, puis filtré (pseudo.js —
+// coordonnées, insultes) ; refusé, il devient vide et l'écran dit « Un
+// voyageur ». ⚠️ Jamais dans `nettoyerNom` ni `canoniser` : l'empreinte d'une
+// lettre se calcule sur le nom nettoyé, une liste qui évolue rendrait
+// « abîmées » des lettres déjà parties. À l'écriture (envoi au serveur, lettre
+// qui part) et à l'affichage (nom reçu).
+export const nomPublic = (nom) => pseudoPropre(nettoyerNom(nom))
 
 // ————— La lettre —————
 // Trois formes, un seul format :

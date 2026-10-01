@@ -12,6 +12,7 @@ import {
   etatClientInitial,
   etatInitial,
   genererCode,
+  messagePropre,
   normaliserCode,
   reduire,
   reduireClient,
@@ -224,5 +225,39 @@ describe('le miroir côté client', () => {
   it('une reprise rend la question en cours', () => {
     const etat = reduireClient(etatClientInitial(), { type: 'reprise', graine: 9, langue: 'es', debut: 1, i: 4, score: 3 })
     expect(etat).toMatchObject({ phase: 'jeu', graine: 9, reprise: { i: 4, score: 3 } })
+  })
+})
+
+describe('les noms venus d’un autre appareil', () => {
+  const joueurs = [
+    { id: 'aaaa1111', nom: 'Sara', score: 3 },
+    { id: 'bbbb2222', nom: 'connard', score: 5 },
+    { id: 'cccc3333', nom: '06 12 34 56 78', score: 1 },
+  ]
+
+  it('ne se montrent jamais tels quels : refusés, ils deviennent vides', () => {
+    for (const type of ['joueurs', 'etat', 'depart', 'fin']) {
+      const propre = messagePropre({ type, graine: 7, joueurs })
+      expect(propre.joueurs.map((j) => j.nom), type).toEqual(['Sara', '', ''])
+      // Rien d'autre ne bouge : ni les scores, ni les ids, ni le reste du message.
+      expect(propre.joueurs.map((j) => j.score)).toEqual([3, 5, 1])
+      expect(propre.joueurs.map((j) => j.id)).toEqual(joueurs.map((j) => j.id))
+      expect(propre).toMatchObject({ type, graine: 7 })
+    }
+  })
+
+  it('ne touche pas au message d’origine, ni aux messages sans joueurs', () => {
+    const message = { type: 'joueurs', joueurs }
+    messagePropre(message)
+    expect(joueurs[1].nom).toBe('connard')
+    const sans = { type: 'erreur', code: 'pleine' }
+    expect(messagePropre(sans)).toBe(sans)
+    expect(messagePropre(null)).toBeNull()
+    expect(messagePropre({ type: 'joueurs', joueurs: [null, {}] }).joueurs.map((j) => j.nom)).toEqual(['', ''])
+  })
+
+  it('arrivent vides jusque dans l’état de l’écran', () => {
+    const etat = reduireClient(etatClientInitial(), messagePropre({ type: 'joueurs', joueurs }))
+    expect(etat.joueurs.map((j) => j.nom)).toEqual(['Sara', '', ''])
   })
 })

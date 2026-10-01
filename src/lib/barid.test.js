@@ -18,6 +18,7 @@ import {
   extraireCodes,
   lienLettre,
   nettoyerNom,
+  nomPublic,
   nouvelleGraine,
   routeConnue,
   terminerBarid,
@@ -154,6 +155,24 @@ describe('nettoyerNom', () => {
   })
 })
 
+describe('nomPublic', () => {
+  it('rend le nom nettoyé quand il est montrable, vide sinon', () => {
+    expect(nomPublic('  Amine ‏  El  ')).toBe('Amine El')
+    expect(nomPublic('فاطمة')).toBe('فاطمة')
+    expect(nomPublic('connard')).toBe('')
+    expect(nomPublic('06 12 34 56 78')).toBe('')
+    expect(nomPublic(null)).toBe('')
+  })
+
+  it('juge le nom tel qu’il partira : coupé à 24 caractères, pas avant', () => {
+    // La coupe se fait AVANT le filtre : on juge ce qui sera montré, ni plus
+    // (« con » n'est pas une insulte) ni moins.
+    expect(nomPublic(`${'a'.repeat(24)} connard`)).toBe('a'.repeat(24))
+    expect(nomPublic(`${'a'.repeat(20)} connard`)).toBe(`${'a'.repeat(20)} con`)
+    expect(nomPublic(`${'a'.repeat(15)} connard`)).toBe('')
+  })
+})
+
 describe('encoder / décoder une lettre', () => {
   const defi = { n: 'فاطمة', l: 'tr', g: 123456, s: 8, t: 42 }
   const reponse = { n: 'Amine', re: { l: 'tr', g: 123456, s: 9, t: 38, s0: 8, t0: 42 } }
@@ -220,6 +239,17 @@ describe('encoder / décoder une lettre', () => {
     expect(decoderLettre(encoderLettre({ n: 'x', l: demain, g: 5, s: 3, t: 4 }), IDS).erreur).toBe('langue')
     expect(decoderLettre(encoderLettre({ n: 'x', l: demain, g: 5, s: 3, t: 4 })).erreur).toBe('langue')
     expect(decoderLettre(encoderLettre({ n: 'x', re: { l: demain, g: 5, s: 3, t: 4, s0: 2, t0: 9 } }), IDS).erreur).toBe('langue')
+  })
+
+  it('ne filtre PAS le nom en route : l’empreinte se calcule sur le nom nettoyé, le filtre vit à l’affichage', () => {
+    // Une lettre partie avec un nom que la liste d'aujourd'hui refuse (ou que
+    // celle de demain refusera) doit rester lisible — « abîmée » serait faux.
+    for (const n of ['connard', '06 12 34 56 78']) {
+      const resultat = decoderLettre(encoderLettre({ ...defi, n }), IDS)
+      expect(resultat.ok, n).toBe(true)
+      expect(resultat.lettre.n).toBe(n)
+      expect(nomPublic(resultat.lettre.n)).toBe('')
+    }
   })
 
   it('nettoie le nom en route', () => {

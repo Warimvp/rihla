@@ -5,7 +5,7 @@
 // entre deux réponses, la connexion reste ouverte.
 import { DurableObject } from 'cloudflare:workers'
 import { LANGUES } from '../../src/data/langues.js'
-import { construireBarid, nettoyerNom, nouvelleGraine } from '../../src/lib/barid.js'
+import { construireBarid, nomPublic, nouvelleGraine } from '../../src/lib/barid.js'
 import { MENAGE, etatInitial, reduire, semaineIso } from '../../src/lib/salle.js'
 import { alea } from './commun.js'
 
@@ -35,7 +35,8 @@ export class Salle extends DurableObject {
     if (!etat) return new Response('salle introuvable', { status: 404 })
     const url = new URL(request.url)
     const id = String(url.searchParams.get('id') ?? '').slice(0, 32)
-    const nom = nettoyerNom(url.searchParams.get('nom'))
+    // Le nom que l'adversaire verra : filtré ici, le client n'est pas de confiance.
+    const nom = nomPublic(url.searchParams.get('nom'))
     if (!/^[a-z0-9-]{4,32}$/i.test(id)) return new Response('identifiant invalide', { status: 400 })
 
     const paire = new WebSocketPair()

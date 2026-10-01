@@ -7,7 +7,7 @@
 // Identité sans compte : le premier envoi d'un `id` fixe l'empreinte de son
 // secret ; ensuite seul le même appareil peut toucher à cette ligne.
 import { DurableObject } from 'cloudflare:workers'
-import { NB_QUESTIONS_BARID, nettoyerNom } from '../../src/lib/barid.js'
+import { NB_QUESTIONS_BARID, nomPublic } from '../../src/lib/barid.js'
 
 const RETENTION = 60 * 24 * 60 * 60 * 1000
 const TAILLE_PAGE = 50
@@ -49,7 +49,9 @@ export class Registre extends DurableObject {
     if (!idValide(id) || typeof secret !== 'string' || secret.length < 8) return { ok: false, erreur: 'identite' }
     if (!Number.isInteger(score) || score < 0 || score > NB_QUESTIONS_BARID) return { ok: false, erreur: 'score' }
     const t = Number.isInteger(temps) && temps >= 0 ? Math.min(temps, 99999) : 99999
-    const nomPropre = nettoyerNom(nom)
+    // Un pseudonyme refusé (coordonnées, insulte — src/lib/pseudo.js) s'inscrit
+    // vide : le classement dit « Un voyageur ». Le client n'est pas de confiance.
+    const nomPropre = nomPublic(nom)
     const marque = await empreinte(secret)
     const connu = this.ctx.storage.sql.exec('SELECT empreinte FROM joueurs WHERE id = ?', id).toArray()[0]
     if (connu && connu.empreinte !== marque) return { ok: false, erreur: 'identite' }
@@ -86,7 +88,7 @@ export class Registre extends DurableObject {
         `INSERT INTO scores (id, nom, score, temps, maj) VALUES (?, ?, ?, 1, ?)
          ON CONFLICT(id) DO UPDATE SET nom = excluded.nom, score = scores.score + excluded.score, temps = scores.temps + 1, maj = excluded.maj`,
         j.id,
-        nettoyerNom(j.nom),
+        nomPublic(j.nom),
         Number(j.points) || 0,
         maintenant
       )
@@ -116,7 +118,9 @@ export class Registre extends DurableObject {
     const lignes = this.ctx.storage.sql
       .exec('SELECT id, nom, score, temps FROM scores ORDER BY score DESC, temps ASC, maj ASC LIMIT ?', TAILLE_PAGE)
       .toArray()
-      .map((l, i) => ({ rang: i + 1, id: l.id, nom: l.nom, score: l.score, temps: l.temps }))
+      // Aussi à la lecture : une ligne inscrite avant le filtre, ou avant qu'on
+      // ajoute un mot à la liste, ne doit pas s'afficher.
+      .map((l, i) => ({ rang: i + 1, id: l.id, nom: nomPublic(l.nom), score: l.score, temps: l.temps }))
     const { rang, total, moi } = idValide(id) ? this.rangDe(id) : { rang: null, total: lignes.length, moi: null }
     return { lignes, total, moi: moi ? { rang, ...moi } : null }
   }

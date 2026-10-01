@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { NB_QUESTIONS_BARID } from '../lib/barid.js'
 import { enLigneActif, envoyerScore as envoyerParDefaut, lireClassement as lireParDefaut } from '../lib/enligne.js'
 import { jourLocal } from '../lib/progression.js'
+import { pseudoPropre } from '../lib/pseudo.js'
 import { semaineIso } from '../lib/salle.js'
 import { identite } from '../lib/voyageur.js'
 import { CoupeIcone, Croix } from './Icones.jsx'
@@ -71,7 +72,7 @@ export function Classement({ t, progres, surQuitter, transport = TRANSPORT_PAR_D
     >
       <span style={{ width: '3ch', textAlign: 'end', fontVariantNumeric: 'tabular-nums', fontWeight: 700, color: l.rang <= 3 ? 'var(--safran-fonce)' : 'inherit' }}>{l.rang}</span>
       <span style={{ flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {l.nom || t.classement.anonyme}
+        {pseudoPropre(l.nom) || t.classement.anonyme}
         {moi ? <span className="texte-2" style={{ fontSize: 12, marginInlineStart: 6 }}>· {t.classement.toi}</span> : null}
       </span>
       <span style={{ fontSize: 13, fontVariantNumeric: 'tabular-nums', flex: '0 0 auto' }}>
