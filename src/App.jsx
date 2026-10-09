@@ -25,6 +25,7 @@ import { normaliserCode } from './lib/salle.js'
 import { identite } from './lib/voyageur.js'
 import { EVENEMENT_RETOUR, profondeurDe } from './lib/retour.js'
 import { suivreBarres } from './lib/barres.js'
+import { CLE_NOUVEAUTES, VERSION_APP, decision } from './lib/miseajour.js'
 import { Accueil } from './components/Accueil.jsx'
 import { Barid } from './components/Barid.jsx'
 import { Classement } from './components/Classement.jsx'
@@ -38,6 +39,7 @@ import { BarreOnglets } from './components/Communs.jsx'
 import { Carnet } from './components/Carnet.jsx'
 import { Defi } from './components/Defi.jsx'
 import { Guide } from './components/Guide.jsx'
+import { Nouveautes } from './components/Nouveautes.jsx'
 import { JeuCaravane } from './components/JeuCaravane.jsx'
 import { JeuDuel } from './components/JeuDuel.jsx'
 import { JeuOreille } from './components/JeuOreille.jsx'
@@ -279,6 +281,24 @@ export default function App() {
   // « Comment ça marche », pour qui arrive : jusqu'à la première étape jouée,
   // ou jusqu'à « J'ai compris ».
   const [bienvenueVue, setBienvenueVue] = useState(() => lireLocal('rihla.bienvenue', null) === 'vu')
+
+  // Les nouveautés, UNE fois, à qui vient de mettre l'app à jour (l'app ne
+  // cherche jamais de mise à jour elle-même : voir src/lib/miseajour.js). Qui
+  // installe pour la première fois n'a rien à découvrir : on range la version
+  // en silence. Fermer la fenêtre range la version ; la quitter sans la fermer
+  // la remontre au lancement suivant.
+  const [nouveautes, setNouveautes] = useState(false)
+  useEffect(() => {
+    const existant = stockageDispo() && (cap !== null || Object.keys(progres.etapes).length > 0)
+    const choix = decision({ vue: lireLocal(CLE_NOUVEAUTES, null), existant })
+    if (choix.marquer) ecrireLocal(CLE_NOUVEAUTES, VERSION_APP)
+    setNouveautes(choix.montrer)
+    // Une seule fois, au lancement : ni le cap ni le progrès n'y changent la décision.
+  }, [])
+  const fermerNouveautes = () => {
+    setNouveautes(false)
+    ecrireLocal(CLE_NOUVEAUTES, VERSION_APP)
+  }
 
   // Point de passage unique : tout gain d'XP est attribué au jour où il tombe
   // (c'est ce qui alimente l'objectif quotidien).
@@ -589,9 +609,11 @@ export default function App() {
           }}
           surEffacer={effacer}
           surReprendre={efface ? reprendreVoyage : null}
+          surNouveautes={() => setNouveautes(true)}
         />
       ) : null}
       <BarreOnglets actif={onglet} sur={setOnglet} t={t} />
+      {nouveautes ? <Nouveautes t={t} surFermer={fermerNouveautes} /> : null}
     </div>
   )
 }

@@ -1386,6 +1386,66 @@ p {
   animation: monter 0.26s cubic-bezier(0.2, 0.8, 0.3, 1) both;
 }
 
+/* Les nouveautés : mêmes valeurs que `.voile` et `.feuille` ci-dessus, sous
+   leurs propres noms — un test (ou un sélecteur) qui cherche « la feuille »
+   d'une question ne doit jamais tomber sur elles. Le fond passe AU-DESSUS du
+   voile de la barre d'état (`.voile-etat`, z-index 20) : miseajour.test.js. */
+.voile-nouveautes {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  background: rgba(15, 11, 9, 0.56);
+  animation: voiler 0.2s ease-out both;
+}
+
+.nouveautes {
+  width: min(100%, 448px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 20px 18px;
+  background: var(--papier);
+  color: var(--encre);
+  border: 1px solid var(--ligne);
+  border-radius: 22px;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
+  text-align: start;
+  animation: monter 0.26s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* La liste des nouveautés : la feuille, avec une liste. Défilable si l'écran est bas
+   (iPhone SE) ; un filet safran au début de chaque point, en propriétés
+   logiques pour que l'arabe le retrouve à droite. */
+.nouveautes__liste {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 2px 0 6px;
+  padding: 0;
+  overflow-y: auto;
+  max-height: 46vh;
+}
+
+.nouveautes__point {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-inline-start: 12px;
+  border-inline-start: 3px solid var(--safran);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.nouveautes__point strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
 /* Seul le FOND du voile se fond : animer son opacité rendrait la feuille
    elle-même translucide, et la question se lirait à travers l'écran. */
 @keyframes voiler {

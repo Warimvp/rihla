@@ -408,6 +408,26 @@ const fr = {
     bouton: 'Proposer une amélioration',
   },
   confidentialite: 'Politique de confidentialité',
+  // La fenêtre posée UNE fois après une mise à jour (src/lib/miseajour.js) et
+  // la carte des Réglages qui la rouvre. À réécrire à chaque version mineure,
+  // avec VERSION_APP — miseajour.test.js refuse les deux oublis.
+  nouveautes: {
+    titre: 'Nouveau dans Rihla',
+    intro: 'Voici ce qui change dans cette version.',
+    bouton: 'C’est parti',
+    points: [
+      { titre: 'Le français, quinzième destination', texte: 'Paris et ses 24 étapes, avec une vraie photo pour chacune des 15 villes.' },
+      { titre: 'Le Barid', texte: 'Défie un ami par message, sans compte ni serveur : il joue les mêmes 10 questions et riposte.' },
+      { titre: 'Les mots voyageurs', texte: 'Les mots venus de l’arabe dans chaque langue : sucre, café, coton, zéro, algèbre.' },
+    ],
+  },
+  miseAJour: {
+    titre: 'Nouveautés',
+    sousTitre: 'Ce qui a changé dans cette version.',
+    sousTitreIos: 'L’App Store installe les mises à jour tout seul ; pour vérifier à la main, ouvre la fiche de Rihla.',
+    nouveautes: 'Voir les nouveautés',
+    appStore: 'Voir sur l’App Store',
+  },
   photos: {
     photo: 'Photo :',
     recadree: '(recadrée)',
@@ -845,6 +865,23 @@ const ar = {
     bouton: 'اقترح تحسيناً',
   },
   confidentialite: 'سياسة الخصوصية',
+  nouveautes: {
+    titre: 'جديد في رحلة',
+    intro: 'هذا ما تغيّر في هذه النسخة.',
+    bouton: 'هيا بنا',
+    points: [
+      { titre: 'الفرنسية، الوجهة الخامسة عشرة', texte: 'باريس بمراحلها الأربع والعشرين، مع صورة حقيقية لكل مدينة من المدن الخمس عشرة.' },
+      { titre: 'البريد', texte: 'تحدَّ صديقاً برسالة، دون حساب ولا خادم: يلعب الأسئلة العشرة نفسها ويردّ.' },
+      { titre: 'الكلمات المسافرة', texte: 'كلمات عربية الأصل في كل لغة: سكر، قهوة، قطن، صفر، جبر.' },
+    ],
+  },
+  miseAJour: {
+    titre: 'الجديد',
+    sousTitre: 'ما تغيّر في هذه النسخة.',
+    sousTitreIos: 'يثبّت App Store التحديثات تلقائياً؛ وللتحقق بنفسك، افتح صفحة رحلة.',
+    nouveautes: 'عرض الجديد',
+    appStore: 'عرض في App Store',
+  },
   photos: {
     photo: 'الصورة:',
     recadree: '(مقصوصة)',

@@ -9,6 +9,7 @@ import { BoiteIcone, CarnetIcone, PartagerIcone } from './Icones.jsx'
 import { reglerSons, sonsActifs } from '../lib/sons.js'
 import { enLigneActif, enLigneDisponible, reglerEnLigne } from '../lib/enligne.js'
 import { lienPourboire } from '../lib/pourboire.js'
+import { LIEN_APP_STORE, VERSION_APP, estIos } from '../lib/miseajour.js'
 import { HEURE_DEFAUT, activerRappel, desactiverRappel, heureRappel, rappelActif, rappelDisponible } from '../lib/rappel.js'
 import { MarqueRihla } from './Logo.jsx'
 
@@ -29,6 +30,7 @@ export function Reglages({
   surRestaurer,
   surEffacer,
   surReprendre = null,
+  surNouveautes = null,
 }) {
   const [sons, setSons] = useState(() => sonsActifs())
   const [enLigne, setEnLigne] = useState(() => enLigneActif())
@@ -36,6 +38,7 @@ export function Reglages({
   const [heure, setHeure] = useState(() => heureRappel())
   const natifDispo = rappelDisponible()
   const pourboire = lienPourboire()
+  const ios = estIos()
   const [message, setMessage] = useState(null)
   const [zoneRestaure, setZoneRestaure] = useState(null)
   // La question en cours : 'effacer', ou le voyage lu dans une sauvegarde.
@@ -396,6 +399,35 @@ export function Reglages({
         </div>
       ) : null}
 
+      {/* Les nouveautés se rouvrent d'ici ; sur iPhone, un lien vers la fiche
+          App Store — l'app ne cherche pas elle-même (src/lib/miseajour.js). */}
+      {surNouveautes || ios ? (
+        <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.miseAJour.titre}</span>
+            <span className="texte-2" style={{ fontSize: 12.5 }}>
+              {ios ? `${t.miseAJour.sousTitre} ${t.miseAJour.sousTitreIos}` : t.miseAJour.sousTitre}
+            </span>
+          </div>
+          {surNouveautes ? (
+            <button type="button" className="bouton bouton--secondaire bouton--pleine" style={{ minHeight: 44, fontSize: 14 }} onClick={surNouveautes}>
+              {t.miseAJour.nouveautes}
+            </button>
+          ) : null}
+          {ios ? (
+            <a
+              className="bouton bouton--secondaire bouton--pleine"
+              style={{ minHeight: 44, fontSize: 14, textDecoration: 'none' }}
+              href={LIEN_APP_STORE}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t.miseAJour.appStore}
+            </a>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="carte" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontSize: 14.5, fontWeight: 600 }}>{t.ameliorer.titre}</span>
@@ -427,7 +459,7 @@ export function Reglages({
         <p style={{ fontSize: 13.5, lineHeight: 1.65, color: 'var(--encre-2)' }}>{t.histoireApp}</p>
         <p style={{ fontSize: 13.5, lineHeight: 1.65, fontWeight: 500 }}>{t.gratuit}</p>
         <p className="texte-2" style={{ fontSize: 12.5 }}>
-          {t.faitAuMaroc} — v0.1.0
+          {t.faitAuMaroc} — v{VERSION_APP}
         </p>
       </div>
 

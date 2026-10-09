@@ -555,3 +555,38 @@ Contenu du build 6 par rapport au build 5 : les mots voyageurs, le Barid (liens,
 (**absent sur iPhone**, garde `estNatif`), le code de La Course **inactif** (aucune adresse de serveur embarquée —
 vérifié : pas de `workers.dev` dans le JS du bundle), la bannière `apple-itunes-app` (ignorée par WKWebView).
 
+
+### 14.4 Annoncer la mise à jour — sans que l'app appelle le réseau
+
+**Ce qui est possible, et ce qui ne l'est pas.** Apple ne permet pas de forcer une mise à jour, et Rihla n'a pas de
+serveur pour la déclencher : elle a promis à Apple (§ 8) et dans sa page de confidentialité de ne faire aucune requête.
+Les mises à jour automatiques d'iOS (activées par défaut) font l'essentiel ; le reste passe par la fiche, le texte
+promotionnel et les canaux du user. Dans l'app : une fenêtre « Nouveautés » une seule fois, et un lien vers la fiche
+dans les Réglages (CLAUDE.md § « Mises à jour »).
+
+**Le build.** Ces textes supposent un build qui contient Paris et les photos (commits `93c58f8` et suivants) : le
+**build 6 est antérieur**. Donc `pnpm version:build` → **7** (la version reste **1.1**, `VERSION_APP` aussi), puis § 14.2.
+Les captures de `captures/6.3/final/` montrent Paris et les photos : elles ne collent qu'avec ce build.
+
+**Dans App Store Connect (version 1.1)**
+1. **Nouveautés de cette version** — remplace le texte du § 14.3, point 5 :
+   - FR : `Nouveau : le français, quinzième destination — Paris et ses 24 étapes — et une vraie photo pour chacune des 15 villes. Le Barid : défie un ami par message, sans compte ni serveur. Les mots voyageurs : les mots venus de l'arabe dans chaque langue. L'app est maintenant en français et en arabe sur l'App Store.`
+   - AR : `جديد: الفرنسية وجهة خامسة عشرة — باريس بمراحلها الأربع والعشرين — مع صورة حقيقية لكل مدينة من المدن الخمس عشرة. البريد: تحدَّ صديقاً برسالة، دون حساب ولا خادم. الكلمات المسافرة: كلمات عربية الأصل في كل لغة. والتطبيق الآن بالفرنسية والعربية على App Store.`
+2. **Publication** : décocher la publication progressive sur 7 jours si elle est proposée — une petite app gratuite, autant que
+   tout le monde l'ait vite.
+3. **Après la publication**, remplacer le **texte promotionnel** (modifiable sans nouvelle version ; ne donne plus de chiffres
+   périmés — « 14 langues, 2 688 mots » ne vaut plus avec Paris) :
+   - FR (136 c.) : `Nouveau : Paris et le français, 15 villes en photos, le Barid pour défier un ami. Un défi par jour, sans compte, tout marche hors-ligne.`
+   - AR (111 c.) : `جديد: الفرنسية وجهة خامسة عشرة، صور لكل مدينة، والبريد لتحدّي صديق. تحدٍّ كل يوم، بلا حساب، ويشتغل بدون أنترنت.`
+   Penser aussi à la **description** (§ 6) et au § 5.3 : « 14 langues » → « 15 », « 2 688 mots » → « 2 880 ».
+
+**Hors de l'App Store** — ceux qui ont les mises à jour automatiques ne voient jamais le texte « Nouveautés » :
+- **legantis.net / GitHub (note de version)** — FR :
+  > **Rihla 1.1 : Paris, une photo pour chaque ville, et le Barid.** Rihla, l'app gratuite pour apprendre les langues du monde
+  > sur la route d'Ibn Battuta, se met à jour. Le français devient la quinzième destination — Paris et ses 24 étapes — et
+  > chacune des 15 villes a sa vraie photo. Nouveau aussi : le Barid, pour défier un ami par message, sans compte ni serveur,
+  > et les mots voyageurs, ces mots venus de l'arabe qu'on retrouve dans chaque langue. Toujours sans publicité, sans compte,
+  > et tout marche hors-ligne. À télécharger ou à mettre à jour : https://apps.apple.com/app/id6809222617
+- **Message court (WhatsApp, réseaux)** — FR : `Rihla vient d'être mise à jour : le français (Paris), une photo pour chacune des 15 villes, et le Barid pour défier un ami. Gratuit, sans compte, hors-ligne. Mets à jour ici : https://apps.apple.com/app/id6809222617`
+- **Message court** — AR : `تحديث جديد لتطبيق رحلة: الفرنسية (باريس)، صورة حقيقية لكل مدينة من المدن الخمس عشرة، والبريد لتحدّي صديق. مجاني، بلا حساب، ويشتغل بدون أنترنت. حدّث من هنا: https://apps.apple.com/app/id6809222617`
+- La version web (`warimvp.github.io/rihla`) se met à jour toute seule au lancement suivant : rien à annoncer.
