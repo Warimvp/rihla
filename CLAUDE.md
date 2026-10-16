@@ -125,6 +125,12 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Ajouter une leçon = 8 concepts communs (fr+ar) + 8 entrées × 15 langues + son icône (`IconesLecons.jsx`), romanisation obligatoire pour fa/hi/zh/ja/ar/**ru**/**ko** — le garde-fou `langues.test.js` veille.
 - ⚠️ Insertion d'une langue dans `BRUTES` : ancrer sur la fin COMPLÈTE d'un bloc (dernier mot + `],` + `},` mots + `},` langue). S'arrêter au `},` de `mots` insère la langue DANS l'objet précédent (erreur de syntaxe silencieuse jusqu'au parse).
 
+## Pubs verticales en vidéo (`reels/`, 2026-10-16)
+- Projet **Remotion 4.0.535 autonome** (son `package.json`, hors build de l'app, hors vitest) : les deux pubs d'origine — « Voyage 1325 » (30 s) et « Apprends partout » (15 s) — refaites **en darija marocaine**. Mode d'emploi : `reels/README.md`.
+- **Les textes vivent dans `reels/src/textes/darija.js`**, seul fichier à relire. Mêmes coupes que les vidéos d'origine : la musique (extraite de leurs mp4, `reels/public/audio/`, hors git) retombe aux mêmes endroits.
+- Les téléphones montrent **l'app réelle en arabe** (Playwright, `reels/scripts/capturer-ecrans.mjs`, `pnpm dev` d'abord) : l'app n'a pas de mode darija, ses écrans restent en arabe standard. Les captures, la musique et les rendus se régénèrent : ils sont dans `.gitignore`.
+- Mêmes polices que l'app (`public/polices/` importé tel quel). Ajouter une destination à la route ne change pas ces vidéos ; changer un libellé d'écran oblige à relancer la capture.
+
 ## Publicité (socle éteint) — `src/lib/pub.js`
 - **Décision produit** : pas de paywall ; revenus par pub RÉCOMPENSÉE d'abord (opt-in, échangée contre une nuit de caravansérail via `offrirGel`), interstitielle plafonnée en appoint, **jamais de bannière**, **jamais de pub pendant une leçon / un jeu / une révision / l'étape du jour**.
 - Aucun SDK n'est installé : `brancherFournisseur()` reste vide → `pubsDisponibles()` est faux → le bouton du Passeport n'existe pas et l'app est identique à aujourd'hui. Brancher AdMob = installer `@capacitor-community/admob` + appeler `brancherFournisseur()` dans `main.jsx`.
