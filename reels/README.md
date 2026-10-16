@@ -40,16 +40,25 @@ La vidéo sort **musique seule** par défaut. Pour y poser une voix en darija :
 - **Le texte à dire et ses fenêtres de temps** sont dans `src/textes/voix.json` : une réplique par ligne (`debut` = quand la
   voix démarre, `limite` = avant quand elle doit avoir fini). Ce n'est pas toujours le texte de l'écran : l'année et « 15 »
   sont épelés, « MaRihla » se dit « مارحلة ». C'est aussi la feuille de travail d'un comédien de voix.
-- **Les fichiers audio** se posent dans `public/voix/<voix>/<pub>-<id>.mp3` (hors git), par exemple
-  `public/voix/jamal/pub1-tanger.mp3`. `<voix>` est un nom libre : il désigne le dossier.
+- **Les fichiers audio** se posent dans `public/voix/<voix>/<pub>-<id>.mp3` (hors git) ; `<voix>` est un nom libre, c'est le
+  dossier. On les obtient de deux façons :
+  - **Synthèse** : `scripts/voix.py` génère `jamal` et `mouna` (les voix neuronales marocaines de Microsoft,
+    `ar-MA-JamalNeural` et `ar-MA-MounaNeural`) :
+    ```sh
+    python3 -m venv .venv-voix && .venv-voix/bin/pip install edge-tts
+    .venv-voix/bin/python scripts/voix.py            # ou --voix jamal
+    ```
+    Chaque réplique est mesurée : si elle dépasse sa fenêtre, elle est refaite en accélérant juste ce qu'il faut (le script
+    prévient au-delà de +30 %, il faut alors raccourcir le texte) ; les silences de tête et de queue sont coupés et le
+    niveau est ramené à −16 LUFS. Attention à la ponctuation : un point fait une longue pause (« بلاش. بلا اشتراك. » dure 6 s,
+    avec des virgules 4 s) — c'est elle qui règle le rythme. Le paquet `edge-tts` passe par le service « lecture à voix haute »
+    d'Edge, sans clé : **usage non officiel**. Pour une campagne payante, mêmes voix via Azure Speech avec une clé.
+  - **Voix humaine** (ou un autre outil) : un fichier par ligne de `voix.json`, mêmes noms.
 - **Le rendu** : `pnpm exec remotion render Pub1-Darija out/pub1-voix.mp4 --props='{"voix":"jamal"}'` (idem `Pub4-Darija`).
-  La musique descend à 40 % pendant chaque réplique (`src/voix.js`) ; les durées sont mesurées au rendu, et une réplique qui
+  La musique descend à 30 % pendant chaque réplique (`src/voix.js`) ; les durées sont mesurées au rendu, et une réplique qui
   déborde sa `limite` est signalée dans la console.
-- **D'où viennent les fichiers ?** D'une voix humaine, ou d'une synthèse vocale marocaine (les voix neuronales Azure
-  `ar-MA-JamalNeural` et `ar-MA-MounaNeural`, noms à confirmer dans la liste des voix du service ; le paquet `edge-tts` les
-  atteint sans clé, mais c'est un usage non officiel — pour une campagne payante, préférer Azure Speech avec une clé), ou d'un
-  autre outil. **À écouter avant de diffuser** : une voix de synthèse lit du darija écrit en arabe, la prononciation n'est
-  pas garantie.
+- **À écouter avant de diffuser.** Une voix de synthèse lit du darija écrit en arabe : l'accent est marocain, mais la
+  prononciation de chaque mot n'est pas garantie.
 
 ## Ce qu'il faut savoir
 

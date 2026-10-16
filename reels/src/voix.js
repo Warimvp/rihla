@@ -11,7 +11,7 @@ export const REPLIQUES = repliques
 
 // La musique descend à ce niveau sous la voix (1 = inchangée). Assez bas pour que la voix passe devant,
 // assez haut pour que la musique reste celle de la pub.
-const MUSIQUE_SOUS_VOIX = 0.4
+const MUSIQUE_SOUS_VOIX = 0.3
 const ENTREE = 0.3 // la musique commence à baisser un peu AVANT la voix…
 const SORTIE = 0.5 // …et ne remonte qu'un peu APRÈS
 
