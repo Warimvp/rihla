@@ -17,3 +17,10 @@ captures/
 
 # Serveur Cloudflare (serveur/) : état local de wrangler dev et bundle de vérification
 serveur/.wrangler/
+
+# Pubs verticales (reels/) : rendus, captures de l'app et musique se régénèrent — voir reels/README.md
+reels/out/
+reels/public/ecrans/
+reels/public/audio/
+reels/public/voix/
+reels/.venv-voix/
