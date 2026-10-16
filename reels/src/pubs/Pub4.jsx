@@ -1,5 +1,5 @@
-import { AbsoluteFill, Easing, Sequence, interpolate, staticFile, useCurrentFrame } from 'remotion'
-import { Audio } from '@remotion/media'
+import { AbsoluteFill, Easing, Sequence, interpolate, useCurrentFrame } from 'remotion'
+import { BandeSon } from '../composants/VoixOff.jsx'
 import { prog, entreeSortie } from '../anim.js'
 import { C, POLICE_UI, sec } from '../theme.js'
 import { PUB4 } from '../textes/darija.js'
@@ -124,9 +124,9 @@ const SceneCabine = () => {
   )
 }
 
-export const Pub4 = () => (
+export const Pub4 = ({ voix, durees }) => (
   <AbsoluteFill style={{ background: C.nuit }}>
-    <Audio src={staticFile('audio/pub4.m4a')} />
+    <BandeSon pub="pub4" musique="audio/pub4.m4a" voix={voix} durees={durees} />
     <Sequence from={0} durationInFrames={sec(T.cabine) + sec(0.4)} layout="none"><SceneReseau /></Sequence>
     <Sequence from={sec(T.cabine)} durationInFrames={sec(T.fin - T.cabine)} layout="none"><SceneCabine /></Sequence>
     <Sequence from={sec(T.fin)} layout="none">

@@ -1,0 +1,17 @@
+{
+  "_lisez-moi": "Voix off en darija : ce que la voix DIT (pas toujours ce que l'écran écrit : l'année et « 15 » sont épelés, « MaRihla » se dit « مارحلة »). `debut` = instant où la voix démarre, `limite` = instant avant lequel elle doit avoir fini (fin de la scène ou apparition du texte suivant), en secondes sur la vidéo. Un enregistrement par ligne, nommé <pub>-<id>.mp3 dans public/voix/<voix>/ — voir README.",
+  "pub1": [
+    { "id": "tanger", "debut": 0.8, "limite": 7.4, "texte": "فسنة ألف وتلاتمية وخمسة وعشرين، ابن بطوطة خرج من طنجة…" },
+    { "id": "aujourdhui", "debut": 8.1, "limite": 11.9, "texte": "اليوم، جا الدور ديالك باش تسافر." },
+    { "id": "destination", "debut": 12.45, "limite": 16.1, "texte": "ختار وجهتك." },
+    { "id": "etapes", "debut": 16.4, "limite": 20.0, "texte": "تعلّم، مرحلة بمرحلة." },
+    { "id": "exercices", "debut": 20.2, "limite": 23.0, "texte": "تمارين متنوعة." },
+    { "id": "fin", "debut": 23.6, "limite": 29.8, "texte": "خمسطاش لغة. عالم كامل باش تكتاشفو. مارحلة — كاين فالآب ستور." }
+  ],
+  "pub4": [
+    { "id": "wifi", "debut": 0.4, "limite": 3.9, "texte": "ماكاينش الويفي؟ ماكاين مشكل." },
+    { "id": "sans-reseau", "debut": 4.25, "limite": 6.95, "texte": "الدروس والألعاب والمراجعة، بلا نيت." },
+    { "id": "capture", "debut": 7.2, "limite": 9.95, "texte": "هادي لقطة من التطبيق، والنيت مقطوع." },
+    { "id": "fin", "debut": 10.5, "limite": 14.8, "texte": "بلاش. بلا اشتراك. كيخدم بلا نيت. مارحلة — كاين فالآب ستور." }
+  ]
+}

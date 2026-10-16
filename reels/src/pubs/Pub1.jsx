@@ -1,5 +1,5 @@
-import { AbsoluteFill, Sequence, staticFile } from 'remotion'
-import { Audio } from '@remotion/media'
+import { AbsoluteFill, Sequence } from 'remotion'
+import { BandeSon } from '../composants/VoixOff.jsx'
 import { entre, prog, entreeSortie } from '../anim.js'
 import { C, POLICE_UI, sec } from '../theme.js'
 import { PUB1 } from '../textes/darija.js'
@@ -132,9 +132,9 @@ const SceneTelephone = () => {
   )
 }
 
-export const Pub1 = () => (
+export const Pub1 = ({ voix, durees }) => (
   <AbsoluteFill style={{ background: C.nuit }}>
-    <Audio src={staticFile('audio/pub1.m4a')} />
+    <BandeSon pub="pub1" musique="audio/pub1.m4a" voix={voix} durees={durees} />
     <Sequence from={0} durationInFrames={sec(T.carteSombre) + 4} layout="none"><ScenePrologue /></Sequence>
     <Sequence from={sec(T.carteSombre)} durationInFrames={sec(T.telephone - T.carteSombre)} layout="none"><SceneSombre /></Sequence>
     <Sequence from={sec(T.telephone)} durationInFrames={sec(T.fin - T.telephone)} layout="none"><SceneTelephone /></Sequence>

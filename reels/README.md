@@ -33,6 +33,24 @@ pnpm render:darija:pub4                     # → out/MaRihla-Pub4-Apprends-Part
 Dans un conteneur sans navigateur de Remotion : `RIHLA_CHROMIUM=/chemin/vers/headless_shell pnpm render:…`
 (`scripts/app.mjs` accepte la même variable pour les captures).
 
+## Voix off (optionnelle)
+
+La vidéo sort **musique seule** par défaut. Pour y poser une voix en darija :
+
+- **Le texte à dire et ses fenêtres de temps** sont dans `src/textes/voix.json` : une réplique par ligne (`debut` = quand la
+  voix démarre, `limite` = avant quand elle doit avoir fini). Ce n'est pas toujours le texte de l'écran : l'année et « 15 »
+  sont épelés, « MaRihla » se dit « مارحلة ». C'est aussi la feuille de travail d'un comédien de voix.
+- **Les fichiers audio** se posent dans `public/voix/<voix>/<pub>-<id>.mp3` (hors git), par exemple
+  `public/voix/jamal/pub1-tanger.mp3`. `<voix>` est un nom libre : il désigne le dossier.
+- **Le rendu** : `pnpm exec remotion render Pub1-Darija out/pub1-voix.mp4 --props='{"voix":"jamal"}'` (idem `Pub4-Darija`).
+  La musique descend à 40 % pendant chaque réplique (`src/voix.js`) ; les durées sont mesurées au rendu, et une réplique qui
+  déborde sa `limite` est signalée dans la console.
+- **D'où viennent les fichiers ?** D'une voix humaine, ou d'une synthèse vocale marocaine (les voix neuronales Azure
+  `ar-MA-JamalNeural` et `ar-MA-MounaNeural`, noms à confirmer dans la liste des voix du service ; le paquet `edge-tts` les
+  atteint sans clé, mais c'est un usage non officiel — pour une campagne payante, préférer Azure Speech avec une clé), ou d'un
+  autre outil. **À écouter avant de diffuser** : une voix de synthèse lit du darija écrit en arabe, la prononciation n'est
+  pas garantie.
+
 ## Ce qu'il faut savoir
 
 - **Les polices sont celles de l'app** (`../public/polices/`, importées telles quelles) : Amiri pour les titres arabes,

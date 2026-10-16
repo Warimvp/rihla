@@ -129,6 +129,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Projet **Remotion 4.0.535 autonome** (son `package.json`, hors build de l'app, hors vitest) : les deux pubs d'origine — « Voyage 1325 » (30 s) et « Apprends partout » (15 s) — refaites **en darija marocaine**. Mode d'emploi : `reels/README.md`.
 - **Les textes vivent dans `reels/src/textes/darija.js`**, seul fichier à relire. Mêmes coupes que les vidéos d'origine : la musique (extraite de leurs mp4, `reels/public/audio/`, hors git) retombe aux mêmes endroits.
 - Les téléphones montrent **l'app réelle en arabe** (Playwright, `reels/scripts/capturer-ecrans.mjs`, `pnpm dev` d'abord) : l'app n'a pas de mode darija, ses écrans restent en arabe standard. Les captures, la musique et les rendus se régénèrent : ils sont dans `.gitignore`.
+- **Voix off optionnelle** : script et fenêtres de temps dans `reels/src/textes/voix.json`, fichiers `reels/public/voix/<voix>/<pub>-<id>.mp3` (hors git), `--props='{"voix":"<voix>"}'` au rendu ; la musique descend sous la voix (`reels/src/voix.js`). Aucune voix n'est livrée : un service de synthèse marocaine n'est pas joignable depuis le conteneur de dev (réseau), il faut un comédien ou un autre outil — voir `reels/README.md`.
 - Mêmes polices que l'app (`public/polices/` importé tel quel). Ajouter une destination à la route ne change pas ces vidéos ; changer un libellé d'écran oblige à relancer la capture.
 
 ## Publicité (socle éteint) — `src/lib/pub.js`
