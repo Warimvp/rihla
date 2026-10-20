@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      Rihla est 100 % hors ligne : le contenu, les polices, les photos et les progrès sont dans
+      l'application ou sur le téléphone, et la page est servie par le serveur LOCAL de Capacitor
+      (https://localhost, dans le processus). Aucune autorisation Internet : l'application ne
+      PEUT rien envoyer, et la fiche Google Play dit « aucune donnée collectée » sans condition.
+      Le jour où le jeu en ligne entre dans le build (docs/app-store.md § 12), il faudra
+      INTERNET, la fiche « Sécurité des données » et la politique de confidentialité en même temps.
+
+      allowBackup="false" ET dataExtractionRules : le progrès (localStorage de la WebView) ne part
+      pas dans une sauvegarde Google Drive — « rien ne quitte votre téléphone » reste exact. La
+      sauvegarde manuelle (Réglages → Aide et sauvegarde) reste le moyen de changer de téléphone.
+      Contrôlé par scripts/verifier-android.mjs.
+    -->
+    <application
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBarLaunch"
+            android:launchMode="singleTask"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
+    </application>
+
+    <!--
+      Autorisations de l'application, et ce qui les justifie. Toute autorisation nouvelle fait
+      échouer scripts/verifier-android.mjs : l'ajouter là-bas exige de la justifier aussi.
+
+      Posées par le greffon de notifications locales (rappel quotidien, OPT-IN, Réglages) :
+      · POST_NOTIFICATIONS   — afficher le rappel ; demandée seulement quand on l'active ;
+      · RECEIVE_BOOT_COMPLETED — reprogrammer le rappel après un redémarrage du téléphone ;
+      · WAKE_LOCK            — réveiller le téléphone le temps d'afficher le rappel.
+
+      RETIRÉE : SCHEDULE_EXACT_ALARM. Le greffon la pose et demanderait à l'utilisateur d'ouvrir
+      le réglage « Alarmes et rappels » ; un rappel de leçon à 19 h n'a pas besoin de la minute
+      exacte (`isExactNotification: false`, src/lib/rappel.js), et Google Play réserve cette
+      autorisation aux applications d'alarme et de calendrier.
+    -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
+    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
+</manifest>

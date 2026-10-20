@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fond de l'icône adaptative ET de l'écran de lancement : le bleu Majorelle de la marque
+         (public/icons/icon.svg). Produit avec scripts/icones-android.mjs — même valeur que son FOND. -->
+    <color name="ic_launcher_background">#4E46C8</color>
+</resources>

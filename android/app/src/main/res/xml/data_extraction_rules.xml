@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ : règles d'extraction des données. Rien ne part, ni dans la sauvegarde dans le cloud,
+  ni dans le transfert d'appareil à appareil — voir AndroidManifest.xml. (allowBackup="false" seul
+  n'arrête pas le transfert d'appareil à appareil chez certains constructeurs.)
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

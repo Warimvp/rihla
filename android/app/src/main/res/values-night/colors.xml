@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Le même papier, de nuit : le jeton « sable » du thème sombre (src/styles.css). Sans cette variante,
+         une bande crème resterait derrière les barres système d'une page sombre. -->
+    <color name="rihla_fond">#171210</color>
+</resources>

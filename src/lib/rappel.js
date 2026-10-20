@@ -39,6 +39,11 @@ export const decouperHeure = (valeur) => {
 
 // La notification qu'on planifie : quotidienne, à heure fixe, sans son
 // agressif — un carnet de voyage ne crie pas.
+//
+// `isExactNotification: false` : sur Android, le greffon demande par défaut une alarme EXACTE, donc
+// d'envoyer l'utilisateur dans le réglage système « Alarmes et rappels » — et Google Play réserve cette
+// autorisation aux applications d'alarme et de calendrier. Un rappel de leçon à 19 h n'a pas besoin de
+// la minute exacte. Sans effet sur iOS (le champ y est ignoré).
 export function planNotification(heure, textes) {
   const { hour, minute } = decouperHeure(heure)
   return {
@@ -46,6 +51,7 @@ export function planNotification(heure, textes) {
     title: textes.titre,
     body: textes.corps,
     schedule: { on: { hour, minute }, allowWhileIdle: true },
+    isExactNotification: false,
   }
 }
 

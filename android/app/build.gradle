@@ -1,0 +1,133 @@
+apply plugin: 'com.android.application'
+
+// ── Version : UNE source, android/version.properties ────────────────────────
+// `versionName` (1.1) = la version affichée, la MÊME que MARKETING_VERSION côté iOS ;
+// `versionCode` = un entier qui ne fait que monter. Google Play refuse deux envois portant
+// le même versionCode : `pnpm version:android` l'incrémente (jamais à la main, jamais en arrière).
+def fichierVersion = rootProject.file('version.properties')
+def versionProps = new Properties()
+fichierVersion.withInputStream { versionProps.load(it) }
+def nomDeVersion = versionProps.getProperty('versionName')
+def numeroDeBuild = versionProps.getProperty('versionCode') as Integer
+if (!(nomDeVersion ==~ /\d+\.\d+(\.\d+)?/)) {
+    throw new GradleException("android/version.properties : versionName doit être de la forme 1.2 ou 1.2.3 (reçu : ${nomDeVersion}).")
+}
+if (numeroDeBuild == null || numeroDeBuild < 1) {
+    throw new GradleException("android/version.properties : versionCode doit être un entier ≥ 1 (reçu : ${numeroDeBuild}).")
+}
+
+// ── Signature de PUBLICATION ────────────────────────────────────────────────
+// Clé d'importation du PROPRIÉTAIRE, jamais dans le dépôt. Le fichier de propriétés est lu,
+// dans cet ordre :
+//   1. le chemin donné par la variable d'environnement ANDROID_KEYSTORE_PROPERTIES ;
+//   2. android/keystore.properties (ignoré par git).
+// Contenu (voir docs/google-play.md § 2) :
+//   storeFile=/chemin/absolu/hors/depot/rihla-importation.jks
+//   storePassword=…
+//   keyAlias=rihla-importation
+//   keyPassword=…
+// Sans lui, les builds debug marchent ; bundleRelease/assembleRelease REFUSENT.
+def cheminProprietes = System.getenv('ANDROID_KEYSTORE_PROPERTIES')
+def fichierProprietes = cheminProprietes ? new File(cheminProprietes) : rootProject.file('keystore.properties')
+def proprietes = new Properties()
+def signatureDisponible = fichierProprietes.isFile()
+if (signatureDisponible) {
+    fichierProprietes.withInputStream { proprietes.load(it) }
+}
+
+android {
+    namespace = "ma.rihla.app"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        // ⚠ Identifiant figé dès le premier envoi sur Google Play : ne plus jamais le changer
+        // (même valeur que l'identifiant de bundle iOS).
+        applicationId "ma.rihla.app"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode numeroDeBuild
+        versionName nomDeVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        release {
+            if (signatureDisponible) {
+                def fichierCle = new File(proprietes.getProperty('storeFile', ''))
+                // Un chemin relatif se lit depuis le fichier de propriétés, pas depuis le dossier
+                // courant de Gradle (qui change selon qui lance la build).
+                storeFile fichierCle.isAbsolute() ? fichierCle : new File(fichierProprietes.parentFile, fichierCle.path)
+                storePassword proprietes.getProperty('storePassword')
+                keyAlias proprietes.getProperty('keyAlias')
+                keyPassword proprietes.getProperty('keyPassword')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (signatureDisponible) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+}
+
+// Une build de publication non signée est inutilisable (Google Play la refuse) : on s'arrête AVANT
+// de compiler, avec un message qui dit quoi faire, plutôt que de livrer un .aab inutile ou une erreur
+// de signature au bout de deux minutes.
+gradle.taskGraph.whenReady { graphe ->
+    def veutPublier = graphe.allTasks.any {
+        it.project == project && it.name ==~ /(bundle|assemble|package|install|sign)Release.*/
+    }
+    if (!veutPublier) return
+    def ou = cheminProprietes ? "ANDROID_KEYSTORE_PROPERTIES=${cheminProprietes}" : 'android/keystore.properties'
+    if (!signatureDisponible) {
+        throw new GradleException(
+            "Build de publication refusée : aucun fichier de signature (${ou} introuvable).\n" +
+            "La clé d'importation est celle du PROPRIÉTAIRE, hors du dépôt : docs/google-play.md § 2.")
+    }
+    def manquantes = ['storeFile', 'storePassword', 'keyAlias', 'keyPassword'].findAll { !proprietes.getProperty(it)?.trim() }
+    if (manquantes) {
+        throw new GradleException("Build de publication refusée : ${ou} ne définit pas ${manquantes.join(', ')}.")
+    }
+    def cle = android.signingConfigs.release.storeFile
+    if (cle == null || !cle.isFile()) {
+        throw new GradleException("Build de publication refusée : le magasin de clés « ${cle} » n'existe pas.")
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    // EdgeToEdge (MainActivity) : bord à bord sur toutes les versions d'Android.
+    implementation "androidx.activity:activity:$androidxActivityVersion"
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

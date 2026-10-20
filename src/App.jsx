@@ -24,6 +24,7 @@ import { CLE_LIEN_SALLE, enLigneActif, envoyerScore } from './lib/enligne.js'
 import { normaliserCode } from './lib/salle.js'
 import { identite } from './lib/voyageur.js'
 import { EVENEMENT_RETOUR, profondeurDe } from './lib/retour.js'
+import { suivreBarres } from './lib/barres.js'
 import { Accueil } from './components/Accueil.jsx'
 import { Barid } from './components/Barid.jsx'
 import { Classement } from './components/Classement.jsx'
@@ -116,6 +117,9 @@ export default function App() {
     }
     ecrireLocal('rihla.theme', theme)
   }, [theme])
+
+  // Android : les icônes des barres système suivent le thème EFFECTIF (src/lib/barres.js).
+  useEffect(() => suivreBarres(theme), [theme])
 
   // Langue des définitions (indépendante de la langue de l'interface) :
   // « anglais → arabe » = interface FR, définitions AR, par exemple.

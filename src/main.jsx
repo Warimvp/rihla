@@ -13,7 +13,9 @@ createRoot(document.getElementById('root')).render(
 // Chemin relatif : fonctionne à la racine comme sous /rihla/ (GitHub Pages).
 // Sur iOS (WKWebView, schéma capacitor://) il n'y a pas de service worker :
 // register() échoue, le .catch() l'avale, l'app native est inchangée.
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+// Pas non plus dans l'app Android (WebView, https://localhost) : les fichiers y sont DÉJÀ embarqués dans
+// l'application, un cache de plus n'apporterait que des versions périmées après une mise à jour.
+if (import.meta.env.PROD && 'serviceWorker' in navigator && !window.Capacitor?.isNativePlatform?.()) {
   // Pas de rechargement forcé quand un nouveau SW prend la main : il tomberait
   // en pleine leçon ou en plein Duel. Le lancement suivant part au réseau et
   // rapporte la nouvelle version — c'est le travail du SW, pas de la page.

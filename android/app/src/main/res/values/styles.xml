@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Thème de l'application (l'activité utilise les deux suivants). -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!--
+      Thème de l'activité une fois l'écran de lancement fermé (BridgeActivity l'applique elle-même).
+      La fenêtre est bord à bord (MainActivity) : windowBackground n'apparaît que DERRIÈRE les barres
+      système, et seulement si la WebView est trop ancienne pour recevoir les zones sûres.
+    -->
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:background">@null</item>
+        <item name="android:windowBackground">@color/rihla_fond</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!--
+      Écran de lancement : API SplashScreen d'Android 12 (rétroportée jusqu'à l'API 24 par
+      androidx.core:core-splashscreen). Le bleu Majorelle de la marque et l'étoile à huit pointes avec
+      sa boussole — la même icône que sur l'iPhone. Images produites par scripts/icones-android.mjs.
+    -->
+    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/lancement</item>
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
+    </style>
+</resources>
