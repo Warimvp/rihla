@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Derrière les barres système si la WebView est trop ancienne pour recevoir les zones sûres :
+         le papier de l'application (jeton sable), pas le gris d'AppCompat. -->
+    <color name="rihla_fond">#F7F0E3</color>
+</resources>

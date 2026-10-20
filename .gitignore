@@ -17,3 +17,13 @@ captures/
 
 # Serveur Cloudflare (serveur/) : état local de wrangler dev et bundle de vérification
 serveur/.wrangler/
+
+# Android : la clé d'importation est celle du PROPRIÉTAIRE, jamais dans le dépôt (docs/google-play.md § 2)
+android/keystore.properties
+*.jks
+*.keystore
+# Copie du build web dans le projet Android — régénérée par `pnpm android:sync`
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/capacitor-cordova-android-plugins/

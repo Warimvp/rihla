@@ -28,4 +28,9 @@ describe('planNotification', () => {
     expect(plan.schedule.on).toEqual({ hour: 8, minute: 5 })
     expect(plan.schedule.allowWhileIdle).toBe(true)
   })
+
+  it('demande une alarme NON exacte : sinon Android envoie l’utilisateur dans « Alarmes et rappels » et Google Play réserve cette autorisation aux applications d’alarme', () => {
+    const plan = planNotification('19:00', { titre: 'Rihla', corps: 'Ton étape du jour t’attend' })
+    expect(plan.isExactNotification).toBe(false)
+  })
 })

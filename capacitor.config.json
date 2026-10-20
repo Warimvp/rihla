@@ -1,5 +1,8 @@
 {
   "appId": "ma.rihla.app",
   "appName": "Rihla",
-  "webDir": "dist"
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false
+  }
 }

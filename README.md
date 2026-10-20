@@ -61,7 +61,7 @@ Une organisation n'est **pas** requise pour publier : l'adhésion **« Individua
 
 ### 4. Android
 
-Google Play : compte développeur à 25 $ **une seule fois** — ou distribution directe d'APK / PWA sans aucun compte.
+Le projet `android/` (Capacitor 8, `ma.rihla.app`) est prêt : `pnpm android:release` fabrique l'AAB signé et refuse tout ce qui ne doit pas partir (barrière `scripts/verifier-android.mjs`). Il manque ta clé d'importation et l'envoi : **mode d'emploi dans [`docs/google-play.md`](docs/google-play.md)**, textes de la fiche dans [`docs/fiche-google-play.md`](docs/fiche-google-play.md). Compte développeur Google Play : 25 $ **une seule fois** — ou distribution directe d'APK / PWA sans aucun compte.
 
 ## Crédits photo
 
