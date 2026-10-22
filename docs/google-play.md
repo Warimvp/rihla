@@ -267,6 +267,9 @@ rétabli, description courte trop longue), `rappel.test.js` (alarme exacte).
 - [ ] Fiche remplie (fr-FR, ar, en-US) ; **les textes arabes et anglais relus par un lecteur natif**
 - [ ] Déclarations du § 5 faites ; classification IARC envoyée ; public cible **13+** confirmé
 - [ ] Pays de distribution choisis ; prix : gratuite
-- [ ] Politique de confidentialité en ligne (`warimvp.github.io/rihla/confidentialite/`) — relire qu'elle n'annonce pas
-      pour Android une fonction absente de cette build (le jeu en ligne : désactivé par défaut et ABSENT ici)
+- [x] Politique de confidentialité en ligne (`warimvp.github.io/rihla/confidentialite/`) — relire qu'elle n'annonce pas
+      pour Android une fonction absente de cette build (le jeu en ligne : désactivé par défaut et ABSENT ici).
+      Fait le 22/10/2026 : la page dit que l'application Android n'a ni le jeu en ligne ni l'autorisation Internet
+      (FR + AR), son contact est celui de la fiche (`contact@legantis.net`) ; `fiche-google-play.test.js` le garde.
+      **Effective à la fusion** : le workflow Pages publie la page à chaque push sur `main`.
 - [ ] Branche `android-play` relue, fusionnée dans `main`, poussée (le workflow Pages teste et publie à chaque push)

@@ -104,3 +104,33 @@ describe('fiche Google Play : ce qu’elle promet, l’application le tient', ()
     expect(textes('fr-FR').complete).toContain('pas de publicité')
   })
 })
+
+describe('politique de confidentialité : même contact que la fiche, et la vérité sur Android', () => {
+  const page = readFileSync(join(RACINE, 'public/confidentialite/index.html'), 'utf8')
+  const [francais, arabe] = page.split('<div dir="rtl" lang="ar">')
+  const contact = /e-mail `([^`]+)`/.exec(fiche)?.[1]
+
+  it('le partage FR / AR de la page est lu correctement (garde-fou du test lui-même)', () => {
+    expect(contact).toBe('contact@legantis.net')
+    expect(francais).toContain('Politique de confidentialité')
+    expect(arabe).toContain('سياسة الخصوصية')
+  })
+
+  it('le contact est celui de la fiche, en français comme en arabe, et aucune adresse personnelle', () => {
+    expect(francais).toContain(`mailto:${contact}`)
+    expect(arabe).toContain(`mailto:${contact}`)
+    expect(page).not.toMatch(/@gmail\.com/i)
+  })
+
+  it('« le jeu en ligne n’existe pas sur Android » est dit en français ET en arabe, et le manifeste le tient', () => {
+    expect(francais).toMatch(/application Android ne contient pas le jeu en ligne/)
+    expect(arabe).toContain('تطبيق أندرويد لا يتضمّن اللعب عبر الإنترنت')
+    expect(manifeste).toMatch(/<uses-permission[^>]*android\.permission\.INTERNET[^>]*tools:node="remove"/)
+  })
+
+  it('les deux « dernière mise à jour » portent le même jour et la même année', () => {
+    const jour = (texte) => /(\d{1,2})\s+\S+\s+(\d{4})/.exec(texte.split(/Dernière mise à jour|آخر تحديث/)[1])?.slice(1, 3).join(' ')
+    expect(jour(francais)).toBeTruthy()
+    expect(jour(francais)).toBe(jour(arabe))
+  })
+})
