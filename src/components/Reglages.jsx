@@ -431,6 +431,18 @@ export function Reglages({
         </p>
       </div>
 
+      {/* Exigé par Google Play DANS l'application, même sans aucune collecte. La page
+          embarquée s'ouvre sans réseau (Android n'a pas l'autorisation INTERNET) ;
+          le nom de fichier est explicite : sans extension, le serveur local de
+          Capacitor rendrait index.html, donc l'application elle-même. */}
+      <a
+        className="bouton bouton--secondaire bouton--pleine"
+        style={{ minHeight: 44, fontSize: 14, textDecoration: 'none' }}
+        href="./confidentialite/index.html"
+      >
+        {t.confidentialite}
+      </a>
+
       <button type="button" className="bouton bouton--secondaire" onClick={() => setQuestion('effacer')}>
         {t.effacer}
       </button>

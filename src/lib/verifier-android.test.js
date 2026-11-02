@@ -182,7 +182,9 @@ describe('verifier-android synchro : ce qui ne doit pas partir sur Google Play',
     })
 
     it('versionCode illisible', async () => {
-      await refuse((d) => remplacer(d, 'android/version.properties', 'versionCode=1', 'versionCode=zéro'), 'versionCode « NaN » illisible')
+      // Le numéro réel, relu : il monte à chaque envoi, un littéral casserait ce test au premier versionCode 2.
+      const versionCode = /^versionCode=\d+$/m.exec(readFileSync(join(RACINE, 'android/version.properties'), 'utf8'))[0]
+      await refuse((d) => remplacer(d, 'android/version.properties', versionCode, 'versionCode=zéro'), 'versionCode « NaN » illisible')
     })
   })
 

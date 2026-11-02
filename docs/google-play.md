@@ -1,8 +1,15 @@
 # Publier Rihla sur Google Play
 
-Dossier du 20/10/2026. **Rien n'a été envoyé à Google.** Ce qui reste est chez vous : la clé d'importation (§ 2),
-l'envoi de l'AAB et l'envoi pour examen (§ 3). La fiche et les déclarations de la console se font d'après
-`docs/fiche-google-play.md` et le § 5 ci-dessous.
+Dossier du 20/10/2026, état revu le 02/11/2026 : **l'application n'est PAS publique** (la fiche Google Play répond 404)
+et **rien n'a été envoyé pour examen**. Clé d'importation créée, compte d'organisation `Legantis Digital Service`
+(connecté avec le compte Google de la société), test interne actif, version de production préparée pour 11 pays, publication
+gérée DÉSACTIVÉE : une approbation de Google rendrait l'application publique aussitôt. Le dernier geste reste au
+responsable (§ 8).
+
+**Trouvé le 02/11/2026, corrigé en 1.1 (2)** : Google exige un lien vers la politique **dans l'application**, même sans
+collecte ; il n'y en avait aucun. Réglages › À propos ouvre désormais `confidentialite/index.html`, la page embarquée
+(pas d'`INTERNET` sur Android ; le nom de fichier est explicite car, sans extension, le serveur local de Capacitor rend
+l'application). La 1.1 (1) embarquait en plus la version du 19/09 de cette page : construite avant le dernier commit.
 
 | | |
 |---|---|
@@ -261,7 +268,8 @@ rétabli, description courte trop longue), `rappel.test.js` (alarme exacte).
 
 ## 8. Liste de contrôle avant « Envoyer pour examen »
 
-- [ ] Clé d'importation créée PAR VOUS, sauvegardée (fichier + mots de passe)
+- [x] Lien vers la politique DANS l'application (Réglages › À propos), ouvert à l'émulateur réseau coupé (1.1 (2))
+- [x] Clé d'importation créée (`~/cles/rihla`) ; **sauvegarde du fichier et des mots de passe à confirmer**
 - [ ] `pnpm android:release` vert avec VOTRE clé (barrière « livrable » : rien à refuser), AAB téléversé
 - [ ] Essai sur un vrai téléphone Android : lancement, hors ligne (mode avion), rappel, Retour, arabe
 - [ ] Fiche remplie (fr-FR, ar, en-US) ; **les textes arabes et anglais relus par un lecteur natif**

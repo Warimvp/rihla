@@ -4,6 +4,8 @@
 // lancement dans sa langue, changer de destination, retrouver les jeux, ne
 // pas perdre une étape sur un geste, revenir en arrière avec le bouton du
 // téléphone.
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -311,6 +313,33 @@ describe('une étape, sans la perdre', () => {
 })
 
 describe('les Réglages, rangés', () => {
+  it('la politique de confidentialité s’ouvre depuis l’application, sur la page embarquée (exigence Google Play)', () => {
+    const vue = monter(
+      <Reglages
+        t={t}
+        locale="fr"
+        surLocale={() => {}}
+        theme="auto"
+        surTheme={() => {}}
+        sourceChoix="auto"
+        surSource={() => {}}
+        objectifJour={20}
+        surObjectif={() => {}}
+        libelleCap="La route"
+        surChangerCap={() => {}}
+        surGuide={() => {}}
+        progres={progresInitial()}
+        surRestaurer={() => {}}
+        surEffacer={() => {}}
+      />
+    )
+    const lien = [...vue.querySelectorAll('a')].find((a) => a.textContent === t.confidentialite)
+    expect(lien).toBeTruthy()
+    const cible = lien.getAttribute('href')
+    expect(cible).toBe('./confidentialite/index.html')
+    expect(existsSync(join(import.meta.dirname, '..', '..', 'public', cible))).toBe(true)
+  })
+
   it('quatre sections titrées, chacune avec ses cartes', () => {
     const vue = monter(
       <Reglages

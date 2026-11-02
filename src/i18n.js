@@ -407,6 +407,7 @@ const fr = {
     sousTitre: 'Suggère une langue, signale une traduction',
     bouton: 'Proposer une amélioration',
   },
+  confidentialite: 'Politique de confidentialité',
   photos: {
     photo: 'Photo :',
     recadree: '(recadrée)',
@@ -843,6 +844,7 @@ const ar = {
     sousTitre: 'اقترح لغة أو بلّغ عن ترجمة',
     bouton: 'اقترح تحسيناً',
   },
+  confidentialite: 'سياسة الخصوصية',
   photos: {
     photo: 'الصورة:',
     recadree: '(مقصوصة)',
