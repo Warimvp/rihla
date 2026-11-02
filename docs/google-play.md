@@ -1,10 +1,10 @@
 # Publier Rihla sur Google Play
 
-Dossier du 20/10/2026, état revu le 02/11/2026 : **l'application n'est PAS publique** (la fiche Google Play répond 404)
-et **rien n'a été envoyé pour examen**. Clé d'importation créée, compte d'organisation `Legantis Digital Service`
-(connecté avec le compte Google de la société), test interne actif, version de production préparée pour 11 pays, publication
-gérée DÉSACTIVÉE : une approbation de Google rendrait l'application publique aussitôt. Le dernier geste reste au
-responsable (§ 8).
+Dossier du 20/10/2026, état revu le 02/11/2026 : **1.1 (2) en cours d'examen chez Google** depuis le 02/11/2026, pour
+11 pays ; **l'application n'est PAS publique** (la fiche Google Play répond 404). Compte d'organisation `Legantis
+Digital Service` (connecté avec le compte Google de la société), test interne actif. **Publication gérée ACTIVÉE** : une
+approbation ne publie rien, les modifications passent en « prêtes à être publiées » et le clic « Publier » revient au
+responsable.
 
 **Trouvé le 02/11/2026, corrigé en 1.1 (2)** : Google exige un lien vers la politique **dans l'application**, même sans
 collecte ; il n'y en avait aucun. Réglages › À propos ouvre désormais `confidentialite/index.html`, la page embarquée
