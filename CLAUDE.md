@@ -58,6 +58,7 @@ App d'apprentissage des langues 100 % gratuite, thème « carnet de voyage » : 
 - Scheme partagé `App` copié depuis khedma (le template Capacitor 8 n'en génère pas — sans lui `xcodebuild -scheme App` ne trouve rien).
 - Workflow : `pnpm ios:sync` (build web + copie), puis Xcode. ⚠️ Mac Intel : premier rendu WKWebView 2–4 min (écran blanc) — attendre.
 - Safe-areas : `viewport-fit=cover` + `env(safe-area-inset-*)` ; ne pas ajouter `contentInset` dans capacitor.config.
+- **Monter Capacitor iOS** : `@capacitor/ios` (8.5.3 depuis le 02/11/2026, faille GHSA-rvm3-566m-v7fv) commande `capacitor-swift-pm`, épinglé `exact` dans `CapApp-SPM/Package.swift` par `cap sync`. Après `pnpm add`, `pnpm ios:sync` puis `xcodebuild -resolvePackageDependencies` (qui réécrit `Package.resolved`) : les quatre fichiers partent ensemble, sinon Xcode garde les anciens artefacts. Un correctif n'atteint les téléphones qu'avec un nouveau build.
 - Déploiement sans organisation Apple : README § « Déploiement ».
 - **Sur l'App Store depuis le 21/09/2026** : id `6809222617`, lien canonique `https://apps.apple.com/app/id6809222617` (utilisé par legantis.net, le README et la balise `apple-itunes-app` de `index.html`). Écarts de la fiche 1.0 (nom `ma.rihla.app`, 17+, EN seul) et leur correction en 1.1 : `docs/app-store.md` § 14. Localisations iOS : `ios/App/App/{fr,ar}.lproj/InfoPlist.strings` (variant group dans le pbxproj) — sans `.lproj` de langue, l'App Store affiche « anglais ».
 
