@@ -14,12 +14,23 @@ Contenu : (1) **le bouton du son reste affiché dans les 15 langues** (éteint e
 de la langue, le toucher explique ; avant, il disparaissait) ; (2) la fenêtre « Nouveautés » de la 1.1 iOS
 (`claude/mise-a-jour`, a4b2e7e — le test du z-index contre `.voile-etat` iOS y est remplacé par « au-dessus de toute
 autre couche »). Les testeurs qui ont déjà la 1.1 (2) verront cette fenêtre UNE fois (elle date de la 1.1). **Le jeu en
-ligne (La Course, serveur) n'est dans AUCUNE build native, iOS comprise** : seul le Barid (duel par lien, sans serveur)
-y est ; l'y mettre = `INTERNET` + fiche « Sécurité des données » + politique + IARC, décision à part.
+ligne (La Course, serveur) n'est dans AUCUNE build 1.1, iOS comprise** : seul le Barid (duel par lien, sans serveur)
+y est.
+
+**1.2 préparée le 08/11/2026 (branche `android/1.1-3`, NON poussée, rien envoyé à Google)** : **La Course, l'adversaire
+au hasard et les classements entrent dans la build Android** (facultatifs, éteints par défaut, écran « Jouer en ligne ? »
+avant tout envoi). AAB `versionName 1.2 / versionCode 4`, 4 113 773 octets, sha256 `8bb2b55b…fbd32`, même clé d'importation.
+Manifeste fusionné : `INTERNET` + les trois autorisations du rappel, **rien d'autre**. Barrière : `INTERNET` exigée
+**et** UNE seule adresse de serveur admise (la bonne, https, présente) — l'une sans l'autre est refusée.
+`android:sync` pose `VITE_RIHLA_SERVEUR` lui-même (plus de `.env`). Essayée dans la WebView 133 de l'émulateur (14
+contrôles) : aucune requête avant le consentement, salle créée sur le serveur de production (code relu côté serveur),
+« Serveur injoignable » proprement sans réseau. **Avant l'envoi, à faire dans la console (§ 5bis) : « Sécurité des
+données », fiche (3 langues), classification IARC** — la 1.1 (3) en cours d'examen n'a PAS `INTERNET` : ne rien changer
+dans ces déclarations avant son approbation et sa publication.
 
 **Trouvé le 02/11/2026, corrigé en 1.1 (2)** : Google exige un lien vers la politique **dans l'application**, même sans
 collecte ; il n'y en avait aucun. Réglages › À propos ouvre désormais `confidentialite/index.html`, la page embarquée
-(pas d'`INTERNET` sur Android ; le nom de fichier est explicite car, sans extension, le serveur local de Capacitor rend
+(page embarquée, ouverte sans réseau ; le nom de fichier est explicite car, sans extension, le serveur local de Capacitor rend
 l'application). La 1.1 (1) embarquait en plus la version du 19/09 de cette page : construite avant le dernier commit.
 
 | | |
@@ -109,7 +120,7 @@ de compiler** (message : « Build de publication refusée »).
 ```bash
 cd ~/Projects/rihla          # après fusion de la branche android-play dans main
 # Aucun .env n'est nécessaire. Surtout PAS de VITE_RIHLA_SERVEUR : la barrière refuse un bundle qui porte
-# l'adresse du serveur de duels (le jeu en ligne n'entre pas dans cette build : docs/app-store.md § 12).
+# l'adresse du serveur de duels est posée PAR `android:sync` (1.2) : la barrière la refuse absente ou différente.
 ANDROID_KEYSTORE_PROPERTIES=~/cles/rihla/keystore.properties pnpm android:release
 ```
 
@@ -143,12 +154,13 @@ plateformes (iOS : build + 1 ; Android : versionCode + 1) — puis `pnpm android
 | `RECEIVE_BOOT_COMPLETED` | reprogrammer le rappel après un redémarrage du téléphone |
 | `WAKE_LOCK` | réveiller le téléphone le temps d'afficher le rappel |
 | `ma.rihla.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` | posée par androidx.core à toute application ; permission de signature, interne, invisible |
-| **`INTERNET` — absente** | Rihla est 100 % hors ligne (la page est servie par le serveur LOCAL de Capacitor, dans le processus) : la fiche peut dire « aucune donnée collectée » sans condition, et l'application NE PEUT rien envoyer |
+| **`INTERNET` — déclarée (1.2)** | le jeu en ligne facultatif : `fetch` + `WebSocket` vers l'UNIQUE serveur de la barrière (https/wss, jamais en clair : `usesCleartextTraffic` reste refusé), seulement après l'écran « Jouer en ligne ? ». Elle va avec « Sécurité des données » (§ 5bis) et la politique. Sans l'adresse du serveur dans la build, la barrière la refuse (autorisation sans usage) |
 | **`SCHEDULE_EXACT_ALARM` — retirée** | le greffon de notifications la pose et enverrait l'utilisateur dans « Alarmes et rappels » ; Google Play la réserve aux applications d'alarme et de calendrier. Le rappel est `isExactNotification: false` (`src/lib/rappel.js`) : à 19 h, pas à la minute près |
 
 Le greffon **ajoute bien** `SCHEDULE_EXACT_ALARM` au manifeste fusionné (constaté en la rétablissant : la barrière
 `livrable` la refuse) : le `tools:node="remove"` du manifeste source est indispensable, pas décoratif. `INTERNET`, elle,
-n'est pas posée par défaut ; son retrait explicite est une ceinture.
+est DÉCLARÉE explicitement dans le manifeste source depuis la 1.2 (le modèle ne la pose pas) : la barrière refuse un
+manifeste qui la retire (`tools:node="remove"`) ou qui ne la cite qu'en commentaire.
 
 - **`allowBackup="false"` ET `dataExtractionRules`.** Le progrès vit dans le `localStorage` de la WebView : une
   sauvegarde Google Drive ou un transfert vers un autre téléphone l'emporterait, ce qui contredirait « rien ne quitte
@@ -199,7 +211,7 @@ dans leur langue ; `en-US` reprend ceux du français.
 |---|---|
 | Accès à l'application | toutes les fonctions sont accessibles sans identifiants |
 | Annonces | **aucune** ; identifiant publicitaire : **non** |
-| Sécurité des données | **aucune donnée collectée ni partagée** (pas d'`INTERNET`) ; pas de compte → pas d'URL de suppression |
+| Sécurité des données | **1.1 : aucune donnée collectée ni partagée** (pas d'`INTERNET`). **1.2 : voir § 5bis** (pseudonyme, scores, identifiant aléatoire, facultatifs) ; pas de compte → pas d'URL de suppression de compte |
 | Politique de confidentialité | `https://warimvp.github.io/rihla/confidentialite/` |
 | Classification (IARC) | catégorie « Tous les autres types d'applications » ; contenu à évaluer dans le package : non ; partage de contenu utilisateur : non ; contenu en ligne : non ; produits soumis à l'âge : non ; position, achats, récompenses, navigateur : non ; « produit essentiellement éducatif » : **oui**. Résultat obtenu : Brésil **L**, ESRB **Tout public**, PEGI **3** |
 | Public cible | **13 ans et plus** : tranches 13–15, 16–17, 18+ (la console refuse d'ailleurs toute tranche < 13 ans : la classification ESRB n'est pas « Tout public »-enfant). L'application n'est pas destinée aux enfants ; cocher une tranche < 13 ans la ferait entrer dans la politique « Familles ». **PROPOSITION à confirmer** |
@@ -224,16 +236,69 @@ textes arabes et anglais, puis l'envoi (§ 8).
 
 ---
 
+## 5bis. Ce qui change dans la console pour la 1.2 — à faire AVANT « Envoyer pour examen »
+
+La 1.2 envoie des données hors du téléphone (si, et seulement si, le voyageur active le jeu en ligne). La console doit
+le dire **avant** que la build parte : Google compare la fiche « Sécurité des données » à ce que l'APK sait faire.
+**Ne rien modifier tant que la 1.1 (3), en cours d'examen, n'est pas approuvée et publiée** (elle n'a pas `INTERNET`).
+Ordre : (1) publier la 1.1 (3) ; (2) déclarations ci-dessous ; (3) fiche ; (4) Production → Créer une version → `rihla-1.2-versionCode4.aab`
+(`~/Documents/bureaux/Rihla-PlayStore/aab/`) ; (5) tout envoyer ensemble.
+
+**Sécurité des données** (Contenu de l'application) — *proposition, à valider par vous (§ 5ter)* :
+
+| Catégorie Play | Type | Collecté | Partagé | Facultatif | Finalité | Chiffré en transit |
+|---|---|---|---|---|---|---|
+| Informations personnelles | **Nom** (le pseudonyme, 24 caractères, choisi librement) | oui | non | **oui** (jeu en ligne activé par l'utilisateur) | fonctionnalités de l'appli | oui (https / wss) |
+| Identifiants d'appareil ou autres | **ID d'appareil ou autres ID** (identifiant tiré au hasard sur l'appareil + empreinte d'un secret ; **pas** un identifiant publicitaire) | oui | non | oui | fonctionnalités de l'appli | oui |
+| Activité dans l'application | **Autres actions** (scores, temps de jeu, réponses pendant un duel) | oui | non | oui | fonctionnalités de l'appli | oui |
+
+Tout le reste : **non collecté**. « Partagé » = non : Cloudflare héberge le serveur **pour le compte de Rihla** (prestataire,
+exempté par la définition de Google). Suppression : les scores s'effacent d'eux-mêmes après 60 jours, les salles après
+1 heure ; l'utilisateur peut demander l'effacement immédiat par e-mail (la page de confidentialité le dit) → répondre
+« oui, par un moyen en dehors de l'appli » avec `https://warimvp.github.io/rihla/confidentialite/`. L'ancien texte
+« aucune donnée collectée » ne doit plus figurer nulle part (fiche, captures, légendes).
+
+**Classification (IARC)** : refaire le questionnaire. Les joueurs interagissent (duel en direct, pseudonyme visible de
+l'adversaire et dans les classements) : « les utilisateurs peuvent interagir » = **oui** ; aucun échange de texte libre
+entre joueurs, aucune position partagée, aucun achat. Résultat attendu : toujours un public large, avec la mention
+« Interactivité des utilisateurs ». Les pseudonymes passent par un filtre local ET serveur (`src/lib/pseudo.js`,
+`nomPublic`).
+
+**Fiche (3 langues)** : coller les nouveaux textes de `docs/fiche-google-play.md` (« La Course (facultatif) » dans « Pour
+réviser » ; le paragraphe « Sans compte… » ne dit plus « aucune donnée » ni « pas d'autorisation Internet »). Les
+captures n'ont pas besoin d'être refaites. **Public cible** : 13 ans et plus, inchangé.
+
+## 5ter. Questions que la 1.2 vous pose (je ne les ai pas tranchées)
+
+1. **CNDP (loi 09-08)** : la 1.2 envoie un pseudonyme, un identifiant aléatoire et des scores depuis des téléphones au
+   Maroc. La version web fait déjà la même chose depuis le 19/09. Un récépissé est-il nécessaire ? À faire valider.
+2. **Journaux de Cloudflare** : `serveur/wrangler.jsonc` active `observability` (journaux des requêtes). La page de
+   confidentialité dit que le code ne conserve aucune adresse IP ; vérifier ce que les journaux de Workers retiennent et
+   pendant combien de temps avant de répondre « non » à une collecte d'adresse IP dans le formulaire.
+3. **Serveur à jour ?** Le dernier changement du dossier `serveur/` (filtre de pseudonymes côté serveur, `1eafb9b`, 01/10)
+   a-t-il été déployé (`pnpm run deploy` depuis `serveur/`) ? Le serveur de production répond `{"version":"1"}` comme le
+   dépôt, mais rien ne prouve la date de son déploiement. Le client filtre de toute façon les noms reçus (`messagePropre`).
+4. **iOS** : la 1.2 iOS (même code, build 8 dans le projet) n'embarque le serveur que si `.env` contient
+   `VITE_RIHLA_SERVEUR` au moment de `pnpm ios:sync` — et alors `docs/app-store.md` § 12 (étiquettes de confidentialité)
+   s'applique. Aucun build iOS n'a été fait ici.
+
+---
+
 ## 6. Ce qui a été éprouvé par sabotage
 
 Chaque règle de la barrière a été cassée UNE fois, le refus NOMMÉ constaté, le fichier restauré et son `md5` comparé.
 
 **`synchro`** (`src/lib/verifier-android.test.js`, projet jetable hermétique + témoin qui doit passer) — **21/21**
-neutralisations détectées : `allowBackup`, `dataExtractionRules`, `usesCleartextTraffic`, `INTERNET` / `SCHEDULE_EXACT_ALARM`
-non retirées, autorisation non justifiée, commentaires XML (une autorisation commentée n'en est pas une), adresse du
-serveur de duels, `server.url`, `appId`, fichier absent / différent / orphelin par rapport à `dist/`, `assets/public` vide,
+neutralisations détectées en 1.1 : `allowBackup`, `dataExtractionRules`, `usesCleartextTraffic`, `SCHEDULE_EXACT_ALARM`
+non retirée, autorisation non justifiée, commentaires XML (une autorisation commentée n'en est pas une), `server.url`, `appId`, fichier absent / différent / orphelin par rapport à `dist/`, `assets/public` vide,
 `MARKETING_VERSION` iOS ≠ `versionName`, `versionCode` illisible, taille et alpha des icônes (adaptative, ronde, de
 lancement, de la fiche), icône manquante, `livrable` sans APK.
+**1.2** (jeu en ligne) : `INTERNET` retirée ou seulement commentée (refusée : elle doit être déclarée), adresse du serveur
+absente du bundle, serveur d'essai en plus du bon, bonne adresse en `http`, plus un témoin « l'adresse dans plusieurs
+fichiers passe ». Les quatre règles du script ont été neutralisées une à une (INTERNET non exigée, présence non exigée,
+autre adresse non refusée, constante `SERVEUR` divergente) : les tests ont échoué à chaque fois, `md5` restauré identique.
+Côté fiche et page : l'ancienne promesse « aucune donnée » dans la fiche, l'ancienne phrase « Android n'a pas le jeu en
+ligne » dans la page, et le filtre des points « en ligne » des Nouveautés ont aussi été sabotés puis détectés.
 
 **`livrable`** (build RÉEL signé par une clé jetable créée hors dépôt puis supprimée ; protocole à rejouer après tout
 changement du script) :
@@ -268,6 +333,10 @@ rétabli, description courte trop longue), `rappel.test.js` (alarme exacte).
   perdu (l'écran d'une première installation, en français même dans la passe arabe). Recharger la page EN PLACE.
 - **Retour** : sans le rappel de `MainActivity`, l'activité se ferme à chaque Retour (§ 4).
 - **Icônes de la barre d'état noires sur fond sombre** (mode nuit) : voir `src/lib/barres.js`.
+- **`rihla_pixel` recréé le 08/11/2026** (Pixel 8, `system-images;android-36;google_apis;arm64-v8a`, `-port 5562
+  -no-snapshot -no-audio -no-window`) ; il est ÉTEINT, l'AVD reste défini. Pour piloter la WebView : le socket DevTools est
+  `webview_devtools_remote_<pid de l'app>` — jamais « le premier de /proc/net/unix » (un lancement précédent en laisse
+  d'obsolètes et le script reste suspendu sans erreur).
 - **`adb` nu** est ambigu dès qu'un autre émulateur tourne : toujours `adb -s emulator-5562`, et ne jamais toucher aux
   émulateurs d'autres sessions (`atlasya_pixel`, `stores_pixel`).
 - **`cap sync` ajoute `cordova.js` et `cordova_plugins.js`** à `assets/public` : ils ne viennent pas de `dist/` (la
@@ -283,6 +352,11 @@ rétabli, description courte trop longue), `rappel.test.js` (alarme exacte).
 - [x] Clé d'importation créée (`~/cles/rihla`) ; **sauvegarde du fichier et des mots de passe à confirmer**
 - [ ] `pnpm android:release` vert avec VOTRE clé (barrière « livrable » : rien à refuser), AAB téléversé
 - [ ] Essai sur un vrai téléphone Android : lancement, hors ligne (mode avion), rappel, Retour, arabe
+- [x] **1.2** : La Course essayée dans la WebView 133 de l'émulateur `rihla_pixel` (Pixel 8, API 36, recréé le 08/11) :
+      aucune requête avant le consentement, salle créée sur le serveur de production, hors connexion propre (14/14)
+- [ ] **1.2** : déclarations de la console faites (§ 5bis), fiche collée en 3 langues, IARC refaite, **après** la
+      publication de la 1.1 (3)
+- [ ] **1.2** : essai d'un duel COMPLET à deux appareils (non fait : il inscrirait deux lignes au classement public)
 - [ ] Fiche remplie (fr-FR, ar, en-US) ; **les textes arabes et anglais relus par un lecteur natif**
 - [ ] Déclarations du § 5 faites ; classification IARC envoyée ; public cible **13+** confirmé
 - [ ] Pays de distribution choisis ; prix : gratuite
