@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from 'react'
+import { enLigneDisponible } from '../lib/enligne.js'
 
 // Les nouveautés : posées en bas de l'écran, comme la feuille, une seule fois
 // après une mise à jour (src/lib/miseajour.js). Un seul bouton, qui reçoit le
@@ -9,6 +10,8 @@ export function Nouveautes({ t, surFermer }) {
   const bouton = useRef(null)
   const idTitre = useId()
   const n = t.nouveautes
+  // Un point `enLigne` annonce le jeu en ligne : seulement là où il existe dans la build.
+  const points = n.points.filter((point) => !point.enLigne || enLigneDisponible())
 
   useEffect(() => {
     bouton.current?.focus()
@@ -36,7 +39,7 @@ export function Nouveautes({ t, surFermer }) {
           {n.intro}
         </p>
         <ul className="nouveautes__liste">
-          {n.points.map((point) => (
+          {points.map((point) => (
             <li key={point.titre} className="nouveautes__point">
               <strong>{point.titre}</strong>
               <span className="texte-2">{point.texte}</span>

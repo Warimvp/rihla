@@ -7,7 +7,7 @@ import { pubsDisponibles } from './pub.js'
 /**
  * `docs/fiche-google-play.md` : les textes de la fiche Google Play. Ce test les LIT — une fiche qui dépasse
  * une limite est refusée par la console, et une fiche qui annonce « 14 destinations » quand il y en a 15,
- * ou « aucune autorisation Internet » quand le manifeste en pose une, est fausse devant le public ET devant
+ * ou « aucune autorisation Internet » quand le manifeste en pose une (c'est le cas depuis la 1.2), est fausse devant le public ET devant
  * le formulaire « Sécurité des données ».
  */
 
@@ -90,13 +90,21 @@ describe('fiche Google Play : les chiffres sont ceux du code', () => {
 })
 
 describe('fiche Google Play : ce qu’elle promet, l’application le tient', () => {
-  it('« aucune autorisation d’accéder à Internet » : le manifeste RETIRE INTERNET', () => {
+  it('« seul le jeu en ligne, facultatif, parle à un serveur » : le manifeste DÉCLARE INTERNET, et la fiche ne promet plus le contraire', () => {
     for (const langue of LANGUES_FICHE) {
       const { complete } = textes(langue)
-      // Le texte le dit dans les trois langues ; si l'un des trois change, ce test doit être relu avec lui.
-      expect(complete).toMatch(/Internet|إنترنت/)
+      // Dit dans les trois langues : le jeu en ligne existe, il est facultatif, il n'envoie que peu.
+      expect(complete, `${langue} : le jeu en ligne est nommé`).toMatch(/La Course|The Race|السباق/)
+      expect(complete, `${langue} : il est facultatif`).toMatch(/facultatif|optional|اختياري/)
+      expect(complete, `${langue} : ce qui part est dit`).toMatch(/pseudonyme|nickname|اسماً مستعاراً/)
+      // Les promesses de la 1.1 (« aucune donnée », « pas même l'autorisation Internet ») seraient fausses
+      // devant la fiche « Sécurité des données » : elles ne reviennent pas par un copier-coller.
+      expect(complete, `${langue} : ancienne promesse`).not.toMatch(
+        /ne collecte aucune donnée|n'a même pas l'autorisation|collects no data|does not even have permission|لا يجمع التطبيق أي بيانات|ولا يملك حتى إذن/,
+      )
     }
-    expect(manifeste).toMatch(/<uses-permission[^>]*android\.permission\.INTERNET[^>]*tools:node="remove"/)
+    expect(manifeste).toMatch(/<uses-permission android:name="android\.permission\.INTERNET" \/>/)
+    expect(manifeste).not.toMatch(/<uses-permission[^>]*android\.permission\.INTERNET[^>]*tools:node="remove"/)
   })
 
   it('« sans publicité » : aucun fournisseur de publicité n’est branché', () => {
@@ -122,10 +130,14 @@ describe('politique de confidentialité : même contact que la fiche, et la vér
     expect(page).not.toMatch(/@gmail\.com/i)
   })
 
-  it('« le jeu en ligne n’existe pas sur Android » est dit en français ET en arabe, et le manifeste le tient', () => {
-    expect(francais).toMatch(/application Android ne contient pas le jeu en ligne/)
-    expect(arabe).toContain('تطبيق أندرويد لا يتضمّن اللعب عبر الإنترنت')
-    expect(manifeste).toMatch(/<uses-permission[^>]*android\.permission\.INTERNET[^>]*tools:node="remove"/)
+  it('« Android demande Internet pour le seul jeu en ligne » est dit en français ET en arabe, et le manifeste le déclare', () => {
+    expect(francais).toMatch(/Sur Android<\/strong>, l'application déclare l'autorisation d'accéder à Internet pour ce seul usage/)
+    expect(arabe).toContain('على أندرويد')
+    expect(arabe).toContain('إذن الاتصال بالإنترنت لهذا الاستخدام وحده')
+    // L'ancienne page disait l'inverse : elle ne doit pas rester à côté de la nouvelle.
+    expect(francais).not.toMatch(/ne contient pas le jeu en ligne|n'existe pas dans l'application Android/)
+    expect(arabe).not.toContain('لا يتضمّن اللعب عبر الإنترنت')
+    expect(manifeste).toMatch(/<uses-permission android:name="android\.permission\.INTERNET" \/>/)
   })
 
   it('les deux « dernière mise à jour » portent le même jour et la même année', () => {

@@ -11,7 +11,7 @@
 // corrective (1.1.1) ne change rien ici : pas de nouvelle fenêtre ; une
 // version mineure (1.2) oblige à réécrire `t.nouveautes` (FR + AR) et à
 // monter ce numéro.
-export const VERSION_APP = '1.1'
+export const VERSION_APP = '1.2'
 
 export const CLE_NOUVEAUTES = 'rihla.nouveautes'
 

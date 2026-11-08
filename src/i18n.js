@@ -409,17 +409,16 @@ const fr = {
     bouton: 'Proposer une amélioration',
   },
   confidentialite: 'Politique de confidentialité',
-  // La fenêtre posée UNE fois après une mise à jour (src/lib/miseajour.js) et
-  // la carte des Réglages qui la rouvre. À réécrire à chaque version mineure,
-  // avec VERSION_APP — miseajour.test.js refuse les deux oublis.
   nouveautes: {
     titre: 'Nouveau dans Rihla',
     intro: 'Voici ce qui change dans cette version.',
     bouton: 'C’est parti',
+    // `enLigne` : le point n'est montré que dans une build qui a le jeu en ligne
+    // (`enLigneDisponible()`, src/lib/enligne.js) — le web, Android et l'iOS qui
+    // embarque l'adresse du serveur. Ailleurs il annoncerait une fonction absente.
     points: [
-      { titre: 'Le français, quinzième destination', texte: 'Paris et ses 24 étapes, avec une vraie photo pour chacune des 15 villes.' },
-      { titre: 'Le Barid', texte: 'Défie un ami par message, sans compte ni serveur : il joue les mêmes 10 questions et riposte.' },
-      { titre: 'Les mots voyageurs', texte: 'Les mots venus de l’arabe dans chaque langue : sucre, café, coton, zéro, algèbre.' },
+      { enLigne: true, titre: 'La Course, en direct', texte: 'Un duel en temps réel : les mêmes 10 questions, avec un ami (par code) ou un adversaire tiré au hasard, et des classements. Facultatif : rien n’est envoyé avant ton accord.' },
+      { titre: 'Le bouton du son, partout', texte: 'Écouter et écouter lentement restent affichés dans toutes les langues. Si ton téléphone n’a pas la voix de la langue, un toucher t’explique comment l’installer.' },
     ],
   },
   miseAJour: {
@@ -872,9 +871,8 @@ const ar = {
     intro: 'هذا ما تغيّر في هذه النسخة.',
     bouton: 'هيا بنا',
     points: [
-      { titre: 'الفرنسية، الوجهة الخامسة عشرة', texte: 'باريس بمراحلها الأربع والعشرين، مع صورة حقيقية لكل مدينة من المدن الخمس عشرة.' },
-      { titre: 'البريد', texte: 'تحدَّ صديقاً برسالة، دون حساب ولا خادم: يلعب الأسئلة العشرة نفسها ويردّ.' },
-      { titre: 'الكلمات المسافرة', texte: 'كلمات عربية الأصل في كل لغة: سكر، قهوة، قطن، صفر، جبر.' },
+      { enLigne: true, titre: 'السباق المباشر', texte: 'مبارزة في الوقت الحقيقي: الأسئلة العشرة نفسها، مع صديق (برمز) أو خصم يُختار عشوائياً، مع تصنيفات. اختياري: لا يُرسَل شيء قبل موافقتك.' },
+      { titre: 'زر الصوت في كل مكان', texte: 'يبقى «استمع» و«استمع ببطء» ظاهرين في كل اللغات. وإن لم يكن في هاتفك صوت اللغة، تشرح لك لمسة كيف تثبّته.' },
     ],
   },
   miseAJour: {

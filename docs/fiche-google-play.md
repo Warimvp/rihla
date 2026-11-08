@@ -45,12 +45,13 @@ Pour réviser
 • Le Carnet : la révision espacée. Chaque étape validée y verse ses mots, qui reviennent juste avant que tu les oublies.
 • Les mots voyageurs : sucre, café, coton, zéro, algèbre… les mots partis de l'arabe et arrivés dans chaque langue.
 • Le Barid : défie un ami par message ; il joue les mêmes dix questions et riposte.
+• La Course (facultatif) : un duel en direct, avec un ami (par code) ou un adversaire tiré au hasard, et des classements. Désactivée tant que tu ne l'as pas acceptée.
 
 À ton rythme
 Choisis ton cap (une langue précise, ou la route d'Ibn Battuta), ton objectif quotidien et, si tu le veux, un rappel à l'heure qui t'arrange. Une nuit de caravansérail protège ta série quand la journée a été trop courte. Sauvegarde ton voyage quand tu veux : il est à toi.
 
 Sans compte, sans publicité, sans abonnement
-Rihla est gratuite : pas de compte, pas de publicité, pas d'abonnement, pas de vies à attendre. Tout fonctionne hors ligne, dans le bus comme au fond du Rif. L'application ne collecte aucune donnée et n'a même pas l'autorisation d'accéder à Internet.
+Rihla est gratuite : pas de compte, pas de publicité, pas d'abonnement, pas de vies à attendre. Tout s'apprend hors ligne, dans le bus comme au fond du Rif. Seul le jeu en ligne, facultatif, parle à un serveur — et seulement quand tu l'as accepté : il envoie un pseudonyme, tes scores et un identifiant tiré au hasard, rien d'autre.
 
 Interface en français et en arabe (écriture de droite à gauche comprise), mode nuit, guide du voyageur intégré.
 
@@ -90,12 +91,13 @@ Fait au Maroc, avec l'amour du voyage. Le code est ouvert : github.com/Warimvp/r
 • الدفتر: مراجعة متباعدة — كل مرحلة تُنجزها تودع كلماتها فيه، فتعود إليك قبل أن تنساها.
 • الكلمات المسافرة: السكر، القهوة، القطن، الصفر، الجبر… كلمات خرجت من العربية ووصلت إلى كل لغة.
 • البريد: تحدَّ صديقاً برسالة؛ يلعب الأسئلة العشرة نفسها ويردّ.
+• السباق (اختياري): مبارزة مباشرة مع صديق (برمز) أو خصم يُختار عشوائياً، مع تصنيفات. وهو موقوف ما لم توافق عليه.
 
 على إيقاعك
 اختر وجهتك (لغة بعينها أو طريق ابن بطوطة)، وهدفك اليومي، وتذكيراً في الساعة التي تناسبك إن شئت. وليلة في الخان تحمي سلسلتك حين يقصر اليوم. واحفظ رحلتك متى شئت: هي ملكك.
 
 بلا حساب، بلا إعلانات، بلا اشتراك
-«رحلة» مجانية: بلا حساب، بلا إعلانات، بلا اشتراك، بلا قلوب تنتظرها. كل شيء يشتغل بدون إنترنت، في الحافلة كما في أعماق الريف. لا يجمع التطبيق أي بيانات، ولا يملك حتى إذن الوصول إلى الإنترنت.
+«رحلة» مجانية: بلا حساب، بلا إعلانات، بلا اشتراك، بلا قلوب تنتظرها. كل شيء يُتعلَّم بدون إنترنت، في الحافلة كما في أعماق الريف. وحده اللعب عبر الإنترنت، وهو اختياري، يتصل بخادم — ولا يفعل ذلك إلا بعد موافقتك: يرسل اسماً مستعاراً ونتائجك ومعرّفاً عشوائياً، لا شيء غير ذلك.
 
 الواجهة بالفرنسية والعربية مع دعم كامل للكتابة من اليمين إلى اليسار، ووضع ليلي، ودليل المسافر داخل التطبيق.
 
@@ -135,12 +137,13 @@ To review
 • The Notebook: spaced repetition. Each validated step drops its words in, and they come back just before you forget them.
 • Travelling words: sugar, coffee, cotton, zero, algebra... the words that left Arabic and arrived in each language.
 • The Barid: challenge a friend by message; they play the same ten questions and reply.
+• The Race (optional): a live duel with a friend (by code) or a random opponent, with leaderboards. Off until you accept it.
 
 At your own pace
 Pick your heading (one language, or Ibn Battuta's road), your daily goal and, if you like, a reminder at a time that suits you. A caravanserai night protects your streak when the day was too short. Back up your journey whenever you want: it is yours.
 
 No account, no ads, no subscription
-Rihla is free: no account, no ads, no subscription, no lives to wait for. Everything works offline, on the bus as in the depths of the Rif. The app collects no data and does not even have permission to access the Internet.
+Rihla is free: no account, no ads, no subscription, no lives to wait for. Everything is learned offline, on the bus as in the depths of the Rif. Only the optional online game talks to a server — and only once you have accepted it: it sends a nickname, your scores and a random identifier, nothing else.
 
 Interface in French and Arabic (full right-to-left support), night mode, built-in traveller's guide.
 

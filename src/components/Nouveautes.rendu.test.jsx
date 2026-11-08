@@ -8,6 +8,7 @@ import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App.jsx'
 import { getDictionary } from '../i18n.js'
+import { reglerServeur } from '../lib/enligne.js'
 import { LIEN_APP_STORE, VERSION_APP } from '../lib/miseajour.js'
 import { mulberry32 } from '../lib/quiz.js'
 
@@ -70,8 +71,9 @@ describe('les nouveautés, une seule fois', () => {
     expect(f).not.toBeNull()
     expect(f.getAttribute('role')).toBe('dialog')
     expect(f.querySelector('h2').textContent).toBe(t.nouveautes.titre)
+    // Sans serveur dans la build (ici : aucun), le point du jeu en ligne n'est pas annoncé.
     expect([...f.querySelectorAll('.nouveautes__point strong')].map((s) => s.textContent)).toEqual(
-      t.nouveautes.points.map((p) => p.titre)
+      t.nouveautes.points.filter((p) => !p.enLigne).map((p) => p.titre)
     )
     // Le bouton reçoit le focus : Entrée suffit pour la fermer.
     expect(document.activeElement).toBe(bouton(f, t.nouveautes.bouton))
@@ -142,7 +144,23 @@ describe('les nouveautés, une seule fois', () => {
     expect(document.documentElement.dir).toBe('rtl')
     expect(f.querySelector('h2').textContent).toBe(ar.nouveautes.titre)
     expect(bouton(f, ar.nouveautes.bouton)).toBeDefined()
-    expect(f.querySelectorAll('.nouveautes__point')).toHaveLength(ar.nouveautes.points.length)
+    expect(f.querySelectorAll('.nouveautes__point')).toHaveLength(ar.nouveautes.points.filter((p) => !p.enLigne).length)
+  })
+
+  it('annonce le jeu en ligne là où la build l’a — et seulement là, en français comme en arabe', () => {
+    for (const [locale, dico] of [['fr', t], ['ar', ar]]) {
+      voyageurExistant(locale)
+      localStorage.removeItem('rihla.nouveautes')
+      reglerServeur('https://serveur.exemple')
+      const app = monter(<App />)
+      const titres = [...fenetre(app.conteneur).querySelectorAll('.nouveautes__point strong')].map((s) => s.textContent)
+      expect(titres, locale).toEqual(dico.nouveautes.points.map((p) => p.titre))
+      expect(dico.nouveautes.points.some((p) => p.enLigne), `${locale} : un point annonce le jeu en ligne`).toBe(true)
+      act(() => app.racine.unmount())
+      app.conteneur.remove()
+      montes.splice(montes.indexOf(app), 1)
+      localStorage.clear()
+    }
   })
 })
 
