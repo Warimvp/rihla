@@ -19,6 +19,8 @@ import { afterAll, describe, expect, it } from 'vitest'
 
 const RACINE = resolve(import.meta.dirname, '..', '..')
 const MAIN = 'android/app/src/main'
+/** L'adresse que la barrière admet — celle que `android:sync` (package.json) pose dans VITE_RIHLA_SERVEUR. */
+const SERVEUR = 'https://rihla-serveur.rihla-serveur.workers.dev'
 const dossiers = []
 
 afterAll(() => {
@@ -31,6 +33,12 @@ function remplacer(racine, fichier, de, par) {
   const texte = readFileSync(f, 'utf8')
   if (!texte.includes(de)) throw new Error(`${fichier} : « ${de} » introuvable — le test n'abîmerait rien`)
   writeFileSync(f, texte.replace(de, par))
+}
+
+/** Remplace le bundle du faux dist/ ET sa copie dans le projet natif (sinon la barrière dirait « diffère »). */
+function ecrireBundle(racine, contenu) {
+  writeFileSync(join(racine, 'dist/assets/app-1.js'), contenu)
+  writeFileSync(join(racine, MAIN, 'assets/public/assets/app-1.js'), contenu)
 }
 
 /** Un projet Android jetable, sain ; `abimer(racine)` en casse une chose avant le lancement. */
@@ -50,7 +58,7 @@ async function verifier(abimer = () => {}, etape = 'synchro') {
   // Un dist/ factice, et sa copie dans le projet natif (+ les deux fichiers que `cap sync` ajoute lui-même).
   mkdirSync(join(racine, 'dist/assets'), { recursive: true })
   writeFileSync(join(racine, 'dist/index.html'), '<!doctype html><title>Rihla</title>')
-  writeFileSync(join(racine, 'dist/assets/app-1.js'), 'console.log("Rihla")')
+  writeFileSync(join(racine, 'dist/assets/app-1.js'), `console.log("Rihla", "${SERVEUR}")`)
   cpSync(join(racine, 'dist'), join(racine, MAIN, 'assets/public'), { recursive: true })
   writeFileSync(join(racine, MAIN, 'assets/public/cordova.js'), '// pont Cordova')
   writeFileSync(join(racine, MAIN, 'assets/public/cordova_plugins.js'), '// greffons')
@@ -99,10 +107,17 @@ describe('verifier-android synchro : ce qui ne doit pas partir sur Google Play',
       await refuse((d) => remplacer(d, `${MAIN}/AndroidManifest.xml`, 'android:allowBackup="false"', 'android:allowBackup="false" android:usesCleartextTraffic="true"'), 'usesCleartextTraffic="true" interdit')
     })
 
-    it('INTERNET n’est plus retirée : le greffon ou le modèle la reposerait dans le manifeste fusionné', async () => {
+    it('INTERNET retirée du manifeste fusionné (tools:node="remove") : le jeu en ligne ne pourrait plus rien envoyer', async () => {
       await refuse(
-        (d) => remplacer(d, `${MAIN}/AndroidManifest.xml`, '<uses-permission android:name="android.permission.INTERNET" tools:node="remove" />', ''),
-        'android.permission.INTERNET doit être RETIRÉE',
+        (d) => remplacer(d, `${MAIN}/AndroidManifest.xml`, '<uses-permission android:name="android.permission.INTERNET" />', '<uses-permission android:name="android.permission.INTERNET" tools:node="remove" />'),
+        'android.permission.INTERNET doit être DÉCLARÉE',
+      )
+    })
+
+    it('INTERNET absente du manifeste source (seuls les commentaires la citent) : un commentaire n’est pas une déclaration', async () => {
+      await refuse(
+        (d) => remplacer(d, `${MAIN}/AndroidManifest.xml`, '<uses-permission android:name="android.permission.INTERNET" />', ''),
+        'android.permission.INTERNET doit être DÉCLARÉE',
       )
     })
 
@@ -126,12 +141,37 @@ describe('verifier-android synchro : ce qui ne doit pas partir sur Google Play',
     })
   })
 
-  describe('aucun serveur embarqué', () => {
-    it('l’adresse du serveur de duels dans un bundle copié (VITE_RIHLA_SERVEUR laissée dans .env)', async () => {
+  describe('une seule adresse de serveur, la bonne', () => {
+    it('aucune adresse dans le bundle (android:sync lancée sans VITE_RIHLA_SERVEUR) : INTERNET sans jeu en ligne', async () => {
+      await refuse((d) => ecrireBundle(d, 'console.log("Rihla")'), "n'embarque l'adresse du serveur de duels")
+    })
+
+    it('un serveur d’essai en plus du bon (une autre adresse workers.dev laissée dans .env)', async () => {
       await refuse(
-        (d) => writeFileSync(join(d, MAIN, 'assets/public/assets/app-1.js'), 'fetch("https://rihla-serveur.exemple.workers.dev")'),
-        'embarque l\'adresse du serveur de duels',
+        (d) => ecrireBundle(d, `fetch("${SERVEUR}"); fetch("https://rihla-serveur.exemple.workers.dev")`),
+        'embarque une autre adresse de serveur',
       )
+    })
+
+    it('seulement un autre serveur que celui de la barrière', async () => {
+      const r = await verifier((d) => ecrireBundle(d, 'fetch("https://rihla-essai.exemple.workers.dev")'))
+      expect(r.code).toBe(1)
+      expect(r.sortie).toContain('embarque une autre adresse de serveur')
+      expect(r.sortie).toContain("n'embarque l'adresse du serveur de duels")
+    })
+
+    it('la bonne adresse, mais en clair (http) : du trafic non chiffré', async () => {
+      await refuse(
+        (d) => ecrireBundle(d, `fetch("${SERVEUR}"); fetch("${SERVEUR.replace('https', 'http')}")`),
+        'embarque une autre adresse de serveur',
+      )
+    })
+
+    it('l’adresse apparaît dans plusieurs fichiers : tant que c’est la bonne, rien à dire', async () => {
+      const r = await verifier((d) => {
+        for (const nom of ['dist/assets/b-2.js', `${MAIN}/assets/public/assets/b-2.js`]) writeFileSync(join(d, nom), `export default "${SERVEUR}"`)
+      })
+      expect(r.code).toBe(0)
     })
 
     it('server.url dans la configuration Capacitor : l’application chargerait un site distant', async () => {
@@ -233,6 +273,15 @@ describe('verifier-android synchro : ce qui ne doit pas partir sur Google Play',
 })
 
 describe('le projet réel', () => {
+  it('android:sync pose l’adresse que la barrière admet, et le serveur de duels du dépôt est celui-là', () => {
+    const scripts = JSON.parse(readFileSync(join(RACINE, 'package.json'), 'utf8')).scripts
+    expect(scripts['android:sync']).toContain(`VITE_RIHLA_SERVEUR=${SERVEUR} `)
+    // La barrière la porte en dur : c'est la même constante, lue dans le script lui-même.
+    expect(readFileSync(join(RACINE, 'scripts/verifier-android.mjs'), 'utf8')).toContain(`const SERVEUR = '${SERVEUR}'`)
+    // Et `.env.example` (ce que le web et iOS lisent) donne la même.
+    expect(readFileSync(join(RACINE, '.env.example'), 'utf8')).toContain(`VITE_RIHLA_SERVEUR=${SERVEUR}\n`)
+  })
+
   it('versionName et versionCode lisibles, comme build.gradle les lit', () => {
     const t = readFileSync(join(RACINE, 'android/version.properties'), 'utf8')
     expect(t).toMatch(/^versionName=\d+\.\d+(\.\d+)?$/m)

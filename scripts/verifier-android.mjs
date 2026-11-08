@@ -26,12 +26,22 @@ const ID = 'ma.rihla.app'
 const API_MINIMALE = 36
 
 /**
+ * L'UNIQUE adresse de serveur que la build Android a le droit d'embarquer : le serveur du jeu en ligne
+ * (serveur/, Worker Cloudflare), en https — la page est servie en https://localhost et la WebView refuse le
+ * contenu mixte. C'est la même valeur que `android:sync` (package.json) injecte dans VITE_RIHLA_SERVEUR :
+ * si l'une change sans l'autre, la barrière refuse.
+ */
+const SERVEUR = 'https://rihla-serveur.rihla-serveur.workers.dev'
+
+/**
  * Les autorisations que l'application a le droit de déclarer, dans le manifeste FUSIONNÉ. Ajouter une
  * ligne exige de la JUSTIFIER ici, dans le manifeste source et dans docs/google-play.md § 4.
- * ABSENTES et interdites : INTERNET (l'application est 100 % hors ligne : la fiche dit « aucune donnée
- * collectée ») et SCHEDULE_EXACT_ALARM (réservée par Google Play aux applications d'alarme et de calendrier).
+ * INTERNET (depuis la 1.2) va avec l'adresse du serveur : la fiche « Sécurité des données » déclare le
+ * pseudonyme, les scores et l'identifiant aléatoire du jeu en ligne. Interdite : SCHEDULE_EXACT_ALARM
+ * (réservée par Google Play aux applications d'alarme et de calendrier).
  */
 const AUTORISATIONS = new Map([
+  ['android.permission.INTERNET', 'le jeu en ligne facultatif (la Course, les classements) : fetch + WebSocket vers l’UNIQUE serveur, après consentement'],
   ['android.permission.POST_NOTIFICATIONS', 'le rappel quotidien (opt-in, demandée à l’activation)'],
   ['android.permission.RECEIVE_BOOT_COMPLETED', 'reprogrammer le rappel après un redémarrage'],
   ['android.permission.WAKE_LOCK', 'réveiller le téléphone le temps d’afficher le rappel'],
@@ -39,7 +49,7 @@ const AUTORISATIONS = new Map([
   // l'application, invisible de l'utilisateur. Rien n'est demandé à personne.
   [`${ID}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`, 'androidx.core, signature, interne'],
 ])
-const INTERDITES = ['android.permission.INTERNET', 'android.permission.SCHEDULE_EXACT_ALARM', 'android.permission.USE_EXACT_ALARM']
+const INTERDITES = ['android.permission.SCHEDULE_EXACT_ALARM', 'android.permission.USE_EXACT_ALARM']
 
 const etape = process.argv[2] ?? ''
 const fautes = []
@@ -87,21 +97,33 @@ function verifierSource() {
   if (!/android:allowBackup="false"/.test(manifeste)) refuse('AndroidManifest.xml : android:allowBackup="false" attendu (« rien ne quitte votre téléphone »).')
   if (!/android:dataExtractionRules="@xml\/data_extraction_rules"/.test(manifeste)) refuse('AndroidManifest.xml : dataExtractionRules attendu (transfert d’appareil à appareil, Android 12+).')
   if (/usesCleartextTraffic="true"/.test(manifeste)) refuse('AndroidManifest.xml : usesCleartextTraffic="true" interdit.')
-  for (const p of ['android.permission.INTERNET', 'android.permission.SCHEDULE_EXACT_ALARM']) {
-    const retiree = new RegExp(`<uses-permission[^>]*android:name="${p.replace(/\./g, '\\.')}"[^>]*tools:node="remove"`).test(manifeste)
-    if (!retiree) refuse(`AndroidManifest.xml : ${p} doit être RETIRÉE (tools:node="remove") — le greffon ou le modèle la pose sinon.`)
+  const p = 'android.permission.SCHEDULE_EXACT_ALARM'
+  if (!new RegExp(`<uses-permission[^>]*android:name="${p.replace(/\./g, '\\.')}"[^>]*tools:node="remove"`).test(manifeste)) {
+    refuse(`AndroidManifest.xml : ${p} doit être RETIRÉE (tools:node="remove") — le greffon ou le modèle la pose sinon.`)
+  }
+  // INTERNET, elle, doit être DÉCLARÉE (et non retirée) : le jeu en ligne est dans la build.
+  const internet = [...manifeste.matchAll(/<uses-permission[^>]*android:name="android\.permission\.INTERNET"[^>]*\/?>/g)]
+  if (!internet.some((m) => !/tools:node="remove"/.test(m[0]))) {
+    refuse('AndroidManifest.xml : android.permission.INTERNET doit être DÉCLARÉE (le jeu en ligne est dans cette build) ; une ligne tools:node="remove" la retirerait du manifeste fusionné.')
   }
   for (const m of manifeste.matchAll(/<uses-permission[^>]*android:name="([^"]+)"[^>]*\/?>/g)) {
     if (!/tools:node="remove"/.test(m[0]) && !AUTORISATIONS.has(m[1])) refuse(`AndroidManifest.xml : autorisation ${m[1]} non justifiée (scripts/verifier-android.mjs).`)
   }
 
-  // 2. Aucun serveur embarqué : l'application est hors ligne (docs/app-store.md § 13.5, § 12).
+  // 2. Une seule adresse de serveur, la bonne : celle du jeu en ligne (SERVEUR), et aucune autre — ni un
+  //    serveur d'essai, ni la même adresse en http. Elle doit être PRÉSENTE : INTERNET sans serveur est une
+  //    autorisation sans usage, et le jeu en ligne promis par la fiche n'existerait pas.
   const dossier = existsSync(PUBLIC) ? arbre(PUBLIC) : []
   if (dossier.length === 0) refuse('android/app/src/main/assets/public est vide : lancer pnpm android:sync (cap sync android).')
+  let adresseTrouvee = false
   for (const f of dossier.filter((x) => /\.(js|html|json|webmanifest|css)$/.test(x))) {
     const t = lire(f)
-    if (/workers\.dev|rihla-serveur/.test(t)) refuse(`${relative(RACINE, f)} embarque l'adresse du serveur de duels : le jeu en ligne n'entre pas dans cette build (docs/app-store.md § 12). Retirer VITE_RIHLA_SERVEUR de .env et relancer.`)
+    if (t.includes(SERVEUR)) adresseTrouvee = true
+    // Ce qui reste une fois la bonne adresse retirée ne doit plus mentionner de serveur de duels.
+    const reste = t.split(SERVEUR).join('')
+    if (/workers\.dev|rihla-serveur/.test(reste)) refuse(`${relative(RACINE, f)} embarque une autre adresse de serveur que ${SERVEUR} (ou la même en clair) : une seule est admise.`)
   }
+  if (dossier.length > 0 && !adresseTrouvee) refuse(`aucun fichier de assets/public n'embarque l'adresse du serveur de duels (${SERVEUR}) : la build Android 1.2 contient le jeu en ligne — passer par pnpm android:sync, qui pose VITE_RIHLA_SERVEUR.`)
 
   // 3. C'est BIEN ce dist/ qui est parti dans le projet natif.
   if (!existsSync(DIST)) refuse('dist/ introuvable : pnpm build.')
@@ -191,7 +213,7 @@ function verifierLivrable() {
     if (INTERDITES.includes(p)) refuse(`Manifeste FUSIONNÉ : ${p} présente — interdite (voir AUTORISATIONS).`)
     else if (!AUTORISATIONS.has(p)) refuse(`Manifeste FUSIONNÉ : autorisation ${p} non justifiée.`)
   }
-  for (const p of AUTORISATIONS.keys()) if (!permissions.includes(p)) refuse(`Manifeste FUSIONNÉ : ${p} attendue et absente (le rappel ne marcherait plus).`)
+  for (const p of AUTORISATIONS.keys()) if (!permissions.includes(p)) refuse(`Manifeste FUSIONNÉ : ${p} attendue et absente (${AUTORISATIONS.get(p)} ne marcherait plus).`)
   const cible = Number(/targetSdkVersion:'(\d+)'/.exec(badging)?.[1])
   if (cible < API_MINIMALE) refuse(`targetSdkVersion ${cible} < ${API_MINIMALE} : Google Play refuse les envois sous l'API ${API_MINIMALE}.`)
   if (!new RegExp(`package: name='${ID.replace(/\./g, '\\.')}'`).test(badging)) refuse(`L'APK n'a pas l'identifiant ${ID}.`)

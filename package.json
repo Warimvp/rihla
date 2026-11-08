@@ -14,7 +14,7 @@
     "version:app": "node scripts/version.mjs app",
     "ios:release": "vite build && cap sync ios && bash scripts/archiver.sh",
     "android:icones": "node scripts/icones-android.mjs",
-    "android:sync": "vite build && cap sync android && node scripts/verifier-android.mjs synchro",
+    "android:sync": "VITE_RIHLA_SERVEUR=https://rihla-serveur.rihla-serveur.workers.dev vite build && cap sync android && node scripts/verifier-android.mjs synchro",
     "android:debug": "pnpm android:sync && node scripts/gradle-android.mjs assembleDebug",
     "android:release": "pnpm android:sync && node scripts/gradle-android.mjs bundleRelease assembleRelease && node scripts/verifier-android.mjs livrable",
     "version:android": "node scripts/version.mjs android"

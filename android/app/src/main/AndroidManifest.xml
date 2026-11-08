@@ -3,17 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!--
-      Rihla est 100 % hors ligne : le contenu, les polices, les photos et les progrès sont dans
+      Rihla s'apprend 100 % hors ligne : le contenu, les polices, les photos et les progrès sont dans
       l'application ou sur le téléphone, et la page est servie par le serveur LOCAL de Capacitor
-      (https://localhost, dans le processus). Aucune autorisation Internet : l'application ne
-      PEUT rien envoyer, et la fiche Google Play dit « aucune donnée collectée » sans condition.
-      Le jour où le jeu en ligne entre dans le build (docs/app-store.md § 12), il faudra
-      INTERNET, la fiche « Sécurité des données » et la politique de confidentialité en même temps.
+      (https://localhost, dans le processus). Depuis la 1.2, UNE seule fonction parle à un serveur : le jeu
+      en ligne (la Course, l'adversaire au hasard, les classements). Il est éteint par défaut ; rien ne part
+      avant que le voyageur ait lu et accepté l'écran « Jouer en ligne ? » (src/lib/enligne.js), et ce
+      qui part se limite à un pseudonyme, des scores et un identifiant tiré au hasard (page de
+      confidentialité, fiche « Sécurité des données »). D'où l'autorisation INTERNET, déclarée plus bas
+      avec la fiche, la politique et la barrière scripts/verifier-android.mjs, qui n'admet qu'UNE adresse.
 
       allowBackup="false" ET dataExtractionRules : le progrès (localStorage de la WebView) ne part
-      pas dans une sauvegarde Google Drive — « rien ne quitte votre téléphone » reste exact. La
-      sauvegarde manuelle (Réglages → Aide et sauvegarde) reste le moyen de changer de téléphone.
-      Contrôlé par scripts/verifier-android.mjs.
+      pas dans une sauvegarde Google Drive — « rien ne quitte votre téléphone » (hors jeu en ligne
+      activé) reste exact. La sauvegarde manuelle (Réglages → Aide et sauvegarde) reste le moyen de
+      changer de téléphone. Contrôlé par scripts/verifier-android.mjs.
     -->
     <application
         android:allowBackup="false"
@@ -65,5 +67,11 @@
       autorisation aux applications d'alarme et de calendrier.
     -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
-    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
+
+    <!--
+      INTERNET (1.2) — le jeu en ligne, et rien d'autre : fetch + WebSocket vers l'UNIQUE serveur de
+      la barrière (https, jamais en clair : usesCleartextTraffic reste refusé). Sans l'adresse du serveur
+      dans la build, cette ligne n'a pas lieu d'être : la barrière refuse l'une sans l'autre.
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
