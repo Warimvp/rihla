@@ -6,6 +6,17 @@ Digital Service` (connecté avec le compte Google de la société), test interne
 approbation ne publie rien, les modifications passent en « prêtes à être publiées » et le clic « Publier » revient au
 responsable.
 
+**État au 08/11/2026** : **1.1 (2) est EN PRODUCTION** (fiche publique, 11 pays, dernière release la veille, aucune
+modification en attente). **1.1 (3) construite le 08/11** (branche `android/1.1-3`, `pnpm android:release` vert,
+barrière « livrable » : rien à refuser) : AAB 4 113 719 octets, sha256 `274eae1a…e351c`, signé par la clé d'importation
+de la société (SHA-256 `D4:8A:3C:31…38:64:37`), **toujours sans `INTERNET`** donc mêmes déclarations que la 1.1 (2).
+Contenu : (1) **le bouton du son reste affiché dans les 15 langues** (éteint et barré quand l'appareil n'a pas la voix
+de la langue, le toucher explique ; avant, il disparaissait) ; (2) la fenêtre « Nouveautés » de la 1.1 iOS
+(`claude/mise-a-jour`, a4b2e7e — le test du z-index contre `.voile-etat` iOS y est remplacé par « au-dessus de toute
+autre couche »). Les testeurs qui ont déjà la 1.1 (2) verront cette fenêtre UNE fois (elle date de la 1.1). **Le jeu en
+ligne (La Course, serveur) n'est dans AUCUNE build native, iOS comprise** : seul le Barid (duel par lien, sans serveur)
+y est ; l'y mettre = `INTERNET` + fiche « Sécurité des données » + politique + IARC, décision à part.
+
 **Trouvé le 02/11/2026, corrigé en 1.1 (2)** : Google exige un lien vers la politique **dans l'application**, même sans
 collecte ; il n'y en avait aucun. Réglages › À propos ouvre désormais `confidentialite/index.html`, la page embarquée
 (pas d'`INTERNET` sur Android ; le nom de fichier est explicite car, sans extension, le serveur local de Capacitor rend
