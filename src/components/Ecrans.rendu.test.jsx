@@ -30,6 +30,7 @@ import { JeuOreille } from './JeuOreille.jsx'
 import { JeuCaravane } from './JeuCaravane.jsx'
 import { Carnet } from './Carnet.jsx'
 import { Defi } from './Defi.jsx'
+import { Ecoute } from './Ecoute.jsx'
 import { QuestionDuel } from './QuestionDuel.jsx'
 import { SectionVoyageurs } from './Voyageurs.jsx'
 import { Lecon } from './Lecon.jsx'
@@ -316,11 +317,52 @@ describe('réécouter, et lentement', () => {
     expect(vus.mot).toBeGreaterThan(0)
   })
 
-  it('sans voix pour la langue, aucun haut-parleur ne fait semblant', () => {
+  it('sans voix pour la langue, le haut-parleur reste là, éteint — et ne fait jamais semblant', () => {
     window.speechSynthesis.getVoices = () => [{ lang: 'fr-FR', name: 'Thomas' }]
     const vue = monterLecon(tr)
-    expect(parLabel(vue, t.ecouter)).toBeNull()
-    expect(parLabel(vue, t.ecouterLent)).toBeNull()
+    for (const label of [t.ecouter, t.ecouterLent]) {
+      const b = parLabel(vue, label)
+      expect(b, label).not.toBeNull()
+      expect(b.getAttribute('aria-disabled')).toBe('true')
+      expect(b.classList.contains('bouton--indispo')).toBe(true)
+      // Jamais `disabled` : il n'enverrait aucun clic, donc aucune explication.
+      expect(b.disabled).toBe(false)
+    }
+    const note = vue.querySelector('.ecoute__note[aria-live="polite"]')
+    expect(note.textContent).toBe('')
+    clic(parLabel(vue, t.ecouter))
+    // Rien n'est prononcé — surtout pas du turc à la française…
+    expect(dites).toHaveLength(0)
+    // … mais le toucher dit pourquoi, et la note est reliée au bouton.
+    expect(note.textContent).toBe(t.sonIndispoAide)
+    expect(parLabel(vue, t.ecouter).getAttribute('aria-describedby')).toBe(note.id)
+    clic(parLabel(vue, t.ecouterLent))
+    expect(dites).toHaveLength(0)
+  })
+
+  it('le haut-parleur est affiché pour les 15 langues, en français comme en arabe — actif seulement avec une voix', () => {
+    for (const locale of ['fr', 'ar']) {
+      const tl = getDictionary(locale)
+      expect(tl.sonIndispoAide, `sonIndispoAide (${locale})`).toBeTruthy()
+      for (const langue of LANGUES) {
+        // Un appareil qui n'a QUE le français, puis un qui a la voix de la langue.
+        window.speechSynthesis.getVoices = () => [{ lang: 'fr-FR', name: 'Thomas' }]
+        const sans = monter(<Ecoute t={tl} texte="x" langue={langue} />)
+        const haut = sans.querySelector(`button[aria-label="${tl.ecouter}"]`)
+        const tortue = sans.querySelector(`button[aria-label="${tl.ecouterLent}"]`)
+        expect(haut, `${locale} ${langue.id} : haut-parleur affiché sans voix`).not.toBeNull()
+        expect(tortue, `${locale} ${langue.id} : tortue affichée sans voix`).not.toBeNull()
+        const attendu = langue.id === 'fr' ? null : 'true'
+        expect(haut.getAttribute('aria-disabled'), `${locale} ${langue.id} (voix française seule)`).toBe(attendu)
+
+        window.speechSynthesis.getVoices = () => [{ lang: langue.tts, name: 'Voix' }]
+        const avec = monter(<Ecoute t={tl} texte="x" langue={langue} />)
+        expect(avec.querySelector(`button[aria-label="${tl.ecouter}"]`).getAttribute('aria-disabled'), `${locale} ${langue.id} (sa voix)`).toBeNull()
+        clic(avec.querySelector(`button[aria-label="${tl.ecouter}"]`))
+        expect(dites.at(-1).text, `${locale} ${langue.id} parle quand une voix existe`).toBe('x')
+        dites.length = 0
+      }
+    }
   })
 })
 

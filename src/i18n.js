@@ -127,6 +127,7 @@ const fr = {
   effacer: 'Effacer mon progrès',
   confirmEffacer: 'Tout ton voyage sera effacé (XP, visas, série). Continuer ?',
   sonIndispo: 'Audio indisponible sur cet appareil',
+  sonIndispoAide: 'Cet appareil n’a pas de voix pour cette langue. Installe-en une dans les réglages de synthèse vocale du téléphone.',
   jeux: {
     titre: 'Jeux du voyage',
     sousTitre: 'Révise en jouant — XP à la clé',
@@ -584,6 +585,7 @@ const ar = {
   effacer: 'مسح تقدمي',
   confirmEffacer: 'سيُمحى كل تقدمك (النقاط، التأشيرات، الأيام). هل تريد المتابعة؟',
   sonIndispo: 'الصوت غير متوفر على هذا الجهاز',
+  sonIndispoAide: 'لا يوجد في هذا الجهاز صوت لهذه اللغة. ثبّت واحداً من إعدادات تحويل النص إلى كلام في الهاتف.',
   jeux: {
     titre: 'ألعاب الرحلة',
     sousTitre: 'راجع وأنت تلعب — واربح النقاط',
