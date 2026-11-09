@@ -59,7 +59,7 @@ Ensuite, chaque mise à jour du serveur = `pnpm deploy` ; `pnpm journal` (wrangl
 
 ## Ce qui est envoyé, et rien d'autre
 
-Pseudonyme, scores, temps, et un identifiant tiré au hasard sur l'appareil (`rihla.voyageur`) avec un secret qui ne sert qu'à prouver que c'est le même appareil. Aucun compte, aucun e-mail, aucune adresse IP conservée par le code (Cloudflare en voit passer, comme tout hébergeur). Les classements s'effacent d'eux-mêmes après 60 jours, les salles après une heure.
+Pseudonyme, scores, temps, et un identifiant tiré au hasard sur l'appareil (`rihla.voyageur`) avec un secret qui ne sert qu'à prouver que c'est le même appareil. Aucun compte, aucun e-mail, aucune adresse IP conservée par le code (Cloudflare en voit passer, comme tout hébergeur) **ni par ses journaux** : `observability` est éteint dans `wrangler.jsonc`, car les journaux de Workers gardent les en-têtes de chaque requête — adresse IP comprise — 3 à 7 jours. Le réglage ne prend effet qu'au prochain `pnpm deploy` ; `pnpm journal` (en direct, rien n'est stocké) reste le moyen de déboguer. `src/lib/serveur.confidentialite.test.js` garde ces deux promesses. Les classements s'effacent d'eux-mêmes après 60 jours, les salles après une heure.
 
 ## Limites du plan gratuit et ordres de grandeur
 

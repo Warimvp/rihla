@@ -7,7 +7,12 @@
   "main": "src/index.js",
   "compatibility_date": "2026-09-01",
   "workers_dev": true,
-  "observability": { "enabled": true },
+  // Aucun journal conservé chez Cloudflare. Les journaux de Workers gardent, pour chaque requête, ses métadonnées
+  // et ses en-têtes — donc l'adresse IP du joueur — 3 jours (plan gratuit) à 7 jours : ce serait une collecte que la
+  // page de confidentialité et la fiche « Sécurité des données » de Google Play ne déclarent pas. Pour déboguer,
+  // `pnpm journal` (wrangler tail) suit les requêtes en direct sans rien stocker. `serveur.confidentialite.test.js`
+  // refuse qu'on rallume ce réglage sans changer ces déclarations.
+  "observability": { "enabled": false },
   "durable_objects": {
     "bindings": [
       // Une salle par duel en direct (code à 5 caractères).

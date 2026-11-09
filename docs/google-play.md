@@ -272,9 +272,15 @@ captures n'ont pas besoin d'être refaites. **Public cible** : 13 ans et plus, i
 
 1. **CNDP (loi 09-08)** : la 1.2 envoie un pseudonyme, un identifiant aléatoire et des scores depuis des téléphones au
    Maroc. La version web fait déjà la même chose depuis le 19/09. Un récépissé est-il nécessaire ? À faire valider.
-2. **Journaux de Cloudflare** : `serveur/wrangler.jsonc` active `observability` (journaux des requêtes). La page de
-   confidentialité dit que le code ne conserve aucune adresse IP ; vérifier ce que les journaux de Workers retiennent et
-   pendant combien de temps avant de répondre « non » à une collecte d'adresse IP dans le formulaire.
+2. **Journaux de Cloudflare** — *tranché le 09/11 : on les éteint ; reste à DÉPLOYER.* `serveur/wrangler.jsonc` activait
+   `observability` : d'après la documentation de Cloudflare, les journaux de Workers gardent les métadonnées ET les
+   en-têtes de chaque requête (donc, très probablement, l'adresse IP — non vérifié dans le compte), 3 jours sur le plan
+   gratuit, 7 sur le payant. Le réglage est maintenant `"observability": { "enabled": false }` (commit local, test
+   `src/lib/serveur.confidentialite.test.js`, 4 sabotages détectés) mais **il ne prend effet qu'au prochain
+   `pnpm deploy` depuis `serveur/`** (à faire par vous : `wrangler login` est le vôtre). Tant que ce n'est pas fait,
+   la phrase « le code n'en conserve aucune » reste vraie mais les journaux d'avant gardent les adresses jusqu'à leur
+   expiration (≤ 3 jours après le déploiement) — donc **déployer AVANT d'envoyer la fiche « Sécurité des données »**,
+   qui ne déclare pas d'adresse IP collectée.
 3. **Serveur à jour ?** Le dernier changement du dossier `serveur/` (filtre de pseudonymes côté serveur, `1eafb9b`, 01/10)
    a-t-il été déployé (`pnpm run deploy` depuis `serveur/`) ? Le serveur de production répond `{"version":"1"}` comme le
    dépôt, mais rien ne prouve la date de son déploiement. Le client filtre de toute façon les noms reçus (`messagePropre`).
