@@ -1,6 +1,6 @@
 {
   // Le serveur de Rihla : un Worker + trois Durable Objects, tous SQLite
-  // (les seuls admis sur le plan gratuit). Déploiement : `pnpm deploy`
+  // (les seuls admis sur le plan gratuit). Déploiement : `pnpm run deploy`
   // depuis serveur/ après `pnpm wrangler login` (une seule fois).
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "rihla-serveur",

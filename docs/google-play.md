@@ -277,7 +277,7 @@ captures n'ont pas besoin d'être refaites. **Public cible** : 13 ans et plus, i
    en-têtes de chaque requête (donc, très probablement, l'adresse IP — non vérifié dans le compte), 3 jours sur le plan
    gratuit, 7 sur le payant. Le réglage est maintenant `"observability": { "enabled": false }` (commit local, test
    `src/lib/serveur.confidentialite.test.js`, 4 sabotages détectés) mais **il ne prend effet qu'au prochain
-   `pnpm deploy` depuis `serveur/`** (à faire par vous : `wrangler login` est le vôtre). Tant que ce n'est pas fait,
+   `pnpm run deploy` depuis `serveur/`** (à faire par vous : `wrangler login` est le vôtre). Tant que ce n'est pas fait,
    la phrase « le code n'en conserve aucune » reste vraie mais les journaux d'avant gardent les adresses jusqu'à leur
    expiration (≤ 3 jours après le déploiement) — donc **déployer AVANT d'envoyer la fiche « Sécurité des données »**,
    qui ne déclare pas d'adresse IP collectée.

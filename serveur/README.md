@@ -45,7 +45,7 @@ Déployé le 19 septembre 2026 : **https://rihla-serveur.rihla-serveur.workers.d
    ```
 3. Déployer :
    ```bash
-   pnpm deploy
+   pnpm run deploy
    ```
    Wrangler crée le Worker `rihla-serveur`, ses trois espaces Durable Objects, et affiche l'adresse : `https://rihla-serveur.<sous-domaine>.workers.dev`.
 4. Donner l'adresse à l'app :
@@ -55,11 +55,11 @@ Déployé le 19 septembre 2026 : **https://rihla-serveur.rihla-serveur.workers.d
 
 **Quand l'app gagne une destination, le serveur se redéploie AVANT l'app web** : il tire les questions avec son propre `langues.js`, et refuse (`400 langue`) une destination ou une route qu'il ne connaît pas encore. L'ordre inverse ne casse aucun duel en cours — `*` tire toujours sur les 14 destinations d'origine, chez tout le monde — mais la Course sur la nouvelle destination répond « erreur » tant que le serveur n'a pas suivi.
 
-Ensuite, chaque mise à jour du serveur = `pnpm deploy` ; `pnpm journal` (wrangler tail) suit les logs en direct ; `pnpm verifier` bâtit sans déployer.
+Ensuite, chaque mise à jour du serveur = `pnpm run deploy` ; `pnpm journal` (wrangler tail) suit les logs en direct ; `pnpm verifier` bâtit sans déployer.
 
 ## Ce qui est envoyé, et rien d'autre
 
-Pseudonyme, scores, temps, et un identifiant tiré au hasard sur l'appareil (`rihla.voyageur`) avec un secret qui ne sert qu'à prouver que c'est le même appareil. Aucun compte, aucun e-mail, aucune adresse IP conservée par le code (Cloudflare en voit passer, comme tout hébergeur) **ni par ses journaux** : `observability` est éteint dans `wrangler.jsonc`, car les journaux de Workers gardent les en-têtes de chaque requête — adresse IP comprise — 3 à 7 jours. Le réglage ne prend effet qu'au prochain `pnpm deploy` ; `pnpm journal` (en direct, rien n'est stocké) reste le moyen de déboguer. `src/lib/serveur.confidentialite.test.js` garde ces deux promesses. Les classements s'effacent d'eux-mêmes après 60 jours, les salles après une heure.
+Pseudonyme, scores, temps, et un identifiant tiré au hasard sur l'appareil (`rihla.voyageur`) avec un secret qui ne sert qu'à prouver que c'est le même appareil. Aucun compte, aucun e-mail, aucune adresse IP conservée par le code (Cloudflare en voit passer, comme tout hébergeur) **ni par ses journaux** : `observability` est éteint dans `wrangler.jsonc`, car les journaux de Workers gardent les en-têtes de chaque requête — adresse IP comprise — 3 à 7 jours. Le réglage ne prend effet qu'au prochain `pnpm run deploy` ; `pnpm journal` (en direct, rien n'est stocké) reste le moyen de déboguer. `src/lib/serveur.confidentialite.test.js` garde ces deux promesses. Les classements s'effacent d'eux-mêmes après 60 jours, les salles après une heure.
 
 ## Limites du plan gratuit et ordres de grandeur
 
